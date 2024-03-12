@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>特殊文字入力アプリ</title>
+    <style>
+      @font-face {
+        font-family: "ashogu";
+        src: url("ashogu_asteain.ttf");
+      }
+
+      body {
+        font-family: "ashogu";
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      textarea {
+        font-family: "ashogu";
+        width: 80%;
+        height: 100px;
+        margin: 10px;
+        font-size: 35px;
+      }
+
+      .button-container {
+        font-family: "ashogu";
+        display: grid;
+        grid-template-columns: repeat(10, 40px);
+        grid-auto-rows: 40px;
+        grid-gap: 5px;
+        writing-mode: vertical-rl; /* 縦書きの設定 */
+      }
+
+      .button {
+        font-family: "ashogu";
+        width: 40px;
+        height: 40px;
+        font-size: 35px;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="textarea"></textarea>
+    <div class="button-container">
+      <button class="button">&#xe001;</button>
+      <button class="button">&#xe002;</button>
+      <button class="button">&#xe003;</button>
+      <button class="button">&#xe004;</button>
+      <button class="button">&#xe005;</button>
+      <button class="button">&#xe006;</button>
+      <button class="button">&#xe007;</button>
+      <button class="button">&#xe008;</button>
+      <button class="button">&#xe009;</button>
+      <button class="button">&#xe00a;</button>
+      <!--ここまでa行-->
+      <button class="button">&#xe00b;</button>
+      <button class="button">&#xe00c;</button>
+      <button class="button">&#xe00d;</button>
+      <button class="button">&#xe00e;</button>
+      <button class="button">&#xe00f;</button>
+      <button class="button">&#xe010;</button>
+      <button class="button">&#xe011;</button>
+      <button class="button">&#xe012;</button>
+      <button class="button">&#xe013;</button>
+      <button class="button">&#xe014;</button>
+      <!--ここまでs行-->
+      <button class="button">&#xe015;</button>
+      <button class="button">&#xe016;</button>
+      <button class="button">&#xe017;</button>
+      <button class="button">&#xe018;</button>
+      <button class="button">&#xe019;</button>
+      <button class="button">&#xe01a;</button>
+      <button class="button">&#xe01b;</button>
+
+      <button class="button">&#xe01c;</button>
+      <button class="button">&#xe01d;</button>
+      <button class="button">&#xe01e;</button>
+      <button class="button">&#xe01f;</button>
+      <button class="button">&#xe020;</button>
+      <button class="button">&#xe021;</button>
+      <button class="button">&#xe022;</button>
+      <button class="button">&#xe023;</button>
+      <button class="button">&#xe024;</button>
+      <button class="button">&#xe025;</button>
+      <button class="button">&#xe026;</button>
+      <button class="button">&#xe027;</button>
+      <button class="button">&#xe028;</button>
+      <button class="button">&#xe029;</button>
+      <button class="button">&#xe02a;</button>
+      <button class="button">&#xe02b;</button>
+      <button class="button">&#xe02c;</button>
+      <button class="button">&#xe02d;</button>
+      <button class="button">&#xe02e;</button>
+      <button class="button">&#xe02f;</button>
+      <button class="button">&#xe030;</button>
+      <button class="button">&#xe031;</button>
+      <button class="button">&#xe032;</button>
+      <button class="button">&#xe033;</button>
+      <button class="button">&#xe034;</button>
+      <button class="button">&#xe035;</button>
+      <button class="button">&#xe036;</button>
+      <button class="button">&#xe037;</button>
+      <button class="button">&#xe038;</button>
+      <button class="button">&#xe039;</button>
+      <button class="button">&#xe03a;</button>
+      <button class="button">&#xe03b;</button>
+      <button class="button">&#xe03c;</button>
+      <button class="button">&#xe03d;</button>
+      <button class="button">&#xe03e;</button>
+      <button class="button">&#xe03f;</button>
+      <button class="button">&#xe040;</button>
+      <button class="button">&#xe041;</button>
+      <button class="button">&#xe042;</button>
+      <button class="button">&#xe043;</button>
+      <button class="button">&#xe044;</button>
+      <button class="button">&#xe045;</button>
+      <button class="button">&#xe046;</button>
+      <button class="button">&#xe047;</button>
+      <button class="button">&#xe048;</button>
+      <button class="button">&#xe049;</button>
+      <button class="button">&#xe04a;</button>
+      <button class="button">&#xe04b;</button>
+      <button class="button">&#xe04c;</button>
+      <button class="button">&#xe04d;</button>
+      <button class="button">&#xe04e;</button>
+      <button class="button">&#xe04f;</button>
+      <button class="button">&#xe050;</button>
+      <button class="button">&#xe051;</button>
+      <button class="button">&#xe052;</button>
+      <button class="button">&#xe053;</button>
+      <button class="button">&#xe054;</button>
+      <button class="button">&#xe055;</button>
+      <button class="button">&#xe056;</button>
+      <button class="button">&#xe057;</button>
+      <button class="button">&#xe058;</button>
+      <button class="button">&#xe059;</button>
+      <button class="button">&#xe05a;</button>
+      <button class="button">&#xe05b;</button>
+      <button class="button">&#xe05c;</button>
+      <button class="button">&#xe05d;</button>
+      <button class="button">&#xe05e;</button>
+      <button class="button">&#xe05f;</button>
+      <button class="button">&#xe060;</button>
+      <button class="button">&#xe061;</button>
+      <button class="button">&#xe062;</button>
+      <button class="button">&#xe063;</button>
+      <button class="button">&#xe064;</button>
+      <button class="button">&#xe065;</button>
+      <button class="button">&#xe066;</button>
+      <button class="button">&#xe067;</button>
+      <button class="button">&#xe068;</button>
+      <button class="button">&#xe069;</button>
+      <button class="button">&#xe06a;</button>
+      <button class="button">&#xe06b;</button>
+      <button class="button">&#xe06c;</button>
+      <button class="button">&#xe06d;</button>
+      <button class="button">&#xe06e;</button>
+      <button class="button">&#xe06f;</button>
+      <button class="button">&#xe070;</button>
+      <button class="button">&#xe071;</button>
+      <button class="button">&#xe072;</button>
+      <button class="button">&#xe073;</button>
+      <button class="button">&#xe074;</button>
+      <button class="button">&#xe075;</button>
+      <button class="button">&#xe076;</button>
+      <button class="button">&#xe077;</button>
+      <button class="button">&#xe078;</button>
+      <button class="button">&#xe079;</button>
+      <button class="button">&#xe07a;</button>
+      <button class="button">&#xe07b;</button>
+      <button class="button">&#xe07c;</button>
+      <button class="button">&#xe07d;</button>
+      <button class="button">&#xe07e;</button>
+      <button class="button">&#xe07f;</button>
+      <button class="button">&#xe080;</button>
+      <button class="button">&#xe081;</button>
+      <button class="button">&#xe082;</button>
+      <button class="button">&#xe083;</button>
+      <button class="button">&#xe084;</button>
+      <button class="button">&#xe085;</button>
+      <button class="button">&#xe086;</button>
+      <button class="button">&#xe087;</button>
+      <button class="button">&#xe088;</button>
+      <button class="button">&#xe089;</button>
+      <button class="button">&#xe08a;</button>
+      <button class="button">&#xe08b;</button>
+      <button class="button">&#xe08c;</button>
+      <button class="button">&#xe08d;</button>
+      <button class="button">&#xe08e;</button>
+      <button class="button">&#xe08f;</button>
+      <button class="button">&#xe090;</button>
+      <button class="button">&#xe091;</button>
+      <button class="button">&#xe092;</button>
+      <button class="button">&#xe093;</button>
+      <button class="button">&#xe094;</button>
+      <button class="button">&#xe095;</button>
+      <button class="button">&#xe096;</button>
+      <button class="button">&#xe097;</button>
+      <button class="button">&#xe098;</button>
+      <button class="button">&#xe099;</button>
+      <button class="button">&#xe09a;</button>
+      <button class="button">&#xe09b;</button>
+      <button class="button">&#xe09c;</button>
+      <button class="button">&#xe09d;</button>
+      <button class="button">&#xe09e;</button>
+      <button class="button">&#xe09f;</button>
+      <button class="button">&#xe0a0;</button>
+      <button class="button">&#xe0a1;</button>
+      <button class="button">&#xe0a2;</button>
+      <button class="button">&#xe0a3;</button>
+      <button class="button">&#xe0a4;</button>
+    </div>
+    <script>
+      const textarea = document.getElementById("textarea");
+      const buttons = document.querySelectorAll(".button");
+
+      // テキストエリアにフォーカスが外れた際、再びフォーカスを当てる
+      textarea.addEventListener("blur", () => textarea.focus());
+
+      buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+          const value1 = textarea.value.substr(0, textarea.selectionStart);
+          const value2 = textarea.value.substr(textarea.selectionEnd);
+          textarea.value = value1 + button.textContent + value2;
+          textarea.selectionStart = textarea.selectionEnd =
+            value1.length + button.textContent.length;
+          textarea.focus(); // テキストエリアにフォーカスを当てる
+        });
+      });
+    </script>
+  </body>
+</html>
