@@ -6,7 +6,5 @@ asteainの作成した、諸人工言語を統一的に扱うことのできる�
 
 
 コードポイントの管理は以下のスプレッドシートで行われている。
-
 コメント可能なので、必要があればお願いします。
-
 https://docs.google.com/spreadsheets/d/1siscXU7ot8c8WV1kuOEd0WzaqyrIUsz4ESV4EhTVfDM/edit?usp=sharing
