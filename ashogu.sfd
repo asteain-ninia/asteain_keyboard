@@ -25,7 +25,7 @@ OS2Version: 4
 OS2_WeightWidthSlopeOnly: 0
 OS2_UseTypoMetrics: 1
 CreationTime: 1710049745
-ModificationTime: 1710983544
+ModificationTime: 1710984590
 PfmFamily: 17
 TTFWeight: 400
 TTFWidth: 5
@@ -58,6 +58,7 @@ OS2StrikeYPos: 528
 OS2Vendor: 'PfEd'
 OS2CodePages: 00000001.00000000
 OS2UnicodeRanges: 00000000.12000000.04000000.00000000
+Lookup: 1 0 0 "+fiZm+DBN-2" { "+fiZm+DBN-2-1" ("vert") } ['vrt2' ('DFLT' <'dflt' > ) ]
 Lookup: 1 0 0 "+fiZm+DBN" { "+fiZm+DBN--1" ("vert") } ['vert' ('DFLT' <'dflt' > 'kana' <'dflt' > 'latn' <'dflt' > ) ]
 MarkAttachClasses: 1
 DEI: 91125
@@ -87,7 +88,7 @@ NameList: AGL For New Fonts
 DisplaySize: -48
 AntiAlias: 1
 FitToEm: 0
-WinInfo: 993744 16 4
+WinInfo: 993968 16 4
 BeginPrivate: 0
 EndPrivate
 BeginChars: 1114116 208
@@ -238,7 +239,7 @@ Encoding: 993795 993795 5
 Width: 320
 VWidth: 1632
 GlyphClass: 2
-Flags: WO
+Flags: W
 LayerCount: 2
 Fore
 SplineSet
@@ -249,6 +250,7 @@ SplineSet
  80 6 l 1,0,-1
 EndSplineSet
 Validated: 1
+Substitution2: "+fiZm+DBN-2-1" ashogu_i.vert
 Substitution2: "+fiZm+DBN--1" ashogu_i.vert
 EndChar
 

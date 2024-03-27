@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>asteain式人工言語統一フォント入力機</title>
+    <style>
+      @font-face {
+        font-family: "ashogu";
+        src: url("ashogu_asteain.woff");
+      }
+
+      body {
+        font-family: "ashogu";
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      textarea {
+        font-family: "ashogu";
+        width: 80%;
+        height: 100px;
+        margin: 10px;
+        font-size: 40px;
+      }
+      .vertical-text {
+        writing-mode: vertical-rl;
+        text-orientation: upright;
+      }
+      .button-container {
+        font-family: "ashogu";
+        writing-mode: vertical-lr;
+      }
+      .labels {
+        writing-mode: horizontal-tb;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+      }
+      .button-container_a {
+        display: grid;
+        grid-auto-rows: 40px;
+        grid-gap: 5px;
+        grid-template-columns: repeat(11, 40px);
+      }
+      .button {
+        font-family: "ashogu";
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        font-size: 40px;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="textarea"></textarea>
+    <button id="toggleVrtAndHoriz" onclick="toggleTextOrientation()">
+      縦書き切り替え
+    </button>
+    注：負荷点・母音記号の結合は未実装。（単体の文字が入力されます）<br />
+    字体が表示されていないキーも入力は可能。
+    <div class="button-container">
+      <div class="button-container_a">
+        <span class="labels"> </span>
+        <span class="labels">a</span>
+        <span class="labels">'a</span>
+        <span class="labels">i</span>
+        <span class="labels">'i</span>
+        <span class="labels">o</span>
+        <span class="labels">'o</span>
+        <span class="labels">u</span>
+        <span class="labels">'u</span>
+        <span class="labels">e</span>
+        <span class="labels">'e</span>
+      </div>
+      <div class="button-container_a">
+        <span class="labels">a</span>
+        <button class="button">&#xF2A01;</button>
+        <button class="button">&#xF2A02;</button>
+        <button class="button">&#xF2A03;</button>
+        <button class="button">&#xF2A04;</button>
+        <button class="button">&#xF2A05;</button>
+        <button class="button">&#xF2A06;</button>
+        <button class="button">&#xF2A07;</button>
+        <button class="button">&#xF2A08;</button>
+        <button class="button">&#xF2A09;</button>
+        <button class="button">&#xF2A0A;</button>
+      </div>
+      <div class="button-container_a">
+        <span class="labels">s</span>
+        <button class="button">&#xF2A0B;</button>
+        <button class="button">&#xF2A0D;</button>
+        <button class="button">&#xF2A0F;</button>
+        <button class="button">&#xF2A11;</button>
+        <button class="button">&#xF2A13;</button>
+        <button class="button">&#xF2A15;</button>
+        <button class="button">&#xF2A17;</button>
+        <button class="button">&#xF2A19;</button>
+        <button class="button">&#xF2A1B;</button>
+        <button class="button">&#xF2A1D;</button>
+      </div>
+      <div class="button-container_a">
+        <span class="labels">z</span>
+        <button class="button">&#xF2A0C;</button>
+        <button class="button">&#xF2A0E;</button>
+        <button class="button">&#xF2A10;</button>
+        <button class="button">&#xF2A12;</button>
+        <button class="button">&#xF2A14;</button>
+        <button class="button">&#xF2A16;</button>
+        <button class="button">&#xF2A18;</button>
+        <button class="button">&#xF2A1A;</button>
+        <button class="button">&#xF2A1C;</button>
+        <button class="button">&#xF2A1E;</button>
+      </div>
+      <div class="button-container_a">
+        <span class="labels">þ</span>
+        <button class="button">&#xF2A1F;</button>
+        <button class="button">&#xF2A21;</button>
+        <button class="button">&#xF2A23;</button>
+        <button class="button">&#xF2A25;</button>
+        <button class="button">&#xF2A27;</button>
+        <button class="button">&#xF2A29;</button>
+        <button class="button">&#xF2A2B;</button>
+        <button class="button">&#xF2A2D;</button>
+        <button class="button">&#xF2A2F;</button>
+        <button class="button">&#xF2A31;</button>
+      </div>
+      <div class="button-container_a">
+        <span class="labels">ð</span>
+        <button class="button">&#xF2A20;</button>
+        <button class="button">&#xF2A22;</button>
+        <button class="button">&#xF2A24;</button>
+        <button class="button">&#xF2A26;</button>
+        <button class="button">&#xF2A28;</button>
+        <button class="button">&#xF2A2A;</button>
+        <button class="button">&#xF2A2C;</button>
+        <button class="button">&#xF2A2E;</button>
+        <button class="button">&#xF2A30;</button>
+        <button class="button">&#xF2A32;</button>
+      </div>
+      <div class="button-container_a">
+        <span class="labels">t</span>
+        <button class="button">&#xF2A33;</button>
+        <button class="button">&#xF2A35;</button>
+        <button class="button">&#xF2A37;</button>
+        <button class="button">&#xF2A39;</button>
+        <button class="button">&#xF2A3B;</button>
+        <button class="button">&#xF2A3D;</button>
+        <button class="button">&#xF2A3F;</button>
+        <button class="button">&#xF2A41;</button>
+        <button class="button">&#xF2A43;</button>
+        <button class="button">&#xF2A45;</button>
+      </div>
+      <div class="button-container_a">
+        <span class="labels">d</span>
+        <button class="button">&#xF2A34;</button>
+        <button class="button">&#xF2A36;</button>
+        <button class="button">&#xF2A38;</button>
+        <button class="button">&#xF2A3A;</button>
+        <button class="button">&#xF2A3C;</button>
+        <button class="button">&#xF2A3E;</button>
+        <button class="button">&#xF2A40;</button>
+        <button class="button">&#xF2A42;</button>
+        <button class="button">&#xF2A44;</button>
+        <button class="button">&#xF2A46;</button>
+      </div>
+      <div class="button-container_a">
+        <span class="labels">f</span>
+        <button class="button">&#xF2A47;</button>
+        <button class="button">&#xF2A4A;</button>
+        <button class="button">&#xF2A4D;</button>
+        <button class="button">&#xF2A50;</button>
+        <button class="button">&#xF2A53;</button>
+        <button class="button">&#xF2A56;</button>
+        <button class="button">&#xF2A59;</button>
+        <button class="button">&#xF2A5C;</button>
+        <button class="button">&#xF2A5F;</button>
+        <button class="button">&#xF2A62;</button>
+      </div>
+      <div class="button-container_a">
+        <span class="labels">v</span>
+        <button class="button">&#xF2A48;</button>
+        <button class="button">&#xF2A4B;</button>
+        <button class="button">&#xF2A4E;</button>
+        <button class="button">&#xF2A51;</button>
+        <button class="button">&#xF2A54;</button>
+        <button class="button">&#xF2A57;</button>
+        <button class="button">&#xF2A5A;</button>
+        <button class="button">&#xF2A5D;</button>
+        <button class="button">&#xF2A60;</button>
+        <button class="button">&#xF2A63;</button>
+      </div>
+      <div class="button-container_a">
+        <span class="labels">b</span>
+        <button class="button">&#xF2A49;</button>
+        <button class="button">&#xF2A4C;</button>
+        <button class="button">&#xF2A4F;</button>
+        <button class="button">&#xF2A52;</button>
+        <button class="button">&#xF2A55;</button>
+        <button class="button">&#xF2A58;</button>
+        <button class="button">&#xF2A5B;</button>
+        <button class="button">&#xF2A5E;</button>
+        <button class="button">&#xF2A61;</button>
+        <button class="button">&#xF2A64;</button>
+      </div>
+      <div class="button-container_a">
+        <span class="labels">h</span>
+        <button class="button">&#xF2A65;</button>
+        <button class="button">&#xF2A68;</button>
+        <button class="button">&#xF2A6B;</button>
+        <button class="button">&#xF2A6E;</button>
+        <button class="button">&#xF2A71;</button>
+        <button class="button">&#xF2A74;</button>
+        <button class="button">&#xF2A77;</button>
+        <button class="button">&#xF2A7A;</button>
+        <button class="button">&#xF2A7D;</button>
+        <button class="button">&#xF2A80;</button>
+      </div>
+      <div class="button-container_a">
+        <span class="labels">k</span>
+        <button class="button">&#xF2A66;</button>
+        <button class="button">&#xF2A69;</button>
+        <button class="button">&#xF2A6C;</button>
+        <button class="button">&#xF2A6F;</button>
+        <button class="button">&#xF2A72;</button>
+        <button class="button">&#xF2A75;</button>
+        <button class="button">&#xF2A78;</button>
+        <button class="button">&#xF2A7B;</button>
+        <button class="button">&#xF2A7E;</button>
+        <button class="button">&#xF2A81;</button>
+      </div>
+      <div class="button-container_a">
+        <span class="labels">g</span>
+        <button class="button">&#xF2A67;</button>
+        <button class="button">&#xF2A6A;</button>
+        <button class="button">&#xF2A6D;</button>
+        <button class="button">&#xF2A70;</button>
+        <button class="button">&#xF2A73;</button>
+        <button class="button">&#xF2A76;</button>
+        <button class="button">&#xF2A79;</button>
+        <button class="button">&#xF2A7C;</button>
+        <button class="button">&#xF2A7F;</button>
+        <button class="button">&#xF2A82;</button>
+      </div>
+      <div class="button-container_a">
+        <span class="labels">l</span>
+        <button class="button">&#xF2A83;</button>
+        <button class="button">&#xF2A85;</button>
+        <button class="button">&#xF2A87;</button>
+        <button class="button">&#xF2A89;</button>
+        <button class="button">&#xF2A8B;</button>
+        <button class="button">&#xF2A8D;</button>
+        <button class="button">&#xF2A8F;</button>
+        <button class="button">&#xF2A91;</button>
+        <button class="button">&#xF2A93;</button>
+        <button class="button">&#xF2A95;</button>
+      </div>
+      <div class="button-container_a">
+        <span class="labels">r</span>
+        <button class="button">&#xF2A84;</button>
+        <button class="button">&#xF2A86;</button>
+        <button class="button">&#xF2A88;</button>
+        <button class="button">&#xF2A8A;</button>
+        <button class="button">&#xF2A8C;</button>
+        <button class="button">&#xF2A8E;</button>
+        <button class="button">&#xF2A90;</button>
+        <button class="button">&#xF2A92;</button>
+        <button class="button">&#xF2A94;</button>
+        <button class="button">&#xF2A96;</button>
+      </div>
+      <div class="button-container_a">
+        <span class="labels">n</span>
+        <button class="button">&#xF2A97;</button>
+        <button class="button">&#xF2A98;</button>
+        <button class="button">&#xF2A99;</button>
+        <button class="button">&#xF2A9A;</button>
+        <button class="button">&#xF2A9B;</button>
+        <button class="button">&#xF2A9C;</button>
+        <button class="button">&#xF2A9D;</button>
+        <button class="button">&#xF2A9E;</button>
+        <button class="button">&#xF2A9F;</button>
+        <button class="button">&#xF2AA0;</button>
+      </div>
+      <div class="button-container_a">
+        <span class="labels">m</span>
+        <button class="button">&#xF2AA1;</button>
+        <button class="button">&#xF2AA2;</button>
+        <button class="button">&#xF2AA3;</button>
+        <button class="button">&#xF2AA4;</button>
+        <button class="button">&#xF2AA5;</button>
+        <button class="button">&#xF2AA6;</button>
+        <button class="button">&#xF2AA7;</button>
+        <button class="button">&#xF2AA8;</button>
+        <button class="button">&#xF2AA9;</button>
+        <button class="button">&#xF2AAA;</button>
+      </div>
+      <div class="button-container_a">
+        <span class="labels">j</span>
+        <button class="button">&#xF2AAB;</button>
+        <button class="button">&#xF2AAC;</button>
+        <button class="button">&#xF2AAD;</button>
+        <button class="button">&#xF2AAE;</button>
+        <button class="button">&#xF2AAF;</button>
+        <button class="button">&#xF2AB0;</button>
+        <button class="button">&#xF2AB1;</button>
+        <button class="button">&#xF2AB2;</button>
+        <button class="button">&#xF2AB3;</button>
+        <button class="button">&#xF2AB4;</button>
+      </div>
+      <div class="button-container_a">
+        <!--ここから撥音・促音-->
+        <button class="button">&#xF2AB5;</button>
+        <button class="button">&#xF2AB6;</button>
+      </div>
+      <div class="button-container_a">
+        <!--ここから母音記号-->
+        <button class="button">&#xF2AB7;</button>
+        <button class="button">&#xF2AB8;</button>
+        <button class="button">&#xF2AB9;</button>
+        <button class="button">&#xF2ABA;</button>
+        <button class="button">&#xF2ABB;</button>
+      </div>
+      <div class="button-container_a">
+        <!--ここから数字-->
+        <button class="button">&#xF2ABC;</button>
+        <button class="button">&#xF2ABD;</button>
+        <button class="button">&#xF2ABE;</button>
+        <button class="button">&#xF2ABF;</button>
+        <button class="button">&#xF2AC0;</button>
+        <button class="button">&#xF2AC1;</button>
+        <button class="button">&#xF2AC2;</button>
+        <button class="button">&#xF2AC3;</button>
+        <button class="button">&#xF2AC4;</button>
+        <button class="button">&#xF2AC5;</button>
+      </div>
+      <div class="button-container_a">
+        <!--ここから約物-->
+        <button class="button">&#xF2AC6;</button>
+        <button class="button">&#xF2AC7;</button>
+        <button class="button">&#xF2AC8;</button>
+        <button class="button">&#xF2AC9;</button>
+        <button class="button">&#xF2ACA;</button>
+      </div>
+    </div>
+    <script src="data.js"></script>
+    <script>
+      const textarea = document.getElementById("textarea");
+      const buttons = document.querySelectorAll(".button");
+
+      // テキストエリアにフォーカスが外れた際、再びフォーカスを当てる
+      textarea.addEventListener("blur", () => textarea.focus());
+
+      buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+          let insertChar = button.textContent;
+          let value1 = textarea.value.substr(0, textarea.selectionStart);
+          const value2 = textarea.value.substr(textarea.selectionEnd);
+          const insertedCharsCodePoint = parseInt(
+            insertChar.replace(/^&#x/, "").replace(/;$/, ""),
+            16
+          );
+          if (母音.includes(button.textContent)) {
+            if (子音文字.includes(value1.substring(value1.length - 2))) {
+              const C = value1.substring(value1.length - 2);
+              const V = button.textContent;
+              const match = combinations.find(
+                (combo) => combo.consonant.includes(C) && combo.vowel === V
+              );
+              if (match) {
+                insertChar = match.char;
+                value1 = value1.slice(0, -2);
+              } else {
+                console.warn(
+                  "変換に失敗しました。一致する組み合わせがありません"
+                );
+                insertChar = "";
+              }
+            } else {
+              //子音後以外で母音を押しても何も起きない
+              insertChar = "";
+            }
+          } else {
+            //負荷点
+            if (負荷点.includes(button.textContent)) {
+              if (子音文字.includes(value1.substring(value1.length - 2))) {
+                const target = value1.substring(value1.length - 2);
+                const 負荷点 = button.textContent;
+                const match = combinations.find(
+                  (combo) =>
+                    combo.consonant.includes(target) && combo.vowel === 負荷点
+                );
+                if (match) {
+                  insertChar = match.char;
+                  value1 = value1.slice(0, -2);
+                } else {
+                  console.warn(
+                    "変換に失敗しました。一致する組み合わせがありません"
+                  );
+                  insertChar = "";
+                }
+              } else {
+                //子音後以外で負荷点を押しても何も起きない
+                insertChar = "";
+              }
+            }
+          }
+
+          textarea.value = value1 + insertChar + value2;
+          textarea.selectionStart = textarea.selectionEnd =
+            value1.length + insertChar.length;
+          textarea.focus(); // テキストエリアにフォーカスを当てる
+        });
+      });
+      function toggleTextOrientation() {
+        const textArea = document.getElementById("textarea");
+        textArea.classList.toggle("vertical-text");
+        const button = document.getElementById("toggleVrtAndHoriz");
+        if (button.textContent === "縦書き切り替え") {
+          button.textContent = "横書き切り替え";
+        } else {
+          button.textContent = "縦書き切り替え";
+        }
+      }
+    </script>
+  </body>
+</html>
