@@ -3,57 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>asteain式人工言語統一フォント入力機</title>
-    <style>
-      @font-face {
-        font-family: "asteain";
-        src: url("asteain.woff");
-      }
-
-      body {
-        font-family: "asteain";
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      textarea {
-        font-family: "asteain";
-        width: 80%;
-        height: 100px;
-        margin: 10px;
-        font-size: 40px;
-      }
-      .vertical-text {
-        writing-mode: vertical-lr;
-        text-orientation: upright;
-      }
-      .button-container {
-        font-family: "asteain";
-        writing-mode: vertical-lr;
-      }
-      .labels {
-        writing-mode: horizontal-tb;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 20px;
-      }
-      .button-container_a {
-        display: grid;
-        grid-auto-rows: 40px;
-        grid-gap: 5px;
-        grid-template-columns: repeat(11, 40px);
-      }
-      .button {
-        writing-mode: horizontal-tb;
-        font-family: "asteain";
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        font-size: 40px;
-      }
-    </style>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <textarea id="textarea"></textarea>
@@ -61,7 +11,7 @@
       縦書き切り替え
     </button>
     <div class="button-container">
-      <div class="button-container_a">
+      <div class="button-container_11">
         <span class="labels"> </span>
         <span class="labels">a</span>
         <span class="labels">'a</span>
@@ -74,7 +24,7 @@
         <span class="labels">e</span>
         <span class="labels">'e</span>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <span class="labels">a</span>
         <button class="button">&#xF2A01;</button>
         <button class="button">&#xF2A02;</button>
@@ -87,7 +37,7 @@
         <button class="button">&#xF2A09;</button>
         <button class="button">&#xF2A0A;</button>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <span class="labels">s</span>
         <button class="button">&#xF2A0B;</button>
         <button class="button">&#xF2A0D;</button>
@@ -100,7 +50,7 @@
         <button class="button">&#xF2A1B;</button>
         <button class="button">&#xF2A1D;</button>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <span class="labels">z</span>
         <button class="button">&#xF2A0C;</button>
         <button class="button">&#xF2A0E;</button>
@@ -113,7 +63,7 @@
         <button class="button">&#xF2A1C;</button>
         <button class="button">&#xF2A1E;</button>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <span class="labels">þ</span>
         <button class="button">&#xF2A1F;</button>
         <button class="button">&#xF2A21;</button>
@@ -126,7 +76,7 @@
         <button class="button">&#xF2A2F;</button>
         <button class="button">&#xF2A31;</button>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <span class="labels">ð</span>
         <button class="button">&#xF2A20;</button>
         <button class="button">&#xF2A22;</button>
@@ -139,7 +89,7 @@
         <button class="button">&#xF2A30;</button>
         <button class="button">&#xF2A32;</button>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <span class="labels">t</span>
         <button class="button">&#xF2A33;</button>
         <button class="button">&#xF2A35;</button>
@@ -152,7 +102,7 @@
         <button class="button">&#xF2A43;</button>
         <button class="button">&#xF2A45;</button>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <span class="labels">d</span>
         <button class="button">&#xF2A34;</button>
         <button class="button">&#xF2A36;</button>
@@ -165,7 +115,7 @@
         <button class="button">&#xF2A44;</button>
         <button class="button">&#xF2A46;</button>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <span class="labels">f</span>
         <button class="button">&#xF2A47;</button>
         <button class="button">&#xF2A4A;</button>
@@ -178,7 +128,7 @@
         <button class="button">&#xF2A5F;</button>
         <button class="button">&#xF2A62;</button>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <span class="labels">v</span>
         <button class="button">&#xF2A48;</button>
         <button class="button">&#xF2A4B;</button>
@@ -191,7 +141,7 @@
         <button class="button">&#xF2A60;</button>
         <button class="button">&#xF2A63;</button>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <span class="labels">b</span>
         <button class="button">&#xF2A49;</button>
         <button class="button">&#xF2A4C;</button>
@@ -204,7 +154,7 @@
         <button class="button">&#xF2A61;</button>
         <button class="button">&#xF2A64;</button>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <span class="labels">h</span>
         <button class="button">&#xF2A65;</button>
         <button class="button">&#xF2A68;</button>
@@ -217,7 +167,7 @@
         <button class="button">&#xF2A7D;</button>
         <button class="button">&#xF2A80;</button>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <span class="labels">k</span>
         <button class="button">&#xF2A66;</button>
         <button class="button">&#xF2A69;</button>
@@ -230,7 +180,7 @@
         <button class="button">&#xF2A7E;</button>
         <button class="button">&#xF2A81;</button>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <span class="labels">g</span>
         <button class="button">&#xF2A67;</button>
         <button class="button">&#xF2A6A;</button>
@@ -243,7 +193,7 @@
         <button class="button">&#xF2A7F;</button>
         <button class="button">&#xF2A82;</button>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <span class="labels">l</span>
         <button class="button">&#xF2A83;</button>
         <button class="button">&#xF2A85;</button>
@@ -256,7 +206,7 @@
         <button class="button">&#xF2A93;</button>
         <button class="button">&#xF2A95;</button>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <span class="labels">r</span>
         <button class="button">&#xF2A84;</button>
         <button class="button">&#xF2A86;</button>
@@ -269,7 +219,7 @@
         <button class="button">&#xF2A94;</button>
         <button class="button">&#xF2A96;</button>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <span class="labels">n</span>
         <button class="button">&#xF2A97;</button>
         <button class="button">&#xF2A98;</button>
@@ -282,7 +232,7 @@
         <button class="button">&#xF2A9F;</button>
         <button class="button">&#xF2AA0;</button>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <span class="labels">m</span>
         <button class="button">&#xF2AA1;</button>
         <button class="button">&#xF2AA2;</button>
@@ -295,7 +245,7 @@
         <button class="button">&#xF2AA9;</button>
         <button class="button">&#xF2AAA;</button>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <span class="labels">j</span>
         <button class="button">&#xF2AAB;</button>
         <button class="button">&#xF2AAC;</button>
@@ -308,12 +258,12 @@
         <button class="button">&#xF2AB3;</button>
         <button class="button">&#xF2AB4;</button>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <!--ここから撥音・促音-->
         <button class="button">&#xF2AB5;</button>
         <button class="button">&#xF2AB6;</button>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <!--ここから母音記号-->
         <button class="button">&#xF2AB7;</button>
         <button class="button">&#xF2AB8;</button>
@@ -321,7 +271,7 @@
         <button class="button">&#xF2ABA;</button>
         <button class="button">&#xF2ABB;</button>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <!--ここから数字-->
         <button class="button">&#xF2ABC;</button>
         <button class="button">&#xF2ABD;</button>
@@ -334,7 +284,7 @@
         <button class="button">&#xF2AC4;</button>
         <button class="button">&#xF2AC5;</button>
       </div>
-      <div class="button-container_a">
+      <div class="button-container_11">
         <!--ここから約物-->
         <button class="button">&#xF2AC6;</button>
         <button class="button">&#xF2AC7;</button>
@@ -343,85 +293,8 @@
         <button class="button">&#xF2ACA;</button>
       </div>
     </div>
-    <script src="data.js"></script>
-    <script>
-      const textarea = document.getElementById("textarea");
-      const buttons = document.querySelectorAll(".button");
-
-      // テキストエリアにフォーカスが外れた際、再びフォーカスを当てる
-      textarea.addEventListener("blur", () => textarea.focus());
-
-      buttons.forEach((button) => {
-        button.addEventListener("click", () => {
-          let insertChar = button.textContent;
-          let value1 = textarea.value.substr(0, textarea.selectionStart);
-          const value2 = textarea.value.substr(textarea.selectionEnd);
-          const insertedCharsCodePoint = parseInt(
-            insertChar.replace(/^&#x/, "").replace(/;$/, ""),
-            16
-          );
-          if (母音.includes(button.textContent)) {
-            if (子音文字.includes(value1.substring(value1.length - 2))) {
-              const C = value1.substring(value1.length - 2);
-              const V = button.textContent;
-              const match = combinations.find(
-                (combo) => combo.consonant.includes(C) && combo.vowel === V
-              );
-              if (match) {
-                insertChar = match.char;
-                value1 = value1.slice(0, -2);
-              } else {
-                console.warn(
-                  "変換に失敗しました。一致する組み合わせがありません"
-                );
-                insertChar = "";
-              }
-            } else {
-              //子音後以外で母音を押しても何も起きない
-              insertChar = "";
-            }
-          } else {
-            //負荷点
-            if (負荷点.includes(button.textContent)) {
-              if (子音文字.includes(value1.substring(value1.length - 2))) {
-                const target = value1.substring(value1.length - 2);
-                const 負荷点 = button.textContent;
-                const match = combinations.find(
-                  (combo) =>
-                    combo.consonant.includes(target) && combo.vowel === 負荷点
-                );
-                if (match) {
-                  insertChar = match.char;
-                  value1 = value1.slice(0, -2);
-                } else {
-                  console.warn(
-                    "変換に失敗しました。一致する組み合わせがありません"
-                  );
-                  insertChar = "";
-                }
-              } else {
-                //子音後以外で負荷点を押しても何も起きない
-                insertChar = "";
-              }
-            }
-          }
-
-          textarea.value = value1 + insertChar + value2;
-          textarea.selectionStart = textarea.selectionEnd =
-            value1.length + insertChar.length;
-          textarea.focus(); // テキストエリアにフォーカスを当てる
-        });
-      });
-      function toggleTextOrientation() {
-        const textArea = document.getElementById("textarea");
-        textArea.classList.toggle("vertical-text");
-        const button = document.getElementById("toggleVrtAndHoriz");
-        if (button.textContent === "横書き切り替え") {
-          button.textContent = "縦書き切り替え";
-        } else {
-          button.textContent = "横書き切り替え";
-        }
-      }
-    </script>
+    <script src="ashogu_data.js"></script>
+    <script src="ashogu.js"></script>
+    <script src="basic.js"></script>
   </body>
 </html>

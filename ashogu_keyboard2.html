@@ -3,66 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>asteain式人工言語統一フォント入力機</title>
-    <style>
-      @font-face {
-        font-family: "asteain";
-        src: url("asteain.woff");
-      }
-
-      body {
-        font-family: "asteain";
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-      }
-      textarea {
-        font-family: "asteain";
-        width: 80%;
-        height: 100px;
-        margin: 10px;
-        font-size: 40px;
-      }
-      .vertical-text {
-        writing-mode: vertical-lr;
-        text-orientation: upright;
-      }
-      .button-container {
-        font-family: "asteain";
-        writing-mode: vertical-lr;
-      }
-      .labels {
-        writing-mode: horizontal-tb;
-        display: flex;
-        align-items: top;
-        justify-content: center;
-        font-size: 12px;
-      }
-      .button-container_a {
-        display: grid;
-        grid-auto-rows: 40px;
-        grid-gap: 5px;
-        grid-template-columns: repeat(6, 40px);
-      }
-      .button {
-        writing-mode: horizontal-tb;
-        font-family: "asteain";
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 40px;
-        height: 40px;
-        font-size: 40px;
-      }
-      .spacer {
-        margin-right: 10px;
-        display: block;
-      }
-      .functionButton {
-        writing-mode: horizontal-tb;
-        align-items: left;
-        padding: 0px;
-      }
-    </style>
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <textarea id="textarea"></textarea>
@@ -71,7 +12,7 @@
     </button>
     <div class="button-container">
       <span class="spacer">
-        <div class="button-container_a">
+        <div class="button-container_6">
           <button class="button">&#xF2A0B;</button>
           <!--s-->
           <button class="button">&#xF2A47;</button>
@@ -84,7 +25,7 @@
           <!--u-->
         </div>
 
-        <div class="button-container_a">
+        <div class="button-container_6">
           <button class="button">&#xF2A1F;</button>
           <!--þ-->
           <button class="button">&#xF2A65;</button>
@@ -97,7 +38,7 @@
           <!--e-->
         </div>
 
-        <div class="button-container_a">
+        <div class="button-container_6">
           <button class="button">&#xF2A33;</button>
           <!--t-->
           <button class="button">&#xF2A83;</button>
@@ -109,7 +50,7 @@
         </div>
       </span>
       <span class="spacer">
-        <div class="button-container_a">
+        <div class="button-container_6">
           <button class="button">&#xF2A0D;</button>
           <!--s'-->
           <button class="button">&#xF2A4A;</button>
@@ -121,7 +62,7 @@
           <button class="button">&#xF2A08;</button>
           <!--u'-->
         </div>
-        <div class="button-container_a">
+        <div class="button-container_6">
           <button class="button">&#xF2A21;</button>
           <!--þ'-->
           <button class="button">&#xF2A68;</button>
@@ -134,7 +75,7 @@
           <button class="button">&#xF2A0A;</button>
           <!--e'-->
         </div>
-        <div class="button-container_a">
+        <div class="button-container_6">
           <button class="button">&#xF2A35;</button>
           <!--t'-->
           <button class="button">&#xF2A85;</button>
@@ -147,7 +88,7 @@
       </span>
 
       <span class="spacer">
-        <div class="button-container_a">
+        <div class="button-container_6">
           <!--負荷点・撥音・促音-->
           <button class="button">&#xF2AC9;</button>
           <button class="button">&#xF2ACA;</button>
@@ -156,7 +97,7 @@
           <button onclick="space()" class="functionButton">space</button>
         </div>
 
-        <div class="button-container_a">
+        <div class="button-container_6">
           <!--母音記号-->
           <button class="button">&#xF2AB7;</button>
           <button class="button">&#xF2AB8;</button>
@@ -164,7 +105,7 @@
           <button class="button">&#xF2ABA;</button>
           <button class="button">&#xF2ABB;</button>
         </div>
-        <div class="button-container_a">
+        <div class="button-container_6">
           <!--句点類-->
           <button class="button">&#xF2AC6;</button>
           <button class="button">&#xF2AC7;</button>
@@ -177,7 +118,7 @@
         </div>
       </span>
       <span class="spacer">
-        <div class="button-container_a">
+        <div class="button-container_6">
           <button class="button">&#xF2AC3;</button
           ><!--7-->
           <button class="button">&#xF2AC0;</button
@@ -185,7 +126,7 @@
           <button class="button">&#xF2ABD;</button
           ><!--1-->
         </div>
-        <div class="button-container_a">
+        <div class="button-container_6">
           <button class="button">&#xF2AC4;</button
           ><!--8-->
           <button class="button">&#xF2AC1;</button
@@ -195,7 +136,7 @@
           <button class="button">&#xF2ABC;</button
           ><!--0-->
         </div>
-        <div class="button-container_a">
+        <div class="button-container_6">
           <button class="button">&#xF2AC5;</button
           ><!--9-->
           <button class="button">&#xF2AC2;</button
@@ -205,119 +146,8 @@
         </div>
       </span>
     </div>
-    <script src="data.js"></script>
-    <script>
-      const textarea = document.getElementById("textarea");
-      const buttons = document.querySelectorAll(".button");
-
-      // テキストエリアにフォーカスが外れた際、再びフォーカスを当てる
-      textarea.addEventListener("blur", () => textarea.focus());
-
-      buttons.forEach((button) => {
-        button.addEventListener("click", () => {
-          let insertChar = button.textContent;
-          let value1 = textarea.value.substr(0, textarea.selectionStart);
-          const value2 = textarea.value.substr(textarea.selectionEnd);
-          const insertedCharsCodePoint = parseInt(
-            insertChar.replace(/^&#x/, "").replace(/;$/, ""),
-            16
-          );
-          if (母音.includes(button.textContent)) {
-            if (子音文字.includes(value1.substring(value1.length - 2))) {
-              const C = value1.substring(value1.length - 2);
-              const V = button.textContent;
-              const match = combinations.find(
-                (combo) => combo.consonant.includes(C) && combo.vowel === V
-              );
-              if (match) {
-                insertChar = match.char;
-                value1 = value1.slice(0, -2);
-              } else {
-                console.warn(
-                  "変換に失敗しました。一致する組み合わせがありません"
-                );
-                insertChar = "";
-              }
-            } else {
-              //子音後以外で母音を押しても何も起きない
-              insertChar = "";
-            }
-          } else {
-            //負荷点
-            if (負荷点.includes(button.textContent)) {
-              if (子音文字.includes(value1.substring(value1.length - 2))) {
-                const target = value1.substring(value1.length - 2);
-                const 負荷点 = button.textContent;
-                const match = combinations.find(
-                  (combo) =>
-                    combo.consonant.includes(target) && combo.vowel === 負荷点
-                );
-                if (match) {
-                  insertChar = match.char;
-                  value1 = value1.slice(0, -2);
-                } else {
-                  console.warn(
-                    "変換に失敗しました。一致する組み合わせがありません"
-                  );
-                  insertChar = "";
-                }
-              } else {
-                //子音後以外で負荷点を押しても何も起きない
-                insertChar = "";
-              }
-            }
-          }
-
-          textarea.value = value1 + insertChar + value2;
-          textarea.selectionStart = textarea.selectionEnd =
-            value1.length + insertChar.length;
-          textarea.focus(); // テキストエリアにフォーカスを当てる
-        });
-      });
-
-      function space() {
-        let value1 = textarea.value.substr(0, textarea.selectionStart);
-        const value2 = textarea.value.substr(textarea.selectionEnd);
-        textarea.value = value1 + " " + value2;
-        textarea.selectionStart = textarea.selectionEnd = value1.length + 1;
-        textarea.focus();
-      }
-      function backspace() {
-        let value1 = textarea.value.substr(0, textarea.selectionStart);
-        const value2 = textarea.value.substr(textarea.selectionEnd);
-        if (
-          (55296 <= value1.codePointAt(value1.length - 1) &&
-            value1.codePointAt(value1.length - 1) <= 56319) ||
-          (56320 <= value1.codePointAt(value1.length - 1) &&
-            value1.codePointAt(value1.length - 1) <= 57343)
-          // サロゲートペアを使う文字かどうかを判定
-        ) {
-          textarea.value = value1.slice(0, -2) + value2;
-          textarea.selectionStart = textarea.selectionEnd = value1.length - 2;
-        } else {
-          textarea.value = value1.slice(0, -1) + value2;
-          textarea.selectionStart = textarea.selectionEnd = value1.length - 1;
-        }
-        textarea.focus();
-      }
-      function enter() {
-        let value1 = textarea.value.substr(0, textarea.selectionStart);
-        const value2 = textarea.value.substr(textarea.selectionEnd);
-        textarea.value = value1 + "\n" + value2;
-        textarea.selectionStart = textarea.selectionEnd = value1.length + 1;
-        textarea.focus();
-      }
-
-      function toggleTextOrientation() {
-        const textArea = document.getElementById("textarea");
-        textArea.classList.toggle("vertical-text");
-        const button = document.getElementById("toggleVrtAndHoriz");
-        if (button.textContent === "横書き切り替え") {
-          button.textContent = "縦書き切り替え";
-        } else {
-          button.textContent = "横書き切り替え";
-        }
-      }
-    </script>
+    <script src="ashogu_data.js"></script>
+    <script src="ashogu.js"></script>
+    <script src="basic.js"></script>
   </body>
 </html>
