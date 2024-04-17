@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>asteain式人工言語統一フォント入力機</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+      .Queso {
+        font-size: 35px;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="textarea"></textarea>
+    <div class="button-container">
+      <span class="spacer">
+        <div class="button-container_6">
+          <!--p b m f v-->
+          <button class="button Queso letter large">&#xF2D01;</button>
+          <button class="button Queso letter large">&#xF2D02;</button>
+          <button class="button Queso letter large">&#xF2D03;</button>
+          <button class="button Queso letter large">&#xF2D04;</button>
+          <button class="button Queso letter large">&#xF2D05;</button>
+        </div>
+        <div class="button-container_6">
+          <!--t d n s sz-->
+          <button class="button Queso letter large">&#xF2D06;</button>
+          <button class="button Queso letter large">&#xF2D07;</button>
+          <button class="button Queso letter large">&#xF2D08;</button>
+          <button class="button Queso letter large">&#xF2D09;</button>
+          <button class="button Queso letter large">&#xF2D0A;</button>
+        </div>
+        <div class="button-container_6">
+          <!--zh z l-->
+          <button class="button Queso letter large">&#xF2D0B;</button>
+          <button class="button Queso letter large">&#xF2D0C;</button>
+          <button class="button Queso letter large">&#xF2D0D;</button>
+        </div>
+        <div class="button-container_6">
+          <!--c jh nh ch j-->
+          <button class="button Queso letter large">&#xF2D0E;</button>
+          <button class="button Queso letter large">&#xF2D0F;</button>
+          <button class="button Queso letter large">&#xF2D10;</button>
+          <button class="button Queso letter large">&#xF2D11;</button>
+          <button class="button Queso letter large">&#xF2D12;</button>
+        </div>
+        <div class="button-container_6">
+          <!--k g ng x gh-->
+          <button class="button Queso letter large">&#xF2D13;</button>
+          <button class="button Queso letter large">&#xF2D14;</button>
+          <button class="button Queso letter large">&#xF2D15;</button>
+          <button class="button Queso letter large">&#xF2D16;</button>
+          <button class="button Queso letter large">&#xF2D17;</button>
+        </div>
+        <div class="button-container_6">
+          <!--q h-->
+          <button class="button Queso letter large">&#xF2D18;</button>
+          <button class="button Queso letter large">&#xF2D19;</button>
+        </div>
+      </span>
+      <span class="spacer">
+        <div class="button-container_6">
+          <!--r ii-->
+          <button class="button Queso letter large">&#xF2D1A;</button>
+          <button class="button Queso letter large">&#xF2D1B;</button>
+        </div>
+        <div class="button-container_6">
+          <!--i y w u-->
+          <button class="button Queso letter large">&#xF2D1C;</button>
+          <button class="button Queso letter large">&#xF2D1D;</button>
+          <button class="button Queso letter large">&#xF2D1E;</button>
+          <button class="button Queso letter large">&#xF2D1F;</button>
+        </div>
+        <div class="button-container_6">
+          <!--e oe eo o-->
+          <button class="button Queso letter large">&#xF2D20;</button>
+          <button class="button Queso letter large">&#xF2D21;</button>
+          <button class="button Queso letter large">&#xF2D22;</button>
+          <button class="button Queso letter large">&#xF2D23;</button>
+        </div>
+        <div class="button-container_6">
+          <!--ae a-->
+          <button class="button Queso letter large">&#xF2D24;</button>
+          <button class="button Queso letter large">&#xF2D25;</button>
+        </div>
+      </span>
+      <span class="spacer">
+        <div class="button-container_6">
+          <!--, .-->
+          <button class="button Queso">&#xF2D4B;</button>
+          <button class="button Queso">&#xF2D4C;</button>
+        </div>
+        <div class="button-container_6">
+          <!-- " - = -->
+          <button class="button Queso">&#xF2D4D;</button>
+          <button class="button Queso">&#xF2D4E;</button>
+          <button class="button Queso">&#xF2D4F;</button>
+        </div>
+        <div class="button-container_6">
+          <!--'-->
+          <button class="button Queso">&#xF2D50;</button>
+        </div>
+        <div class="button-container_6">
+          <!--¡ ! ?-->
+          <button class="button Queso">&#xF2D51;</button>
+          <button class="button Queso">&#xF2D52;</button>
+          <button class="button Queso">&#xF2D53;</button>
+        </div>
+        <div class="button-container_6">
+          <button class="functionButton" onclick="Shift()">Shift</button>
+          <button onclick="backspace()" class="functionButton">
+            Back<br />Space
+          </button>
+          <button onclick="enter()" class="functionButton">Enter</button>
+          <button onclick="space()" class="functionButton">space</button>
+        </div>
+      </span>
+    </div>
+    <script src="queso_data.js"></script>
+    <script src="basic.js"></script>
+    <script>
+      function insertLogic(value1, insertChar, button) {
+        if (アクセント.includes(button.textContent)) {
+          if (母音.includes(value1.substring(value1.length - 2))) {
+            const C = value1.substring(value1.length - 2);
+            const V = button.textContent;
+            const match = combinations.find(
+              (combo) => combo.consonant.includes(C) && combo.vowel === V
+            );
+            if (match) {
+              insertChar = match.char;
+              value1 = value1.slice(0, -2);
+            } else {
+              console.warn(
+                "変換に失敗しました。一致する組み合わせがありません"
+              );
+              insertChar = "";
+            }
+          } else {
+            //母音後以外でアクセントを押しても何も起きない
+            insertChar = "";
+          }
+        }
+
+        const firstHalf = value1 + insertChar;
+
+        if (button.classList.contains("large")) {
+          const buttons = document.querySelectorAll(
+            ".button.Queso.letter.large"
+          );
+          buttons.forEach((button) => {
+            const charCode = button.textContent.codePointAt();
+            const newCharCode = charCode + 37;
+            button.textContent = String.fromCodePoint(newCharCode);
+            button.classList.toggle("large");
+          });
+        }
+        return firstHalf;
+      }
+
+      function Shift() {
+        const buttons = document.querySelectorAll(".button.Queso.letter");
+        buttons.forEach((button) => {
+          if (button.classList.contains("large")) {
+            const charCode = button.textContent.codePointAt();
+            const newCharCode = charCode + 37;
+            button.textContent = String.fromCodePoint(newCharCode);
+          } else {
+            const charCode = button.textContent.codePointAt();
+            const newCharCode = charCode - 37;
+            button.textContent = String.fromCodePoint(newCharCode);
+          }
+          button.classList.toggle("large");
+        });
+      }
+    </script>
+  </body>
+</html>
