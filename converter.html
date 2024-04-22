@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>asteain式人工言語統一フォント入力機</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <textarea id="textarea"></textarea>
+    <button onclick="convert()">ザイロ文字に転写！</button>
+    蒼山さんの求めによって作成された簡易的なテキスト転写器です。<br />
+    ラテン文字で綴られた以下の言語の文章をザイロ文字に転写します。<br />
+    ・ノルウェー語（ブークモール）<br />
+    ・スウェーデン語<br />
+    ・フィンランド語<br />
+    長音には非対応です。kk→󲮻ではなく、kk→󲫚󲫚になります。母音も同様です。<br />
+    ラテン文字二文字で転写されるザイロ文字には転写されません。sd→󲫴ではなく、sd→󲫞󲫙になります。<br />
+    数字は大中華数字に転写されます。<br />
+    変換できない文字（セミコロンなど）はそのまま残ります。<br />
+    例外的な転写は以下です：<br />
+    ・å > 󲮱<br />
+    ・æ > 󲯓<br />
+    ・ø > 󲯗<br />
+    ・y > 󲯕<br />
+    <script>
+      const latin_zairo = [
+        { latin: "a", zairo: String.fromCodePoint(994000) },
+        { latin: "i", zairo: String.fromCodePoint(994001) },
+        { latin: "u", zairo: String.fromCodePoint(994002) },
+        { latin: "e", zairo: String.fromCodePoint(994003) },
+        { latin: "o", zairo: String.fromCodePoint(994004) },
+        { latin: "eo", zairo: String.fromCodePoint(994005) },
+        { latin: "p", zairo: String.fromCodePoint(994006) },
+        { latin: "b", zairo: String.fromCodePoint(994007) },
+        { latin: "t", zairo: String.fromCodePoint(994008) },
+        { latin: "d", zairo: String.fromCodePoint(994009) },
+        { latin: "k", zairo: String.fromCodePoint(994010) },
+        { latin: "g", zairo: String.fromCodePoint(994011) },
+        { latin: "f", zairo: String.fromCodePoint(994012) },
+        { latin: "v", zairo: String.fromCodePoint(994013) },
+        { latin: "s", zairo: String.fromCodePoint(994014) },
+        { latin: "z", zairo: String.fromCodePoint(994015) },
+        { latin: "sh", zairo: String.fromCodePoint(994016) },
+        { latin: "dz", zairo: String.fromCodePoint(994017) },
+        { latin: "h", zairo: String.fromCodePoint(994018) },
+        { latin: "rh", zairo: String.fromCodePoint(994019) },
+        { latin: "q", zairo: String.fromCodePoint(994020) },
+        { latin: "n", zairo: String.fromCodePoint(994021) },
+        { latin: "m", zairo: String.fromCodePoint(994022) },
+        { latin: "r", zairo: String.fromCodePoint(994023) },
+        { latin: "l", zairo: String.fromCodePoint(994024) },
+        { latin: "j", zairo: String.fromCodePoint(994025) },
+        { latin: "tsh", zairo: String.fromCodePoint(994026) },
+        { latin: "ts", zairo: String.fromCodePoint(994027) },
+        { latin: "tl", zairo: String.fromCodePoint(994028) },
+        { latin: ".", zairo: String.fromCodePoint(994029) },
+        { latin: ",", zairo: String.fromCodePoint(994030) },
+        { latin: '"', zairo: String.fromCodePoint(994031) },
+        { latin: "?", zairo: String.fromCodePoint(994034) },
+        { latin: "!", zairo: String.fromCodePoint(994035) },
+        { latin: "sd", zairo: String.fromCodePoint(994036) },
+        { latin: "zd", zairo: String.fromCodePoint(994037) },
+        { latin: "uu", zairo: String.fromCodePoint(994038) },
+        { latin: "ng", zairo: String.fromCodePoint(994039) },
+
+        { latin: "ä", zairo: String.fromCodePoint(994259) },
+        { latin: "ï", zairo: String.fromCodePoint(994260) },
+        { latin: "ü", zairo: String.fromCodePoint(994261) },
+        { latin: "ë", zairo: String.fromCodePoint(994262) },
+        { latin: "ö", zairo: String.fromCodePoint(994263) },
+
+        { latin: "å", zairo: String.fromCodePoint(994225) },
+        { latin: "æ", zairo: String.fromCodePoint(994259) },
+        { latin: "ø", zairo: String.fromCodePoint(994263) },
+
+        { latin: "0", zairo: String.fromCodePoint(993980) },
+        { latin: "1", zairo: String.fromCodePoint(993981) },
+        { latin: "2", zairo: String.fromCodePoint(993982) },
+        { latin: "3", zairo: String.fromCodePoint(993983) },
+        { latin: "4", zairo: String.fromCodePoint(993984) },
+        { latin: "5", zairo: String.fromCodePoint(993985) },
+        { latin: "6", zairo: String.fromCodePoint(993986) },
+        { latin: "7", zairo: String.fromCodePoint(993987) },
+        { latin: "8", zairo: String.fromCodePoint(993988) },
+        { latin: "9", zairo: String.fromCodePoint(993989) },
+      ];
+      function convert() {
+        const textarea = document.getElementById("textarea").value;
+        let textArray = textarea.split("");
+        let resultArray = [];
+        for (let i = 0; i < textArray.length; i++) {
+          const char = textArray[i].toLowerCase();
+          const match = latin_zairo.find((obj) => obj.latin === char);
+          if (match) {
+            resultChar = match.zairo;
+            resultArray.push(resultChar);
+          } else {
+            resultChar = textArray[i];
+            resultArray.push(resultChar);
+          }
+        }
+        document.getElementById("textarea").value = resultArray.join("");
+      }
+    </script>
+  </body>
+</html>
