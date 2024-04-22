@@ -1,10 +1,12 @@
 @charset "unicode";
-
 @font-face {
   font-family: "asteain";
   src: url("asteain.woff");
 }
 
+:root {
+  --w: 40;
+}
 body {
   font-family: "asteain";
   display: flex;
@@ -22,7 +24,7 @@ textarea {
   writing-mode: vertical-lr;
   text-orientation: upright;
 }
-.button-container {
+.vertical_keyboard {
   font-family: "asteain";
   writing-mode: vertical-lr;
 }
@@ -51,7 +53,7 @@ textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
+  width: calc(var(--w) * 1px);/*数値設定の最小値は16*/
   height: 40px;
   font-size: 40px;
 }
@@ -62,5 +64,14 @@ textarea {
 .functionButton {
   writing-mode: horizontal-tb;
   align-items: left;
+  width: calc(var(--w) * 1px);/*数値設定の最小値は16*/
   padding: 0px;
+}
+.flexibleSpacer {
+  margin-right: calc(var(--w) * 1px);/*数値設定の最小値は16*/
+  display: block;
+}
+.keyboardRow {
+  display: flex;
+  margin-bottom: 5px;
 }
