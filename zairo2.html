@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>asteain式人工言語統一フォント入力機</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <textarea id="textarea"></textarea>
+    <div class="keyboard">
+      <div class="keyboardRow">
+        <span class="spacer"> </span>
+        <button class="button">&#xF2AD0;</button>
+        <button class="button">&#xF2AD1;</button>
+        <button class="button">&#xF2AD2;</button>
+        <button class="button">&#xF2AD3;</button>
+        <button class="button">&#xF2AD4;</button>
+        <button class="button">&#xF2AD5;</button>
+        <span class="spacer"> </span>
+        <button class="button">&#xF2BD2;</button>
+        <button class="button">&#xF2BB0;</button>
+        <button class="button" style="background-color: gray"></button>
+        <span class="spacer"> </span>
+        <button class="button">&#xF2AED;</button>
+        <button class="button">&#xF2AEE;</button>
+        <button class="button">&#xF2AF2;</button>
+        <button class="button">&#xF2AF3;</button>
+        <span class="spacer"> </span>
+        <button class="button">&#xF2AF1;</button>
+        <button class="button">&#xF2AF0;</button>
+        <button class="button">&#xF2AEF;</button>
+        <!--数字-->
+        <span class="flexibleSpacer" style="--w: 20"> </span>
+        <button class="button">&#xF2AC3;</button>
+        <button class="button">&#xF2AC4;</button>
+        <button class="button">&#xF2AC5;</button>
+      </div>
+      <div class="keyboardRow">
+        <button class="button">&#xF2AD6;</button>
+        <button class="button">&#xF2AD7;</button>
+        <button class="button">&#xF2AD8;</button>
+        <button class="button">&#xF2AD9;</button>
+        <button class="button">&#xF2ADA;</button>
+        <button class="button">&#xF2ADB;</button>
+        <button class="button">&#xF2ADC;</button>
+        <button class="button">&#xF2ADD;</button>
+        <button class="button">&#xF2ADE;</button>
+        <button class="button">&#xF2ADF;</button>
+        <button class="button">&#xF2AE0;</button>
+        <button class="button">&#xF2AE1;</button>
+        <button class="button">&#xF2AE2;</button>
+        <button class="button">&#xF2AE3;</button>
+        <span class="flexibleSpacer" style="--w: 20"> </span>
+
+        <button onclick="backspace()" class="functionButton">
+          Back<br />Space
+        </button>
+        <button onclick="enter()" class="functionButton">Enter</button>
+        <!--数字-->
+        <span class="flexibleSpacer" style="--w: 40"> </span>
+        <button class="button">&#xF2AC0;</button>
+        <button class="button">&#xF2AC1;</button>
+        <button class="button">&#xF2AC2;</button>
+      </div>
+      <div class="keyboardRow">
+        <span class="spacer"> </span>
+        <button class="button">&#xF2AE4;</button>
+        <button class="button">&#xF2AE5;</button>
+        <button class="button">&#xF2AE6;</button>
+        <button class="button">&#xF2AE7;</button>
+        <button class="button">&#xF2AE8;</button>
+        <button class="button">&#xF2AE9;</button>
+        <button class="button">&#xF2AEA;</button>
+        <button class="button">&#xF2AEB;</button>
+        <button class="button">&#xF2AEC;</button>
+        <button class="button">&#xF2AF4;</button>
+        <button class="button">&#xF2AF5;</button>
+        <button class="button">&#xF2AF6;</button>
+        <button class="button">&#xF2AF7;</button>
+        <span class="flexibleSpacer" style="--w: 50"> </span>
+        <button onclick="space()" class="functionButton" style="--w: 80">
+          space
+        </button>
+        <!--数字-->
+        <span class="flexibleSpacer" style="--w: 40"> </span>
+        <button class="button">&#xF2ABD;</button>
+        <button class="button">&#xF2ABE;</button>
+        <button class="button">&#xF2ABF;</button>
+      </div>
+      <div class="keyboardRow">
+        <span class="flexibleSpacer" style="--w: 740"> </span>
+        <button class="button">&#xF2ABC;</button>
+      </div>
+    </div>
+    <script src="ashogu_data.js"></script>
+    <script src="ashogu.js"></script>
+    <script src="basic.js"></script>
+  </body>
+</html>
