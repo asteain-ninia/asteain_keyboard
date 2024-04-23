@@ -1,3 +1,9 @@
 <footer style="text-align: center">
   <a href="index.html">トップに戻る</a>
+  <button onclick="returnToTop()">a</button>
 </footer>
+<script>
+  function returnToTop() {
+    window.parent.location.href = "index.html";
+  }
+</script>
