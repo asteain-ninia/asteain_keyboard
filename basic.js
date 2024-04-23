@@ -18,6 +18,17 @@ buttons.forEach((button) => {
   });
 });
 
+function toggleTextOrientation() {
+  const textArea = document.getElementById("textarea");
+  textArea.classList.toggle("vertical-text");
+  const button = document.getElementById("toggleVrtAndHoriz");
+  if (button.textContent === "横書き切り替え") {
+    button.textContent = "縦書き切り替え";
+  } else {
+    button.textContent = "横書き切り替え";
+  }
+}
+
 function space() {
   let value1 = textarea.value.substr(0, textarea.selectionStart);
   const value2 = textarea.value.substr(textarea.selectionEnd);
