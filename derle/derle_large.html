@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>asteain式人工言語統一フォント入力機</title>
+    <link rel="stylesheet" href="../style.css" />
+    <style>
+      .derle {
+        font-size: 35px;
+      }
+    </style>
+  </head>
+  <body>
+    <textarea id="textarea"></textarea>
+    <div>
+      <div class="keyboardRow">
+        <!--a z h i-->
+        <button class="button derle">&#xF2F01;</button>
+        <button class="button derle">&#xF2F02;</button>
+        <button class="button derle">&#xF2F03;</button>
+        <button class="button derle">&#xF2F04;</button>
+        <!--数字-->
+        <span class="flexibleSpacer" style="--w: 20"> </span>
+        <button class="button derle">&#xF2F36;</button>
+        <button class="button derle">&#xF2F37;</button>
+        <button class="button derle">&#xF2F38;</button>
+        <!--記号-->
+        <span class="flexibleSpacer" style="--w: 20"> </span>
+        <button class="button derle">&#xF2F84;</button>
+        <button class="button derle">&#xF2F87;</button>
+        <button class="button derle">&#xF2F86;</button>
+        <button class="button derle">&#xF2F85;</button>
+      </div>
+      <div class="keyboardRow">
+        <!--d y j p-->
+        <button class="button derle">&#xF2F05;</button>
+        <button class="button derle">&#xF2F06;</button>
+        <button class="button derle">&#xF2F07;</button>
+        <button class="button derle">&#xF2F08;</button>
+        <!--数字-->
+        <span class="flexibleSpacer" style="--w: 20"> </span>
+        <button class="button derle">&#xF2F39;</button>
+        <button class="button derle">&#xF2F3A;</button>
+        <button class="button derle">&#xF2F3B;</button>
+        <!--記号-->
+        <span class="flexibleSpacer" style="--w: 20"> </span>
+        <button class="button derle">&#xF2F89;</button>
+        <button class="button derle">&#xF2F81;</button>
+        <button class="button derle">&#xF2F8A;</button>
+        <button class="button derle">&#xF2F94;</button>
+      </div>
+      <div class="keyboardRow">
+        <!--b f m n-->
+        <button class="button derle">&#xF2F09;</button>
+        <button class="button derle">&#xF2F0A;</button>
+        <button class="button derle">&#xF2F0B;</button>
+        <button class="button derle">&#xF2F0C;</button>
+        <!--数字-->
+        <span class="flexibleSpacer" style="--w: 20"> </span>
+        <button class="button derle">&#xF2F3C;</button>
+        <button class="button derle">&#xF2F3D;</button>
+        <button class="button derle">&#xF2F3E;</button>
+        <!--記号-->
+        <span class="flexibleSpacer" style="--w: 20"> </span>
+        <button class="button derle">&#xF2F93;</button>
+        <button class="button derle">&#xF2F95;</button>
+      </div>
+      <div class="keyboardRow">
+        <!--v u e t-->
+        <button class="button">&#xF2F0D;</button>
+        <button class="button">&#xF2F0E;</button>
+        <button class="button derle">&#xF2F0F;</button>
+        <button class="button derle">&#xF2F10;</button>
+        <!--数字-->
+        <span class="flexibleSpacer" style="--w: 60"> </span>
+        <button class="button derle">&#xF2F35;</button>
+        <button onclick="enter()" class="functionButton tall-key">Enter</button>
+        <!--記号-->
+        <span class="flexibleSpacer" style="--w: 20"> </span>
+        <button class="button derle">&#xF2FC2;</button>
+        <button class="button derle">&#xF2FC3;</button>
+        <button class="button derle">&#xF2FC4;</button>
+        <button class="button derle">&#xF2F83;</button>
+        <span class="flexibleSpacer" style="--w: 20"> </span>
+        <button class="button derle">&#xF2FC5;</button>
+        <button class="button derle">&#xF2FC6;</button>
+      </div>
+      <div class="keyboardRow">
+        <!--s w k l-->
+        <button class="button derle">&#xF2F11;</button>
+        <button class="button derle">&#xF2F12;</button>
+        <button class="button derle">&#xF2F13;</button>
+        <button class="button derle">&#xF2F14;</button>
+
+        <span class="flexibleSpacer" style="--w: 20"> </span>
+        <button class="button derle">&#xF2FC1;</button>
+        <button onclick="backspace()" class="functionButton">
+          Back<br />Space
+        </button>
+        <!--記号-->
+        <span class="flexibleSpacer" style="--w: 60"> </span>
+        <button class="button derle">&#xF2F8B;</button>
+        <button class="button derle">&#xF2F8C;</button>
+        <button class="button derle">&#xF2F8D;</button>
+        <button class="button derle">&#xF2F8E;</button>
+        <span class="flexibleSpacer" style="--w: 20"> </span>
+        <button class="button derle">&#xF2FC7;</button>
+        <button class="button derle">&#xF2FC8;</button>
+      </div>
+      <div class="keyboardRow">
+        <!-- o q x r-->
+        <button class="button derle">&#xF2F15;</button>
+        <button class="button derle">&#xF2F16;</button>
+        <button class="button derle">&#xF2F17;</button>
+        <button class="button derle">&#xF2F18;</button>
+        <span class="flexibleSpacer" style="--w: 20"> </span>
+        <button onclick="space()" class="functionButton" style="--w: 120">
+          space
+        </button>
+        <!--記号-->
+        <span class="flexibleSpacer" style="--w: 20"> </span>
+        <button class="button derle">&#xF2F8F;</button>
+        <button class="button derle">&#xF2F90;</button>
+        <button class="button derle">&#xF2F91;</button>
+        <button class="button derle">&#xF2F92;</button>
+        <span class="flexibleSpacer" style="--w: 20"> </span>
+        <button class="button derle">&#xF2FC9;</button>
+        <button class="button derle">&#xF2FCA;</button>
+      </div>
+      <div class="keyboardRow">
+        <!--g c-->
+        <button class="button derle">&#xF2F19;</button>
+        <button class="button derle">&#xF2F1A;</button>
+      </div>
+    </div>
+    <script src="derle_data.js"></script>
+    <script src="../basic.js"></script>
+    <script>
+      function insertLogic(value1, insertChar, button) {
+        insertChar = button.textContent;
+        const charCode = value1.substring(value1.length - 2).codePointAt();
+        if (button.textContent == "󲿁") {
+          //発音線
+          console.log(charCode);
+          if (charCode >= 995073 && charCode <= 995098) {
+            const newCharCode = charCode + 26;
+            insertChar = String.fromCodePoint(newCharCode);
+            value1 = value1.slice(0, -2);
+          } else if (charCode >= 995099 && charCode <= 995124) {
+            const newCharCode = charCode - 26;
+            insertChar = String.fromCodePoint(newCharCode);
+            value1 = value1.slice(0, -2);
+          } else if (charCode == 995201) {
+            const newCharCode = charCode + 7;
+            insertChar = String.fromCodePoint(newCharCode);
+            value1 = value1.slice(0, -2);
+          } else if (charCode == 995208) {
+            const newCharCode = charCode - 7;
+            insertChar = String.fromCodePoint(newCharCode);
+            value1 = value1.slice(0, -2);
+          } else {
+            //発音線がつかない文字の後で発音線を押しても何も起きない
+            insertChar = "";
+          }
+        }
+        console.log(insertChar.codePointAt());
+        if (charCode == insertChar.codePointAt()) {
+          //促音符号
+          insertChar = String.fromCodePoint(995202);
+        }
+        const firstHalf = value1 + insertChar;
+        return firstHalf;
+      }
+    </script>
+  </body>
+  <iframe src="../footer.html" frameborder="0"></iframe>
+</html>
