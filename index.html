@@ -4,26 +4,31 @@
 <head>
   <meta charset="UTF-8" />
   <title>asteain式人工言語統一フォント入力機</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-  <a href="arka/arka.html">幻字キーボード（未対応）</a><br />
-  <a href="liparxe/liparxe.html">リパーシェキーボード（未対応）</a><br />
-  <a href="shaleian/shaleian.html">シャレイア文字キーボード（未対応）</a><br />
-  <a href="derle/derle_large.html">デーレ文字（正文字）キーボード</a><br />
-  <a href="derle/derle_small.html">デーレ文字（小文字）キーボード</a><br />
-  <a href="ashogu/ashogu_keyboard.html">アソーグ文字180音キーボード</a><br />
-  <a href="ashogu/ashogu_keyboard2.html">アソーグ文字標準キーボード</a><br />
-  <a href="zairo/zairo.html">QWERTYザイロ文字キーボード</a><br />
-  <a href="zairo/zairo2.html">観界板ザイロ文字キーボード</a><br />
-  <a href="queso/modernQueso_keyboard.html">新笈霜語キーボード</a><br />
-  <hr>
-  <a href="derle/derleConverter_small.html">デーレ文字（小文字）変換器</a><br />
-  <hr>
-  <h2>asteainフォント収録領域サンプル（F27xx〜F33xx）</h2>
-  <div id="glyph-sample-list"
-    style="display: flex; flex-wrap: wrap; gap: 8px; font-family: 'asteain', sans-serif; font-size: 36px; line-height: 1.2;">
-  </div>
+  <ul class="menu" style="font-size:20px;">
+    <li data-ico="󲟤"> <a href="arka/arka.html">幻字キーボード（未対応）</a> </li>
+    <li> <a href="liparxe/liparxe.html">リパーシェキーボード（未対応）</a> </li>
+    <li> <a href="shaleian/shaleian.html">シャレイア文字キーボード（未対応）</a> </li>
+    <li data-ico="󲼅"> <a href="derle/derle_large.html">デーレ文字（正文字）キーボード</a> </li>
+    <li data-ico="󲽅"> <a href="derle/derle_small.html">デーレ文字（小文字）キーボード</a> </li>
+    <li data-ico="󲨁"> <a href="ashogu/ashogu_keyboard.html">アソーグ文字180音キーボード</a> </li>
+    <li data-ico="󲨁"> <a href="ashogu/ashogu_keyboard2.html">アソーグ文字標準キーボード</a> </li>
+    <li data-ico="󲫖"> <a href="zairo/zairo.html">QWERTYザイロ文字キーボード</a> </li>
+    <li data-ico="󲫖"> <a href="zairo/zairo2.html">観界板ザイロ文字キーボード</a> </li>
+    <li data-ico="󲴁"> <a href="queso/modernQueso_keyboard.html">新笈霜語キーボード</a> </li>
+    <li> <a href="kinon/kinon.html">キノン文字キーボード（未対応）</a> </li>
+    <hr>
+    <li data-ico="d󲽅"> <a href="derle/derleConverter_small.html">デーレ文字（小文字）変換器</a> </li>
+    <hr>
+
+    <h2>asteainフォント収録領域サンプル（F27xx〜F33xx）</h2>
+    <div id="glyph-sample-list"
+      style="display: flex; flex-wrap: wrap; gap: 8px; font-family: 'asteain'; font-size: 36px; line-height: 1.2;">
+    </div>
+  </ul>
   <script>
     // F27xx〜F33xxの全PUA範囲を表示
     const allPUA = [];
