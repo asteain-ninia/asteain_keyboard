@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>asteain式人工言語統一フォント入力機</title>
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    .arka {
+      font-size: 35px;
+      font-family: "asteain", "nishiki-teki", sans-serif;
+    }
+
+    .multiple {
+      font-size: 20px;
+    }
+  </style>
+  <!--
+    参考: derle/ のページ構成に倣い、
+    - 入力欄
+    - キー群
+    - 操作ボタン（Space/Enter/Backspace, 方向切替）
+    を配置します。
+    キー群は arka_codepoint.tsv を読み込んで arka_data.js で自動生成します。
+  -->
+</head>
+
+<body>
+  <textarea id="textarea" style="font-family:'nishiki-teki', 'asteain';"></textarea>
+
+  <div>
+    <!-- 子音4個x5行+数字3x3+1と記号: tkxs 123 +-x÷/ nvfm 456 =/ dgpb 789/ hycr shift 0 enter / zjwl shift BS enter-->
+    <div class="keyboardRow"><!--1行目-->
+      <span class="flexibleSpacer" style="--w: 40"> </span>
+      <button class="button arka letter">&#xF2710;</button>
+      <button class="button arka letter">&#xF2711;</button>
+      <button class="button arka letter">&#xF2712;</button>
+      <button class="button arka letter">&#xF2713;</button>
+      <span class="flexibleSpacer" style="--w: 20"> </span>
+      <button class="button arka">&#xF2701;</button>
+      <button class="button arka">&#xF2702;</button>
+      <button class="button arka">&#xF2703;</button>
+      <span class="flexibleSpacer" style="--w: 20"> </span>
+      <button class="button arka">&#xF273C;</button>
+      <button class="button arka">&#xF273D;</button>
+      <button class="button arka">&#xF2751;</button>
+      <span class="flexibleSpacer" style="--w: 40"> </span>
+      <span class="flexibleSpacer" style="--w: 20"> </span>
+      <button class="button arka">&#xF2770;</button>
+      <button class="button arka">&#xF2771;</button>
+      <button class="button arka">&#xF2772;</button>
+      <button class="button arka">&#xF2773;</button>
+
+    </div>
+    <div class="keyboardRow"><!--2行目-->
+      <span class="flexibleSpacer" style="--w: 40"> </span>
+      <button class="button arka letter">&#xF2714;</button>
+      <button class="button arka letter">&#xF2715;</button>
+      <button class="button arka letter">&#xF2716;</button>
+      <button class="button arka letter">&#xF2717;</button>
+      <span class="flexibleSpacer" style="--w: 20"> </span>
+      <button class="button arka">&#xF2704;</button>
+      <button class="button arka">&#xF2705;</button>
+      <button class="button arka">&#xF2706;</button>
+      <span class="flexibleSpacer" style="--w: 20"> </span>
+      <button class="button arka">&#xF275B;</button>
+      <span class="flexibleSpacer" style="--w: 40"> </span>
+      <span class="flexibleSpacer" style="--w: 40"> </span>
+      <span class="flexibleSpacer" style="--w: 40"> </span>
+      <span class="flexibleSpacer" style="--w: 20"> </span>
+      <button class="button arka">&#xF2774;</button>
+      <button class="button arka">&#xF2775;</button>
+      <button class="button arka">&#xF2776;</button>
+      <button class="button arka">&#xF2777;</button>
+
+
+
+    </div>
+    <div class="keyboardRow"><!--3行目-->
+      <span class="flexibleSpacer" style="--w: 40"> </span>
+      <button class="button arka letter">&#xF2718;</button>
+      <button class="button arka letter">&#xF2719;</button>
+      <button class="button arka letter">&#xF271A;</button>
+      <button class="button arka letter">&#xF271B;</button>
+      <span class="flexibleSpacer" style="--w: 20"> </span>
+      <button class="button arka">&#xF2707;</button>
+      <button class="button arka">&#xF2708;</button>
+      <button class="button arka">&#xF2709;</button>
+      <span class="flexibleSpacer" style="--w: 20"> </span>
+      <button class="button arka">&#xF273E;</button>
+      <span class="flexibleSpacer" style="--w: 40"> </span>
+      <span class="flexibleSpacer" style="--w: 40"> </span>
+      <span class="flexibleSpacer" style="--w: 40"> </span>
+      <span class="flexibleSpacer" style="--w: 20"> </span>
+      <button class="button arka">&#xF2778;</button>
+      <button class="button arka">&#xF2779;</button>
+      <button class="button arka">&#xF277A;</button>
+      <button class="button arka">&#xF277B;</button>
+
+
+
+    </div>
+    <div class="keyboardRow"><!--4行目-->
+      <span class="flexibleSpacer" style="--w: 40"> </span>
+      <button class="button arka letter">&#xF271C;</button>
+      <button class="button arka letter">&#xF271D;</button>
+      <button class="button arka letter">&#xF271E;</button>
+      <button class="button arka letter">&#xF271F;</button>
+      <span class="flexibleSpacer" style="--w: 20"> </span>
+      <button onclick="Shift()" class="functionButton tall-key">Shift</button>
+      <button class="button arka">&#xF2700;</button>
+      <button onclick="enter()" class="functionButton tall-key">Enter</button>
+      <span class="flexibleSpacer" style="--w: 20"> </span>
+      <button class="button arka">&#xF2747;</button>
+      <button class="button arka">&#xF2748;</button>
+      <button class="button arka">&#xF2745;</button>
+      <button class="button arka">&#xF2746;</button>
+      <span class="flexibleSpacer" style="--w: 20"></span>
+      <button class="button arka">&#xF27D8;</button>
+      <button class="button arka">&#xF27D9;</button>
+      <button class="button arka">&#xF27DA;</button>
+      <button class="button arka">&#xF27DB;</button>
+
+    </div>
+
+    <div class="keyboardRow"><!--5行目-->
+      <span class="flexibleSpacer" style="--w: 40"> </span>
+      <button class="button arka letter">&#xF2720;</button>
+      <button class="button arka letter">&#xF2721;</button>
+      <button class="button arka letter">&#xF2722;</button>
+      <button class="button arka letter">&#xF2723;</button>
+      <span class="flexibleSpacer" style="--w: 20"> </span>
+      <span class="flexibleSpacer" style="--w: 40"> </span>
+      <button onclick="backspace()" class="functionButton">Back<br />Space</button>
+      <span class="flexibleSpacer" style="--w: 40"> </span>
+      <span class="flexibleSpacer" style="--w: 20"> </span><!--季節記号-->
+      <button class="button arka">&#xF2741;</button>
+      <button class="button arka">&#xF2742;</button>
+      <button class="button arka">&#xF275A;</button>
+      <button class="button arka">&#xF275C;</button>
+      <span class="flexibleSpacer" style="--w: 20"></span><!--神名記号-->
+      <button class="button arka">&#xF27DC;</button>
+      <button class="button arka">&#xF27DD;</button>
+      <button class="button arka">&#xF27DE;</button>
+      <button class="button arka">&#xF27E0;</button>
+    </div>
+
+    <!-- 母音 : a i o e u space イントネーション6種-->
+    <div class="keyboardRow">
+      <button class="button arka vowel">&#xF2728;</button>
+      <button class="button arka vowel">&#xF272B;</button>
+      <button class="button arka vowel">&#xF272E;</button>
+      <button class="button arka vowel">&#xF2731;</button>
+      <button class="button arka vowel">&#xF2734;</button>
+      <span class="flexibleSpacer" style="--w: 20"> </span>
+      <button onclick="space()" class="functionButton" style="--w: 120">space</button>
+      <span class="flexibleSpacer" style="--w: 20"> </span>
+      <button class="button arka intonation">&#xF2760;</button>
+      <button class="button arka intonation">&#xF2761;</button>
+      <button class="button arka intonation">&#xF2762;</button>
+      <button class="button arka intonation">&#xF2763;</button>
+      <button class="button arka intonation">&#xF2764;</button>
+      <button class="button arka intonation">&#xF2765;</button>
+    </div>
+
+
+    <div class="keyboardRow">
+      <button class="button arka">&#xF2724;</button> <!--古幻字 (q以外大文字なし)-->
+      <button class="button arka">&#xF2725;</button>
+      <button class="button arka">&#xF2726;</button>
+      <button class="button arka">&#xF2727;</button>
+      <button class="button arka schwa">&#xF2737;</button>
+      <span class="flexibleSpacer" style="--w: 20"></span><!--曜魔文字-->
+      <button class="button arka">&#xF2780;</button>
+      <button class="button arka">&#xF2781;</button>
+      <button class="button arka">&#xF2782;</button>
+      <button class="button arka">&#xF2783;</button>
+      <button class="button arka">&#xF2784;</button>
+      <button class="button arka">&#xF2785;</button>
+      <button class="button arka">&#xF2786;</button>
+      <span class="flexibleSpacer" style="--w: 40"></span><!--拡張幼字4字-->
+      <button class="button arka">&#xF276D;</button>
+      <button class="button arka">&#xF276E;</button>
+      <button class="button arka">&#xF276F;</button>
+      <button class="button arka">&#xF27CD;</button>
+
+    </div>
+
+    <div class="keyboardRow"><!--記号１-->
+      <button class="button arka">&#xF273F;</button>
+      <button class="button arka">&#xF2740;</button>
+      <button class="button arka">&#xF2743;</button>
+      <button class="button arka">&#xF2744;</button>
+      <button class="button arka">&#xF2749;</button>
+      <button class="button arka">&#xF274A;</button>
+      <button class="button arka">&#xF274B;</button>
+      <button class="button arka">&#xF274C;</button>
+      <button class="button arka">&#xF274D;</button>
+      <button class="button arka">&#xF274E;</button>
+      <button class="button arka">&#xF274F;</button>
+      <button class="button arka">&#xF2752;</button>
+      <button class="button arka">&#xF2753;</button>
+      <button class="button arka">&#xF2754;</button>
+      <button class="button arka">&#xF2755;</button>
+      <button class="button arka">&#xF2756;</button>
+      <span class="flexibleSpacer" style="--w: 20"></span>
+    </div>
+
+    <div class="keyboardRow">
+      <button class="button arka">&#xF2790;</button>
+      <button class="button arka">&#xF2791;</button>
+      <button class="button arka">&#xF2792;</button>
+      <button class="button arka">&#xF2793;</button>
+      <button class="button arka">&#xF2794;</button>
+      <button class="button arka">&#xF2795;</button>
+      <button class="button arka">&#xF2796;</button>
+      <span class="flexibleSpacer" style="--w: 20"></span>
+      <button class="button arka">&#xF27B0;</button>
+      <button class="button arka">&#xF27B1;</button>
+      <button class="button arka">&#xF27B2;</button>
+      <button class="button arka">&#xF27B3;</button>
+      <button class="button arka">&#xF27B4;</button>
+      <button class="button arka">&#xF27B5;</button>
+      <button class="button arka">&#xF27B6;</button>
+    </div>
+    <div class="keyboardRow">
+      <button class="button arka">&#xF2797;</button>
+      <button class="button arka">&#xF2798;</button>
+      <button class="button arka">&#xF2799;</button>
+      <button class="button arka">&#xF279A;</button>
+      <button class="button arka">&#xF279B;</button>
+      <button class="button arka">&#xF279C;</button>
+      <button class="button arka">&#xF279D;</button>
+      <span class="flexibleSpacer" style="--w: 20"></span>
+      <button class="button arka">&#xF27B8;</button>
+      <button class="button arka">&#xF27B9;</button>
+      <button class="button arka">&#xF27BA;</button>
+      <button class="button arka">&#xF27BB;</button>
+      <button class="button arka">&#xF27BC;</button>
+      <button class="button arka">&#xF27BD;</button>
+      <button class="button arka">&#xF27BE;</button>
+    </div>
+    <div class="keyboardRow">
+      <button class="button arka">&#xF279E;</button>
+      <button class="button arka">&#xF279F;</button>
+      <button class="button arka">&#xF27A0;</button>
+      <button class="button arka">&#xF27A1;</button>
+      <button class="button arka">&#xF27A2;</button>
+      <button class="button arka">&#xF27A3;</button>
+      <button class="button arka">&#xF27A4;</button>
+      <span class="flexibleSpacer" style="--w: 20"></span>
+      <button class="button arka">&#xF27BF;</button>
+      <button class="button arka">&#xF27C0;</button>
+      <button class="button arka">&#xF27C1;</button>
+      <button class="button arka">&#xF27C2;</button>
+      <button class="button arka">&#xF27C3;</button>
+      <button class="button arka">&#xF27C4;</button>
+      <button class="button arka">&#xF27C5;</button>
+    </div>
+    <div class="keyboardRow">
+      <button class="button arka">&#xF27A5;</button>
+      <button class="button arka">&#xF27A6;</button>
+      <button class="button arka">&#xF27A7;</button>
+      <button class="button arka">&#xF27A8;</button>
+      <button class="button arka">&#xF27A9;</button>
+      <button class="button arka">&#xF27AA;</button>
+      <button class="button arka">&#xF27AB;</button>
+      <span class="flexibleSpacer" style="--w: 20"></span>
+      <button class="button arka">&#xF27C6;</button>
+      <button class="button arka">&#xF27C7;</button>
+      <button class="button arka">&#xF27C8;</button>
+      <button class="button arka">&#xF27C9;</button>
+      <button class="button arka">&#xF27CA;</button>
+      <button class="button arka">&#xF27CB;</button>
+      <button class="button arka">&#xF27CC;</button>
+
+    </div>
+    <div class="keyboardRow"><!--月相・ミュシェット・象徴2字-->
+      <button class="button arka">&#xF27D0;</button>
+      <button class="button arka">&#xF27D1;</button>
+      <button class="button arka">&#xF27D2;</button>
+      <button class="button arka">&#xF27D3;</button>
+      <button class="button arka">&#xF27D4;</button>
+      <button class="button arka">&#xF27D5;</button>
+      <button class="button arka">&#xF27D6;</button>
+      <button class="button arka">&#xF27D7;</button>
+      <span class="flexibleSpacer" style="--w: 20"></span>
+
+      <button class="button arka">&#xF27E1;</button>
+      <button class="button arka">&#xF27E2;</button>
+      <button class="button arka">&#xF27E3;</button>
+      <span class="flexibleSpacer" style="--w: 20"></span>
+
+      <button class="button arka">&#xF27E4;</button>
+      <button class="button arka">&#xF27E6;</button>
+      <span class="flexibleSpacer" style="--w: 20"></span>
+    </div>
+  </div>
+
+  <script src="../basic.js"></script>
+  <script>
+    function insertLogic(value1, insertChar, button) {
+      return value1 + (button.textContent || insertChar);
+    }
+    function Shift() {
+      const buttons = document.querySelectorAll(".button.arka.letter");
+      buttons.forEach((button) => {
+        if (button.classList.contains("large")) {
+          const charCode = button.textContent.codePointAt();
+          const newCharCode = charCode - 215;
+          button.textContent = String.fromCodePoint(newCharCode);
+        } else {
+          const charCode = button.textContent.codePointAt();
+          const newCharCode = charCode + 215;
+          button.textContent = String.fromCodePoint(newCharCode);
+        }
+        button.classList.toggle("large");
+      });
+      const vowel = document.querySelectorAll(".button.arka.vowel");
+      vowel.forEach((button) => {
+        if (button.classList.contains("large")) {
+          switch (button.textContent) {
+            case String.fromCodePoint(993275): // a A
+              button.textContent = String.fromCodePoint(993064);
+              break;
+            case String.fromCodePoint(993276): // i I
+              button.textContent = String.fromCodePoint(993067);
+              break;
+            case String.fromCodePoint(993277): // o O
+              button.textContent = String.fromCodePoint(993070);
+              break;
+            case String.fromCodePoint(993278): // e E
+              button.textContent = String.fromCodePoint(993073);
+              break;
+            case String.fromCodePoint(993279): // u U
+              button.textContent = String.fromCodePoint(993076);
+              break;
+          }
+        } else {
+          switch (button.textContent) {
+            case String.fromCodePoint(993064): // A a
+              button.textContent = String.fromCodePoint(993275);
+              break;
+            case String.fromCodePoint(993067): // I i
+              button.textContent = String.fromCodePoint(993276);
+              break;
+            case String.fromCodePoint(993070): // O o
+              button.textContent = String.fromCodePoint(993277);
+              break;
+            case String.fromCodePoint(993073): // E e
+              button.textContent = String.fromCodePoint(993278);
+              break;
+            case String.fromCodePoint(993076): // U u
+              button.textContent = String.fromCodePoint(993279);
+              break;
+          }
+        }
+        button.classList.toggle("large");
+      });
+      const intonationButtons = document.querySelectorAll(".button.arka.intonation");
+      intonationButtons.forEach((button) => {
+        if (button.classList.contains("large")) {
+          const charCode = button.textContent.codePointAt();
+          const newCharCode = charCode - 6;
+          button.textContent = String.fromCodePoint(newCharCode);
+        } else {
+          const charCode = button.textContent.codePointAt();
+          const newCharCode = charCode + 6;
+          button.textContent = String.fromCodePoint(newCharCode);
+        }
+        button.classList.toggle("large");
+      });
+      const schwa = document.querySelectorAll(".button.arka.schwa");
+      schwa.forEach((button) => {
+        if (button.classList.contains("large")) {
+          const newCharCode = 993079;
+          button.textContent = String.fromCodePoint(newCharCode);
+        } else {
+          const newCharCode = 993247;
+          button.textContent = String.fromCodePoint(newCharCode);
+        }
+        button.classList.toggle("large");
+      });
+    }
+  </script>
+</body>
+<iframe src="../footer.html" frameborder="0"></iframe>
+
+</html>
