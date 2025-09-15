@@ -14,12 +14,31 @@
     .multiple {
       font-size: 20px;
     }
+
+    /* Font toggle helpers */
+    body.font-asteain .arka {
+      font-family: "asteain", "nishiki-teki", sans-serif;
+    }
+
+    body.font-nishiki .arka {
+      font-family: "nishiki-teki", "asteain", sans-serif;
+    }
+
+    body.font-asteain #textarea {
+      font-family: "asteain", "nishiki-teki", sans-serif;
+    }
+
+    body.font-nishiki #textarea {
+      font-family: "nishiki-teki", "asteain", sans-serif;
+    }
   </style>
 </head>
 
-<body>
-  <textarea id="textarea" style="font-family:'nishiki-teki', 'asteain';"></textarea>
-
+<body class="font-asteain">
+  <textarea id="textarea"></textarea>
+  <div style="margin: 8px 0;">
+    <button id="fontToggleBtn" type="button">フォント: asteain</button>
+  </div>
   <div>
     <!-- 子音4個x5行+数字3x3+1と記号: tkxs 123 +-x÷/ nvfm 456 =/ dgpb 789/ hycr shift 0 enter / zjwl shift BS enter-->
     <div class="keyboardRow"><!--1行目-->
@@ -374,6 +393,33 @@
         button.classList.toggle("large");
       });
     }
+  </script>
+  <script>
+    (function () {
+      const body = document.body;
+      const btn = document.getElementById('fontToggleBtn');
+
+      function setState(state) {
+        body.classList.toggle('font-asteain', state === 'asteain');
+        body.classList.toggle('font-nishiki', state === 'nishiki-teki');
+        if (btn) btn.textContent = 'フォント: ' + (state === 'asteain' ? 'asteain' : 'にしき的（要フォントインストール）');
+        try { localStorage.setItem('arka-font', state); } catch (_) { }
+      }
+
+      function getSaved() {
+        try { return localStorage.getItem('arka-font'); } catch (_) { return null; }
+      }
+
+      const saved = getSaved();
+      setState(saved === 'nishiki-teki' ? 'nishiki-teki' : 'asteain');
+
+      if (btn) {
+        btn.addEventListener('click', () => {
+          const next = body.classList.contains('font-asteain') ? 'nishiki-teki' : 'asteain';
+          setState(next);
+        });
+      }
+    })();
   </script>
 </body>
 <iframe src="../footer.html" frameborder="0"></iframe>
