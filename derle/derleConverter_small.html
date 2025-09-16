@@ -1,82 +1,102 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>デーレ語ラテン文字→デーレ文字変換機</title>
-    <link rel="stylesheet" href="../style.css" />
-  </head>
-  <body>
-    <textarea id="textarea"></textarea>
-    <button onclick="convert()">デーレ文字に転写！</button>
-    <br />
-    ラテン文字で綴られたデーレ語の文章をデーレ文字に転写します。<br />
-    同じ文字が連続した場合、2文字目は「󲾂」に変換されます。
-    変換できない文字（セミコロンなど）はそのまま残ります。<br />
-    例外的な転写は以下です：<br />
-    <script>
-      const latin_derle = [
-        { latin: "a", derle: String.fromCodePoint(995137) },
-        { latin: "z", derle: String.fromCodePoint(995138) },
-        { latin: "h", derle: String.fromCodePoint(995139) },
-        { latin: "i", derle: String.fromCodePoint(995140) },
-        { latin: "d", derle: String.fromCodePoint(995141) },
-        { latin: "y", derle: String.fromCodePoint(995142) },
-        { latin: "j", derle: String.fromCodePoint(995143) },
-        { latin: "p", derle: String.fromCodePoint(995144) },
-        { latin: "b", derle: String.fromCodePoint(995145) },
-        { latin: "f", derle: String.fromCodePoint(995146) },
-        { latin: "m", derle: String.fromCodePoint(995147) },
-        { latin: "n", derle: String.fromCodePoint(995148) },
-        { latin: "v", derle: String.fromCodePoint(995149) },
-        { latin: "u", derle: String.fromCodePoint(995150) },
-        { latin: "e", derle: String.fromCodePoint(995151) },
-        { latin: "t", derle: String.fromCodePoint(995152) },
-        { latin: "s", derle: String.fromCodePoint(995153) },
-        { latin: "w", derle: String.fromCodePoint(995154) },
-        { latin: "k", derle: String.fromCodePoint(995155) },
-        { latin: "l", derle: String.fromCodePoint(995156) },
-        { latin: "o", derle: String.fromCodePoint(995157) },
-        { latin: "q", derle: String.fromCodePoint(995158) },
-        { latin: "x", derle: String.fromCodePoint(995159) },
-        { latin: "r", derle: String.fromCodePoint(995160) },
-        { latin: "g", derle: String.fromCodePoint(995161) },
-        { latin: "c", derle: String.fromCodePoint(995162) },
-        // 数字の追加
-        { latin: "0", derle: String.fromCodePoint(995190) },
-        { latin: "1", derle: String.fromCodePoint(995191) },
-        { latin: "2", derle: String.fromCodePoint(995192) },
-        { latin: "3", derle: String.fromCodePoint(995193) },
-        { latin: "4", derle: String.fromCodePoint(995194) },
-        { latin: "5", derle: String.fromCodePoint(995195) },
-        { latin: "6", derle: String.fromCodePoint(995196) },
-        { latin: "7", derle: String.fromCodePoint(995197) },
-        { latin: "8", derle: String.fromCodePoint(995198) },
-        { latin: "9", derle: String.fromCodePoint(995199) },
-      ];
 
-      function convert() {
-        const textarea = document.getElementById("textarea").value;
-        let textArray = textarea.split("");
-        let resultArray = [];
-        for (let i = 0; i < textArray.length; i++) {
-          const char = textArray[i].toLowerCase();
-          const match = latin_derle.find((obj) => obj.latin === char);
-          if (match) {
-            resultChar = match.derle;
-            if (
-              resultArray.length > 0 &&
-              resultArray[resultArray.length - 1] === resultChar
-            ) {
-              resultChar = String.fromCodePoint(995234); // 󲾂
-            }
-            resultArray.push(resultChar);
-          } else {
-            resultChar = textArray[i];
-            resultArray.push(resultChar);
-          }
+<head>
+  <meta charset="UTF-8" />
+  <title>デーレ語ラテン文字→デーレ文字変換機</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+
+<body>
+  <textarea id="textarea"></textarea>
+  <button onclick="convert()" type="button">デーレ文字に転写！</button>
+  <br />
+  ラテン文字で綴られたデーレ語の文章をデーレ文字に転写します。<br />
+  同じ文字が連続した場合、2文字目は「󲾂」に変換されます。
+  変換できない文字（セミコロンなど）はそのまま残ります。<br />
+  対応：
+  <ul>
+    <li>a,z,h,i,d,y,j,p,b,f,m,n,v,u,e,t,s,w,k,l,o,q,x,r,g,c（小文字へ）</li>
+    <li>0-9 </li>
+  </ul>
+  ピリオドは自動で前後を判別します。<br />
+  <script>
+    const latin_derle = [
+      { latin: "a", derle: String.fromCodePoint(995137) },
+      { latin: "z", derle: String.fromCodePoint(995138) },
+      { latin: "h", derle: String.fromCodePoint(995139) },
+      { latin: "i", derle: String.fromCodePoint(995140) },
+      { latin: "d", derle: String.fromCodePoint(995141) },
+      { latin: "y", derle: String.fromCodePoint(995142) },
+      { latin: "j", derle: String.fromCodePoint(995143) },
+      { latin: "p", derle: String.fromCodePoint(995144) },
+      { latin: "b", derle: String.fromCodePoint(995145) },
+      { latin: "f", derle: String.fromCodePoint(995146) },
+      { latin: "m", derle: String.fromCodePoint(995147) },
+      { latin: "n", derle: String.fromCodePoint(995148) },
+      { latin: "v", derle: String.fromCodePoint(995149) },
+      { latin: "u", derle: String.fromCodePoint(995150) },
+      { latin: "e", derle: String.fromCodePoint(995151) },
+      { latin: "t", derle: String.fromCodePoint(995152) },
+      { latin: "s", derle: String.fromCodePoint(995153) },
+      { latin: "w", derle: String.fromCodePoint(995154) },
+      { latin: "k", derle: String.fromCodePoint(995155) },
+      { latin: "l", derle: String.fromCodePoint(995156) },
+      { latin: "o", derle: String.fromCodePoint(995157) },
+      { latin: "q", derle: String.fromCodePoint(995158) },
+      { latin: "x", derle: String.fromCodePoint(995159) },
+      { latin: "r", derle: String.fromCodePoint(995160) },
+      { latin: "g", derle: String.fromCodePoint(995161) },
+      { latin: "c", derle: String.fromCodePoint(995162) },
+      // 数字
+      { latin: "0", derle: String.fromCodePoint(995190) },
+      { latin: "1", derle: String.fromCodePoint(995191) },
+      { latin: "2", derle: String.fromCodePoint(995192) },
+      { latin: "3", derle: String.fromCodePoint(995193) },
+      { latin: "4", derle: String.fromCodePoint(995194) },
+      { latin: "5", derle: String.fromCodePoint(995195) },
+      { latin: "6", derle: String.fromCodePoint(995196) },
+      { latin: "7", derle: String.fromCodePoint(995197) },
+      { latin: "8", derle: String.fromCodePoint(995198) },
+      { latin: "9", derle: String.fromCodePoint(995199) },
+    ];
+
+    // 前後ピリオド（文頭/文末）を区別
+    const DERLE_PERIOD_FRONT = String.fromCodePoint(0xF2FC2); // 󲿂
+    const DERLE_PERIOD_BACK = String.fromCodePoint(0xF2FC3);  // 󲿃
+
+    function convert() {
+      const textarea = document.getElementById("textarea").value;
+      let textArray = textarea.split("");
+      let resultArray = [];
+      let periodOpenNext = true; // '.' は文頭→文末の順に交互変換
+      for (let i = 0; i < textArray.length; i++) {
+        const raw = textArray[i];
+        // '.' をデーレ語の前/後ピリオドに変換（arka/arkaconverter と同様のトグル方式）
+        if (raw === ".") {
+          resultArray.push(periodOpenNext ? DERLE_PERIOD_FRONT : DERLE_PERIOD_BACK);
+          periodOpenNext = !periodOpenNext;
+          continue;
         }
-        document.getElementById("textarea").value = resultArray.join("");
+        const char = raw.toLowerCase();
+        const match = latin_derle.find((obj) => obj.latin === char);
+        if (match) {
+          resultChar = match.derle;
+          if (
+            resultArray.length > 0 &&
+            resultArray[resultArray.length - 1] === resultChar
+          ) {
+            resultChar = String.fromCodePoint(995234); // 󲾂
+          }
+          resultArray.push(resultChar);
+        } else {
+          resultChar = raw;
+          resultArray.push(resultChar);
+        }
       }
-    </script>
-  </body>
+      document.getElementById("textarea").value = resultArray.join("");
+    }
+  </script>
+</body>
+
 </html>
