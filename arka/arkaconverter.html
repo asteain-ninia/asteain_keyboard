@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8" />
+  <title>アルカ ラテン文字→幻字変換機</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+
+<body>
+  <textarea id="textarea"></textarea>
+  <button onclick="convert()" type="button">幻字に変換！</button>
+  <br />
+  ラテン文字で綴られたアルカの文章を幻字に転写します。<br />
+  変換できない文字（セミコロンなど）はそのまま残ります。<br />
+  対応：
+  <ul>
+    <li>t,k,x,s,n,v,f,m,d,g,p,b,h,y,c,r,z,j,w,l,a,i,o,e,u,q </li>
+    <li>T,K,X,S,N,V,F,M,D,G,P,B,H,Y,C,R,Z,J,W,L,A,I,O,E,U,</li>
+    <li>0-9 </li>
+    <li>?,!,.,, /, ０-９, ？, ！, ．, ，, ＋, －, ＄, ＜, ＝, ＞, ' , "</li>
+  </ul>
+  ダブルクォーテーションは自動で前後を判別します。<br />
+  <script>
+    const latin_hacm = [
+      // 子音（小文字）
+      { latin: "t", hacm: String.fromCodePoint(0xF2710) },
+      { latin: "k", hacm: String.fromCodePoint(0xF2711) },
+      { latin: "x", hacm: String.fromCodePoint(0xF2712) },
+      { latin: "s", hacm: String.fromCodePoint(0xF2713) },
+      { latin: "n", hacm: String.fromCodePoint(0xF2714) },
+      { latin: "v", hacm: String.fromCodePoint(0xF2715) },
+      { latin: "f", hacm: String.fromCodePoint(0xF2716) },
+      { latin: "m", hacm: String.fromCodePoint(0xF2717) },
+      { latin: "d", hacm: String.fromCodePoint(0xF2718) },
+      { latin: "g", hacm: String.fromCodePoint(0xF2719) },
+      { latin: "p", hacm: String.fromCodePoint(0xF271A) },
+      { latin: "b", hacm: String.fromCodePoint(0xF271B) },
+      { latin: "h", hacm: String.fromCodePoint(0xF271C) },
+      { latin: "y", hacm: String.fromCodePoint(0xF271D) },
+      { latin: "c", hacm: String.fromCodePoint(0xF271E) },
+      { latin: "r", hacm: String.fromCodePoint(0xF271F) },
+      { latin: "z", hacm: String.fromCodePoint(0xF2720) },
+      { latin: "j", hacm: String.fromCodePoint(0xF2721) },
+      { latin: "w", hacm: String.fromCodePoint(0xF2722) },
+      { latin: "l", hacm: String.fromCodePoint(0xF2723) },
+      // 母音（小文字）
+      { latin: "a", hacm: String.fromCodePoint(0xF2728) },
+      { latin: "i", hacm: String.fromCodePoint(0xF272B) },
+      { latin: "o", hacm: String.fromCodePoint(0xF272E) },
+      { latin: "e", hacm: String.fromCodePoint(0xF2731) },
+      { latin: "u", hacm: String.fromCodePoint(0xF2734) },
+      { latin: "q", hacm: String.fromCodePoint(0xF2737) },
+      // 子音（大文字）
+      { latin: "T", hacm: String.fromCodePoint(0xF27E7) },
+      { latin: "K", hacm: String.fromCodePoint(0xF27E8) },
+      { latin: "X", hacm: String.fromCodePoint(0xF27E9) },
+      { latin: "S", hacm: String.fromCodePoint(0xF27EA) },
+      { latin: "N", hacm: String.fromCodePoint(0xF27EB) },
+      { latin: "V", hacm: String.fromCodePoint(0xF27EC) },
+      { latin: "F", hacm: String.fromCodePoint(0xF27ED) },
+      { latin: "M", hacm: String.fromCodePoint(0xF27EE) },
+      { latin: "D", hacm: String.fromCodePoint(0xF27EF) },
+      { latin: "G", hacm: String.fromCodePoint(0xF27F0) },
+      { latin: "P", hacm: String.fromCodePoint(0xF27F1) },
+      { latin: "B", hacm: String.fromCodePoint(0xF27F2) },
+      { latin: "H", hacm: String.fromCodePoint(0xF27F3) },
+      { latin: "Y", hacm: String.fromCodePoint(0xF27F4) },
+      { latin: "C", hacm: String.fromCodePoint(0xF27F5) },
+      { latin: "R", hacm: String.fromCodePoint(0xF27F6) },
+      { latin: "Z", hacm: String.fromCodePoint(0xF27F7) },
+      { latin: "J", hacm: String.fromCodePoint(0xF27F8) },
+      { latin: "W", hacm: String.fromCodePoint(0xF27F9) },
+      { latin: "L", hacm: String.fromCodePoint(0xF27FA) },
+      // 母音（大文字）
+      { latin: "A", hacm: String.fromCodePoint(0xF27FB) },
+      { latin: "I", hacm: String.fromCodePoint(0xF27FC) },
+      { latin: "O", hacm: String.fromCodePoint(0xF27FD) },
+      { latin: "E", hacm: String.fromCodePoint(0xF27FE) },
+      { latin: "U", hacm: String.fromCodePoint(0xF27FF) },
+      { latin: "Q", hacm: String.fromCodePoint(0xF27DF) },
+      // 数字（半角）
+      { latin: "0", hacm: String.fromCodePoint(0xF2700) },
+      { latin: "1", hacm: String.fromCodePoint(0xF2701) },
+      { latin: "2", hacm: String.fromCodePoint(0xF2702) },
+      { latin: "3", hacm: String.fromCodePoint(0xF2703) },
+      { latin: "4", hacm: String.fromCodePoint(0xF2704) },
+      { latin: "5", hacm: String.fromCodePoint(0xF2705) },
+      { latin: "6", hacm: String.fromCodePoint(0xF2706) },
+      { latin: "7", hacm: String.fromCodePoint(0xF2707) },
+      { latin: "8", hacm: String.fromCodePoint(0xF2708) },
+      { latin: "9", hacm: String.fromCodePoint(0xF2709) },
+      // 数字（全角）
+      { latin: "０", hacm: String.fromCodePoint(0xF2700) },
+      { latin: "１", hacm: String.fromCodePoint(0xF2701) },
+      { latin: "２", hacm: String.fromCodePoint(0xF2702) },
+      { latin: "３", hacm: String.fromCodePoint(0xF2703) },
+      { latin: "４", hacm: String.fromCodePoint(0xF2704) },
+      { latin: "５", hacm: String.fromCodePoint(0xF2705) },
+      { latin: "６", hacm: String.fromCodePoint(0xF2706) },
+      { latin: "７", hacm: String.fromCodePoint(0xF2707) },
+      { latin: "８", hacm: String.fromCodePoint(0xF2708) },
+      { latin: "９", hacm: String.fromCodePoint(0xF2709) },
+      // 記号（句読点・疑問/感嘆）半角/全角
+      { latin: ",", hacm: String.fromCodePoint(0xF2749) },
+      { latin: "，", hacm: String.fromCodePoint(0xF2749) },
+      { latin: ".", hacm: String.fromCodePoint(0xF274B) },
+      { latin: "．", hacm: String.fromCodePoint(0xF274B) },
+      { latin: "?", hacm: String.fromCodePoint(0xF2761) },
+      { latin: "？", hacm: String.fromCodePoint(0xF2761) },
+      { latin: "!", hacm: String.fromCodePoint(0xF2763) },
+      { latin: "！", hacm: String.fromCodePoint(0xF2763) },
+      // 記号（算術・比較）半角/全角
+      { latin: "+", hacm: String.fromCodePoint(0xF273C) },
+      { latin: "＋", hacm: String.fromCodePoint(0xF273C) },
+      { latin: "-", hacm: String.fromCodePoint(0xF273D) },
+      { latin: "－", hacm: String.fromCodePoint(0xF273D) },
+      { latin: "ー", hacm: String.fromCodePoint(0xF273D) },
+      { latin: "$", hacm: String.fromCodePoint(0xF273E) },
+      { latin: "＄", hacm: String.fromCodePoint(0xF273E) },
+      { latin: "<", hacm: String.fromCodePoint(0xF275A) },
+      { latin: "＜", hacm: String.fromCodePoint(0xF275A) },
+      { latin: "=", hacm: String.fromCodePoint(0xF275B) },
+      { latin: "＝", hacm: String.fromCodePoint(0xF275B) },
+      { latin: ">", hacm: String.fromCodePoint(0xF275C) },
+      { latin: "＞", hacm: String.fromCodePoint(0xF275C) },
+      // シングルクォート（半角/全角/スマートクォート）
+      { latin: "'", hacm: String.fromCodePoint(0xF2744) },
+      { latin: "＇", hacm: String.fromCodePoint(0xF2744) },
+      { latin: "’", hacm: String.fromCodePoint(0xF2744) },
+      { latin: "‘", hacm: String.fromCodePoint(0xF2744) },
+    ];
+
+    // ダブルクォートは前後を考慮して交互に割り当て
+    const HACM_DQUOTE_OPEN = String.fromCodePoint(0xF2747);  // 󲝇
+    const HACM_DQUOTE_CLOSE = String.fromCodePoint(0xF2748); // 󲝈
+
+    function convert() {
+      const textarea = document.getElementById("textarea").value;
+      let textArray = textarea.split("");
+      let resultArray = [];
+      let dquoteOpenNext = true; // 次の " は開き
+
+      for (let i = 0; i < textArray.length; i++) {
+        const raw = textArray[i];
+
+        // ダブルクォート（半角/全角/スマート）
+        if (raw === '"' || raw === '＂') {
+          resultArray.push(dquoteOpenNext ? HACM_DQUOTE_OPEN : HACM_DQUOTE_CLOSE);
+          dquoteOpenNext = !dquoteOpenNext;
+          continue;
+        }
+        if (raw === '“') { resultArray.push(HACM_DQUOTE_OPEN); continue; }
+        if (raw === '”') { resultArray.push(HACM_DQUOTE_CLOSE); continue; }
+
+        const match = latin_hacm.find((obj) => obj.latin === raw);
+        if (match) {
+          resultArray.push(match.hacm);
+        } else {
+          resultArray.push(raw);
+        }
+      }
+      document.getElementById("textarea").value = resultArray.join("");
+    }
+  </script>
+</body>
+
+</html>
