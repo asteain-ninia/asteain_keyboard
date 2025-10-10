@@ -8,7 +8,8 @@
 </head>
 
 <body style="align-items: left;">
-  <ul class="menu" style="font-size:20px;">
+  <h1>asteain式人工言語統一フォント入力機</h1>
+  <ul class="menu" style="font-size:24px;">
     <li data-ico="󲟤"> <a href="arka/arka.html">幻字キーボード</a> </li>
     <li> <a href="liparxe/liparxe.html">リパーシェキーボード（未対応）</a> </li>
     <li> <a href="shaleian/shaleian.html">シャレイア文字キーボード（未対応）</a> </li>
@@ -26,27 +27,60 @@
     <li data-ico="t󲜐"> <a href="arka/arkaConverter.html">幻字変換器</a> </li>
     <li data-ico="d󲽅"> <a href="derle/derleConverter_small.html">デーレ文字（小文字）変換器</a> </li>
     <hr>
-
-    <h2>asteainフォント収録領域サンプル（F2700〜F33FF）</h2>
-    <div id="glyph-sample-list"
-      style="display: flex; flex-wrap: wrap; gap: 8px; font-family: 'asteain'; font-size: 36px; line-height: 1.2;">
-    </div>
   </ul>
+
+  <h1>asteainフォント収録領域サンプル（00020～0007F/F2700〜F33FF）</h1>
+  <div id="glyph-sample-wrapper"
+    style="display: flex; flex-direction: column; font-family: 'asteain'; font-size: 24px;">
+    <section>
+      <h3>ASCII U+00020 ~ U+0007F</h3>
+      <p style="margin-bottom: 1em;">
+        A QUICK FOX JUMPS OVER THE LAZY DOG.<br>
+        a quick fox jumps over the lazy dog.<br>
+      </p>
+      <div id="ascii-sample-list" class="glyph-sample-section"></div>
+      <hr>
+    </section>
+    <section>
+      <h3>PUA U+F2700 ~ U+F33FF</h3>
+      <div id="pua-sample-list" class="glyph-sample-section"></div>
+      <hr>
+    </section>
+  </div>
   <script>
-    // F27xx〜F33xxの全PUA範囲を表示
-    const allPUA = [];
-    for (let block = 0xF2700; block <= 0xF33FF; block += 0x100) {
-      for (let i = 0; i < 0x100; i++) {
-        allPUA.push(block + i);
+    // Render samples for ASCII and the F27xx-F33xx PUA blocks in 16-code rows
+    function renderRange(containerId, start, end) {
+      const container = document.getElementById(containerId);
+      container.style.display = 'flex';
+      container.style.flexDirection = 'column';
+      container.style.gap = '4px';
+
+      const adjustedStart = start & ~0xF;
+      const adjustedEnd = end | 0xF;
+
+      for (let rowStart = adjustedStart; rowStart <= adjustedEnd; rowStart += 0x10) {
+        const row = document.createElement('div');
+        row.style.display = 'flex';
+        row.style.gap = '8px';
+
+        for (let offset = 0; offset < 0x10; offset++) {
+          const cp = rowStart + offset;
+          const span = document.createElement('span');
+          span.textContent = String.fromCodePoint(cp);
+          span.title = 'U+' + cp.toString(16).toUpperCase().padStart(4, '0');
+          span.style.display = 'inline-flex';
+          span.style.width = '2em';
+          span.style.justifyContent = 'center';
+          span.style.alignItems = 'center';
+          row.appendChild(span);
+        }
+
+        container.appendChild(row);
       }
     }
-    const container = document.getElementById('glyph-sample-list');
-    allPUA.forEach(cp => {
-      const span = document.createElement('span');
-      span.textContent = String.fromCodePoint(cp);
-      span.title = 'U+' + cp.toString(16).toUpperCase();
-      container.appendChild(span);
-    });
+
+    renderRange('ascii-sample-list', 0x21, 0x7E);
+    renderRange('pua-sample-list', 0xF2700, 0xF33FF);
   </script>
 </body>
 
