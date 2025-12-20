@@ -104,3 +104,42 @@ textarea {
 .tall-key {
   height: 85px;
 }
+
+.conversion-table {
+  border-collapse: collapse;
+  margin: 20px 0;
+  font-size: 18px;
+}
+
+.conversion-table caption {
+  margin-bottom: 10px;
+  font-weight: bold;
+}
+
+.conversion-table th,
+.conversion-table td {
+  border: 1px solid #333;
+  padding: 6px 12px;
+  text-align: left;
+}
+
+.conversion-table th {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.conversion-table .entry-list {
+  display: inline-flex;
+  gap: 0.6em;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.conversion-table .entry-list span::after {
+  content: '　';
+  margin-left: 0.2em;
+}
+
+.conversion-table .entry-list span:last-child::after {
+  content: '';
+  margin: 0;
+}

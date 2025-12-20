@@ -52,10 +52,10 @@
       <button class="button arka">&#xF2702;</button>
       <button class="button arka">&#xF2703;</button>
       <span class="flexibleSpacer" style="--w: 20"> </span>
-      <button class="button arka">&#xF273C;</button>
-      <button class="button arka">&#xF273D;</button>
-      <button class="button arka">&#xF2751;</button>
-      <span class="flexibleSpacer" style="--w: 40"> </span>
+      <button class="button arka shift-symbol" data-normal="-" data-shift-code="F273C">-</button>
+      <button class="button arka shift-symbol" data-normal="+" data-shift-code="F273D">+</button>
+      <button class="button arka shift-symbol" data-normal="×" data-shift-code="F2751">×</button>
+      <button class="button arka">%</button>
       <span class="flexibleSpacer" style="--w: 20"> </span>
       <button class="button arka">&#xF2770;</button>
       <button class="button arka">&#xF2771;</button>
@@ -74,10 +74,10 @@
       <button class="button arka">&#xF2705;</button>
       <button class="button arka">&#xF2706;</button>
       <span class="flexibleSpacer" style="--w: 20"> </span>
-      <button class="button arka">&#xF275B;</button>
-      <span class="flexibleSpacer" style="--w: 40"> </span>
-      <span class="flexibleSpacer" style="--w: 40"> </span>
-      <span class="flexibleSpacer" style="--w: 40"> </span>
+      <button class="button arka shift-symbol" data-normal="=" data-shift-code="F275B">=</button>
+      <button class="button arka">.</button>
+      <button class="button arka">_</button>
+      <button class="button arka">|</button>
       <span class="flexibleSpacer" style="--w: 20"> </span>
       <button class="button arka">&#xF2774;</button>
       <button class="button arka">&#xF2775;</button>
@@ -98,10 +98,10 @@
       <button class="button arka">&#xF2708;</button>
       <button class="button arka">&#xF2709;</button>
       <span class="flexibleSpacer" style="--w: 20"> </span>
-      <button class="button arka">&#xF273E;</button>
-      <span class="flexibleSpacer" style="--w: 40"> </span>
-      <span class="flexibleSpacer" style="--w: 40"> </span>
-      <span class="flexibleSpacer" style="--w: 40"> </span>
+      <button class="button arka">&#xF2743;</button>
+      <button class="button arka">;</button>
+      <button class="button arka">(</button>
+      <button class="button arka">)</button>
       <span class="flexibleSpacer" style="--w: 20"> </span>
       <button class="button arka">&#xF2778;</button>
       <button class="button arka">&#xF2779;</button>
@@ -122,10 +122,10 @@
       <button class="button arka">&#xF2700;</button>
       <button onclick="enter()" class="functionButton tall-key">Enter</button>
       <span class="flexibleSpacer" style="--w: 20"> </span>
-      <button class="button arka">&#xF2747;</button>
-      <button class="button arka">&#xF2748;</button>
       <button class="button arka">&#xF2745;</button>
       <button class="button arka">&#xF2746;</button>
+      <button class="button arka shift-symbol" data-normal="[" data-shift-code="007B">[</button>
+      <button class="button arka shift-symbol" data-normal="]" data-shift-code="007D">]</button>
       <span class="flexibleSpacer" style="--w: 20"></span>
       <button class="button arka">&#xF27D8;</button>
       <button class="button arka">&#xF27D9;</button>
@@ -147,8 +147,8 @@
       <span class="flexibleSpacer" style="--w: 20"> </span><!--季節記号-->
       <button class="button arka">&#xF2741;</button>
       <button class="button arka">&#xF2742;</button>
-      <button class="button arka">&#xF275A;</button>
-      <button class="button arka">&#xF275C;</button>
+      <button class="button arka shift-symbol" data-normal="&lt;" data-shift-code="F275A">&#x003C;</button>
+      <button class="button arka shift-symbol" data-normal="&gt;" data-shift-code="F275C">&#x003E;</button>
       <span class="flexibleSpacer" style="--w: 20"></span><!--神名記号-->
       <button class="button arka">&#xF27DC;</button>
       <button class="button arka">&#xF27DD;</button>
@@ -193,7 +193,6 @@
       <button class="button arka">&#xF276D;</button>
       <button class="button arka">&#xF276E;</button>
       <button class="button arka">&#xF276F;</button>
-      <button class="button arka">&#xF27CD;</button>
 
     </div>
 
@@ -202,10 +201,7 @@
       <button class="button arka">&#xF2740;</button>
       <button class="button arka">&#xF2743;</button>
       <button class="button arka">&#xF2744;</button>
-      <button class="button arka">&#xF2749;</button>
-      <button class="button arka">&#xF274A;</button>
       <button class="button arka">&#xF274B;</button>
-      <button class="button arka">&#xF274C;</button>
       <button class="button arka">&#xF274D;</button>
       <button class="button arka">&#xF274E;</button>
       <button class="button arka">&#xF274F;</button>
@@ -214,6 +210,7 @@
       <button class="button arka">&#xF2754;</button>
       <button class="button arka">&#xF2755;</button>
       <button class="button arka">&#xF2756;</button>
+      <button class="button arka">&#xF273E;</button>
       <span class="flexibleSpacer" style="--w: 20"></span>
     </div>
 
@@ -284,6 +281,7 @@
       <button class="button arka">&#xF27CA;</button>
       <button class="button arka">&#xF27CB;</button>
       <button class="button arka">&#xF27CC;</button>
+      <button class="button arka">&#xF27CD;</button>
 
     </div>
     <div class="keyboardRow"><!--月相・ミュシェット・象徴2字-->
@@ -391,6 +389,18 @@
           button.textContent = String.fromCodePoint(newCharCode);
         }
         button.classList.toggle("large");
+      });
+      const shiftSymbols = document.querySelectorAll(".button.arka.shift-symbol");
+      shiftSymbols.forEach((button) => {
+        if (button.classList.contains("shifted")) {
+          button.textContent = button.dataset.normal || button.textContent;
+        } else {
+          const shiftCode = parseInt(button.dataset.shiftCode, 16);
+          if (!Number.isNaN(shiftCode)) {
+            button.textContent = String.fromCodePoint(shiftCode);
+          }
+        }
+        button.classList.toggle("shifted");
       });
     }
   </script>

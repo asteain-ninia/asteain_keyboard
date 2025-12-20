@@ -10,17 +10,225 @@
 <body>
   <textarea id="textarea"></textarea>
   <button onclick="convert()" type="button">幻字に変換！</button>
+  <button id="toggleSymbols" onclick="toggleSymbolConversion()" type="button">記号変換: オン</button>
   <br />
   ラテン文字で綴られたアルカの文章を幻字に転写します。<br />
+  記号変換ボタンで「+」「-」「&lt;」「&gt;」や引用符などをラテン転写のまま残すかどうか切り替えられます。<br />
+  オンのときはハイフン類（-, －, ー, ｰ, ‐, ‑）を &#xF2740;(F2740)、二重引用符（&quot;）を &#xF2743;(F2743) に統一します。<br />
   変換できない文字（セミコロンなど）はそのまま残ります。<br />
   対応：
   <ul>
-    <li>t,k,x,s,n,v,f,m,d,g,p,b,h,y,c,r,z,j,w,l,a,i,o,e,u,q </li>
-    <li>T,K,X,S,N,V,F,M,D,G,P,B,H,Y,C,R,Z,J,W,L,A,I,O,E,U,</li>
+    <li>t, k, x, s, n, v, f, m, d, g, p, b, h, y, c, r, z, j, w, l, a, i, o, e, u, q </li>
+    <li>T, K, X, S, N, V, F, M, D, G, P, B, H, Y, C, R, Z, J, W, L, A, I, O, E, U, </li>
     <li>0-9 </li>
-    <li>?,!,.,, /, ０-９, ？, ！, ．, ，, ＋, －, ＄, ＜, ＝, ＞, ' , "</li>
+    <li>?, !, ., , /, ０-９, ？, ！, ．, ，, ＋, －, ＄, ＜, ＝, ＞, ' , "</li>
   </ul>
-  ダブルクォーテーションは自動で前後を判別します。<br />
+  <table class="conversion-table">
+    <caption>記号変換の対応票</caption>
+    <thead>
+      <tr>
+        <th scope="col">入力</th>
+        <th scope="col">記号変換オン</th>
+        <th scope="col">記号変換オフ</th>
+        <th scope="col">備考</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>
+          <span class="entry-list">
+            <span>+</span>
+            <span>＋</span>
+          </span>
+        </td>
+        <td>&#xF273C; (F273C)</td>
+        <td>
+          <span class="entry-list">
+            <span>+</span>
+            <span>＋</span>
+          </span>
+        </td>
+        <td>加算記号</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="entry-list">
+            <span>-</span>
+            <span>－</span>
+            <span>ー</span>
+            <span>ｰ</span>
+            <span>‐</span>
+            <span>‑</span>
+          </span>
+        </td>
+        <td>&#xF2740; (F2740)</td>
+        <td>
+          <span class="entry-list">
+            <span>-</span>
+            <span>－</span>
+            <span>ー</span>
+            <span>ｰ</span>
+            <span>‐</span>
+            <span>‑</span>
+          </span>
+        </td>
+        <td>ハイフン類をまとめて統一</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="entry-list">
+            <span>&lt;</span>
+            <span>＜</span>
+          </span>
+        </td>
+        <td>&#xF275A; (F275A)</td>
+        <td>
+          <span class="entry-list">
+            <span>&lt;</span>
+            <span>＜</span>
+          </span>
+        </td>
+        <td>不等号（小なり）</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="entry-list">
+            <span>&gt;</span>
+            <span>＞</span>
+          </span>
+        </td>
+        <td>&#xF275C; (F275C)</td>
+        <td>
+          <span class="entry-list">
+            <span>&gt;</span>
+            <span>＞</span>
+          </span>
+        </td>
+        <td>不等号（大なり）</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="entry-list">
+            <span>=</span>
+            <span>＝</span>
+          </span>
+        </td>
+        <td>&#xF275B; (F275B)</td>
+        <td>&#xF275B; (F275B)</td>
+        <td>等号（常に統一）</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="entry-list">
+            <span>$</span>
+            <span>＄</span>
+          </span>
+        </td>
+        <td>&#xF273E; (F273E)</td>
+        <td>&#xF273E; (F273E)</td>
+        <td>通貨記号（常に統一）</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="entry-list">
+            <span>.</span>
+            <span>．</span>
+          </span>
+        </td>
+        <td>&#xF274B; (F274B)</td>
+        <td>
+          <span class="entry-list">
+            <span>.</span>
+            <span>．</span>
+          </span>
+        </td>
+        <td>ピリオド</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="entry-list">
+            <span>,</span>
+            <span>，</span>
+          </span>
+        </td>
+        <td>&#xF2749; (F2749)</td>
+        <td>
+          <span class="entry-list">
+            <span>,</span>
+            <span>，</span>
+          </span>
+        </td>
+        <td>カンマ</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="entry-list">
+            <span>?</span>
+            <span>？</span>
+          </span>
+        </td>
+        <td>&#xF2761; (F2761)</td>
+        <td>&#xF2761; (F2761)</td>
+        <td>疑問符（常に統一）</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="entry-list">
+            <span>!</span>
+            <span>！</span>
+          </span>
+        </td>
+        <td>&#xF2763; (F2763)</td>
+        <td>&#xF2763; (F2763)</td>
+        <td>感嘆符（常に統一）</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="entry-list">
+            <span>'</span>
+            <span>＇</span>
+            <span>’</span>
+            <span>‘</span>
+          </span>
+        </td>
+        <td>&#xF2744; (F2744)</td>
+        <td>&#xF2744; (F2744)</td>
+        <td>シングルクォート（常に統一）</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="entry-list">
+            <span>&quot;</span>
+            <span>＂</span>
+          </span>
+        </td>
+        <td>&#xF2743; (F2743)</td>
+        <td>
+          <span class="entry-list">
+            <span>&quot;</span>
+            <span>＂</span>
+          </span>
+        </td>
+        <td>直線の引用符</td>
+      </tr>
+      <tr>
+        <td>
+          <span class="entry-list">
+            <span>“</span>
+            <span>”</span>
+          </span>
+        </td>
+        <td>&#xF2743; (F2743)</td>
+        <td>
+          <span class="entry-list">
+            <span>“</span>
+            <span>”</span>
+          </span>
+        </td>
+        <td>記号変換オンのときのみ統一</td>
+      </tr>
+    </tbody>
+  </table>
   <script>
     const latin_hacm = [
       // 子音（小文字）
@@ -113,9 +321,12 @@
       // 記号（算術・比較）半角/全角
       { latin: "+", hacm: String.fromCodePoint(0xF273C) },
       { latin: "＋", hacm: String.fromCodePoint(0xF273C) },
-      { latin: "-", hacm: String.fromCodePoint(0xF273D) },
-      { latin: "－", hacm: String.fromCodePoint(0xF273D) },
-      { latin: "ー", hacm: String.fromCodePoint(0xF273D) },
+      { latin: "-", hacm: String.fromCodePoint(0xF2740) },
+      { latin: "－", hacm: String.fromCodePoint(0xF2740) },
+      { latin: "ー", hacm: String.fromCodePoint(0xF2740) },
+      { latin: "ｰ", hacm: String.fromCodePoint(0xF2740) },
+      { latin: "‐", hacm: String.fromCodePoint(0xF2740) },
+      { latin: "‑", hacm: String.fromCodePoint(0xF2740) },
       { latin: "$", hacm: String.fromCodePoint(0xF273E) },
       { latin: "＄", hacm: String.fromCodePoint(0xF273E) },
       { latin: "<", hacm: String.fromCodePoint(0xF275A) },
@@ -131,31 +342,46 @@
       { latin: "‘", hacm: String.fromCodePoint(0xF2744) },
     ];
 
-    // ダブルクォートは前後を考慮して交互に割り当て
-    const HACM_DQUOTE_OPEN = String.fromCodePoint(0xF2747);  // 󲝇
-    const HACM_DQUOTE_CLOSE = String.fromCodePoint(0xF2748); // 󲝈
+    // ダブルクォートは発話括弧を優先して単一の字形に変換
+    const OPTIONAL_PUNCTUATION = new Set(['.', '．', ',', '，', '+', '＋', '-', '－', 'ー', 'ｰ', '‐', '‑', '<', '＜', '>', '＞', '"', '＂']);
+    let convertSymbols = true;
+    const HACM_DQUOTE = String.fromCodePoint(0xF2743);
+
+    function toggleSymbolConversion() {
+      convertSymbols = !convertSymbols;
+      const button = document.getElementById("toggleSymbols");
+      button.textContent = convertSymbols ? "記号変換: オン" : "記号変換: オフ";
+    }
 
     function convert() {
       const textarea = document.getElementById("textarea").value;
-      let textArray = textarea.split("");
-      let resultArray = [];
-      let dquoteOpenNext = true; // 次の " は開き
+      const textArray = textarea.split("");
+      const resultArray = [];
 
       for (let i = 0; i < textArray.length; i++) {
         const raw = textArray[i];
 
-        // ダブルクォート（半角/全角/スマート）
         if (raw === '"' || raw === '＂') {
-          resultArray.push(dquoteOpenNext ? HACM_DQUOTE_OPEN : HACM_DQUOTE_CLOSE);
-          dquoteOpenNext = !dquoteOpenNext;
+          if (convertSymbols) {
+            resultArray.push(HACM_DQUOTE);
+          } else {
+            resultArray.push(raw);
+          }
           continue;
         }
-        if (raw === '“') { resultArray.push(HACM_DQUOTE_OPEN); continue; }
-        if (raw === '”') { resultArray.push(HACM_DQUOTE_CLOSE); continue; }
+        if (raw === '“' || raw === '”') {
+          if (convertSymbols) {
+            resultArray.push(HACM_DQUOTE);
+          } else {
+            resultArray.push(raw);
+          }
+          continue;
+        }
 
         const match = latin_hacm.find((obj) => obj.latin === raw);
         if (match) {
-          resultArray.push(match.hacm);
+          const shouldConvert = convertSymbols || !OPTIONAL_PUNCTUATION.has(raw);
+          resultArray.push(shouldConvert ? match.hacm : raw);
         } else {
           resultArray.push(raw);
         }
