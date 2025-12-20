@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>asteain式人工言語統一フォント入力機</title>
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <textarea id="textarea"></textarea>
+    <div>
+      <div class="keyboardRow">
+        <button class="button ascii-key" data-normal="`" data-shift="~">`</button>
+        <button class="button ascii-key" data-normal="1" data-shift="!">1</button>
+        <button class="button ascii-key" data-normal="2" data-shift="@">2</button>
+        <button class="button ascii-key" data-normal="3" data-shift="#">3</button>
+        <button class="button ascii-key" data-normal="4" data-shift="$">4</button>
+        <button class="button ascii-key" data-normal="5" data-shift="%">5</button>
+        <button class="button ascii-key" data-normal="6" data-shift="^">6</button>
+        <button class="button ascii-key" data-normal="7" data-shift="&amp;">7</button>
+        <button class="button ascii-key" data-normal="8" data-shift="*">8</button>
+        <button class="button ascii-key" data-normal="9" data-shift="(">9</button>
+        <button class="button ascii-key" data-normal="0" data-shift=")">0</button>
+        <button class="button ascii-key" data-normal="-" data-shift="_">-</button>
+        <button class="button ascii-key" data-normal="=" data-shift="+">=</button>
+        <button onclick="backspace()" class="functionButton" style="--w: 60">Back<br />Space</button>
+      </div>
+      <div class="keyboardRow">
+        <button onclick="tab()" class="functionButton" style="--w: 60">Tab</button>
+        <button class="button ascii-key" data-normal="q" data-shift="Q">q</button>
+        <button class="button ascii-key" data-normal="w" data-shift="W">w</button>
+        <button class="button ascii-key" data-normal="e" data-shift="E">e</button>
+        <button class="button ascii-key" data-normal="r" data-shift="R">r</button>
+        <button class="button ascii-key" data-normal="t" data-shift="T">t</button>
+        <button class="button ascii-key" data-normal="y" data-shift="Y">y</button>
+        <button class="button ascii-key" data-normal="u" data-shift="U">u</button>
+        <button class="button ascii-key" data-normal="i" data-shift="I">i</button>
+        <button class="button ascii-key" data-normal="o" data-shift="O">o</button>
+        <button class="button ascii-key" data-normal="p" data-shift="P">p</button>
+        <button class="button ascii-key" data-normal="[" data-shift="{">[</button>
+        <button class="button ascii-key" data-normal="]" data-shift="}">]</button>
+        <button class="button ascii-key" data-normal="&#92;" data-shift="|">&#92;</button>
+      </div>
+      <div class="keyboardRow">
+        <button onclick="CapsLock()" class="functionButton" style="--w: 70">
+          CapsLock
+        </button>
+        <button class="button ascii-key" data-normal="a" data-shift="A">a</button>
+        <button class="button ascii-key" data-normal="s" data-shift="S">s</button>
+        <button class="button ascii-key" data-normal="d" data-shift="D">d</button>
+        <button class="button ascii-key" data-normal="f" data-shift="F">f</button>
+        <button class="button ascii-key" data-normal="g" data-shift="G">g</button>
+        <button class="button ascii-key" data-normal="h" data-shift="H">h</button>
+        <button class="button ascii-key" data-normal="j" data-shift="J">j</button>
+        <button class="button ascii-key" data-normal="k" data-shift="K">k</button>
+        <button class="button ascii-key" data-normal="l" data-shift="L">l</button>
+        <button class="button ascii-key" data-normal=";" data-shift=":">;</button>
+        <button class="button ascii-key" data-normal="'" data-shift="&quot;">'</button>
+        <button onclick="enter()" class="functionButton" style="--w: 70">Enter</button>
+      </div>
+      <div class="keyboardRow">
+        <button onclick="Shift()" class="functionButton" style="--w: 80">Shift</button>
+        <button class="button ascii-key" data-normal="z" data-shift="Z">z</button>
+        <button class="button ascii-key" data-normal="x" data-shift="X">x</button>
+        <button class="button ascii-key" data-normal="c" data-shift="C">c</button>
+        <button class="button ascii-key" data-normal="v" data-shift="V">v</button>
+        <button class="button ascii-key" data-normal="b" data-shift="B">b</button>
+        <button class="button ascii-key" data-normal="n" data-shift="N">n</button>
+        <button class="button ascii-key" data-normal="m" data-shift="M">m</button>
+        <button class="button ascii-key" data-normal="," data-shift="&lt;">,</button>
+        <button class="button ascii-key" data-normal="." data-shift="&gt;">.</button>
+        <button class="button ascii-key" data-normal="/" data-shift="?">/</button>
+        <button onclick="Shift()" class="functionButton" style="--w: 100">Shift</button>
+      </div>
+      <div class="keyboardRow">
+        <span class="flexibleSpacer" style="--w: 150"> </span>
+        <button onclick="space()" class="functionButton" style="--w: 240">space</button>
+      </div>
+    </div>
+    <script src="../basic.js"></script>
+    <script>
+      let shiftOn = false;
+      let capsOn = false;
+
+      function insertLogic(value1, insertChar) {
+        return value1 + insertChar;
+      }
+
+      function isLetterKey(key) {
+        const normal = key.dataset.normal;
+        const shifted = key.dataset.shift;
+        if (typeof normal !== "string" || typeof shifted !== "string") {
+          return false;
+        }
+        if (normal.length !== 1 || shifted.length !== 1) {
+          return false;
+        }
+        return normal.toLowerCase() === shifted.toLowerCase();
+      }
+
+      function updateKeyLabels() {
+        const keys = document.querySelectorAll(".ascii-key");
+        keys.forEach((key) => {
+          const normal = key.dataset.normal;
+          const shifted = key.dataset.shift;
+          if (typeof normal !== "string" || typeof shifted !== "string") {
+            return;
+          }
+          let next = normal;
+          if (isLetterKey(key)) {
+            const upper = capsOn ? !shiftOn : shiftOn;
+            next = upper ? shifted : normal;
+          } else {
+            next = shiftOn ? shifted : normal;
+          }
+          if (typeof next === "string") {
+            key.textContent = next;
+          }
+        });
+      }
+
+      function Shift() {
+        shiftOn = !shiftOn;
+        updateKeyLabels();
+      }
+
+      function CapsLock() {
+        capsOn = !capsOn;
+        updateKeyLabels();
+      }
+
+      function tab() {
+        const textArea = document.getElementById("textarea");
+        const value1 = textArea.value.substr(0, textArea.selectionStart);
+        const value2 = textArea.value.substr(textArea.selectionEnd);
+
+        textArea.value = value1 + "\t" + value2;
+        textArea.selectionStart = textArea.selectionEnd = value1.length + 1;
+        textArea.focus();
+      }
+
+      updateKeyLabels();
+    </script>
+  </body>
+  <iframe src="../footer.html" frameborder="0"></iframe>
+</html>
