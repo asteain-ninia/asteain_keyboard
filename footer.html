@@ -1,8 +1,19 @@
-<footer style="text-align: center">
-  <a href="index.html" onclick="returnToTop()">トップに戻る</a>
-</footer>
-<script>
-  function returnToTop() {
-    window.parent.location.href = "index.html";
-  }
-</script>
+<!DOCTYPE html>
+<html lang="ja" class="footer-root">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Footer</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="footer-body">
+    <footer class="app-footer">
+      <a href="index.html" onclick="returnToTop()">トップに戻る</a>
+    </footer>
+    <script src="theme.js"></script>
+    <script>
+      function returnToTop() {
+        window.parent.location.href = "index.html";
+      }
+    </script>
+  </body>
+</html>
