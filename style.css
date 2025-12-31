@@ -106,6 +106,12 @@ textarea {
   height: 40px;
 }
 
+.ascii-keyboard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .tall-key {
   height: 85px;
 }
@@ -218,13 +224,19 @@ iframe[src$="footer.html"] {
 
 [data-theme="rich"] {
   --rich-ink: #1c1f24;
+  --rich-ink-soft: #2f3845;
   --rich-accent: #0b6571;
   --rich-accent-strong: #0a4f58;
+  --rich-accent-glow: rgba(11, 101, 113, 0.18);
   --rich-surface: rgba(255, 255, 255, 0.78);
-  --rich-surface-strong: rgba(255, 255, 255, 0.92);
+  --rich-surface-strong: rgba(255, 255, 255, 0.94);
+  --rich-surface-veil: rgba(255, 255, 255, 0.62);
   --rich-border: rgba(24, 32, 40, 0.18);
+  --rich-border-strong: rgba(24, 32, 40, 0.28);
   --rich-shadow: 0 16px 36px rgba(16, 22, 30, 0.22);
   --rich-shadow-soft: 0 8px 18px rgba(16, 22, 30, 0.18);
+  --rich-shadow-lift: 0 18px 32px rgba(16, 22, 30, 0.18);
+  --rich-key-shadow: 0 8px 14px rgba(16, 22, 30, 0.16);
   --toggle-bg: rgba(255, 255, 255, 0.92);
   --toggle-fg: #1c1f24;
   --toggle-border: rgba(20, 30, 40, 0.22);
@@ -233,23 +245,37 @@ iframe[src$="footer.html"] {
 }
 
 [data-theme="rich"] body {
-  background: radial-gradient(900px 600px at 12% 0%, #f6ead9 0%, transparent 60%),
-    radial-gradient(900px 600px at 88% 20%, #dce8ee 0%, transparent 55%),
-    linear-gradient(180deg, #f8f3eb 0%, #eef2f3 100%);
+  background: radial-gradient(1100px 720px at 10% -10%, #f4e4cf 0%, transparent 55%),
+    radial-gradient(900px 680px at 92% 12%, #d6e6ec 0%, transparent 55%),
+    linear-gradient(180deg, #f7f1e6 0%, #edf2f3 100%);
   color: var(--rich-ink);
-  padding: 28px 18px 40px;
+  padding: 30px 18px 44px;
   min-height: 100vh;
+  position: relative;
+  color-scheme: light;
 }
 
 [data-theme="rich"] body::before {
   content: "";
   position: fixed;
   inset: 0;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.5) 1px, transparent 1px);
-  background-size: 18px 18px;
-  opacity: 0.25;
+  background-image: radial-gradient(rgba(28, 31, 36, 0.08) 1px, transparent 1px);
+  background-size: 19px 19px;
+  opacity: 0.3;
   pointer-events: none;
   z-index: -1;
+}
+
+[data-theme="rich"] body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(520px 320px at 16% 12%, rgba(255, 255, 255, 0.75), transparent 70%),
+    radial-gradient(520px 340px at 86% 10%, rgba(214, 236, 240, 0.7), transparent 70%),
+    radial-gradient(360px 260px at 70% 85%, rgba(243, 229, 207, 0.55), transparent 70%);
+  opacity: 0.75;
+  pointer-events: none;
+  z-index: -2;
 }
 
 [data-theme="rich"] body.footer-body {
@@ -262,11 +288,30 @@ iframe[src$="footer.html"] {
   content: none;
 }
 
+[data-theme="rich"] body.footer-body::after {
+  content: none;
+}
+
 [data-theme="rich"] h1,
 [data-theme="rich"] h2,
 [data-theme="rich"] h3 {
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.6);
   letter-spacing: 0.02em;
+}
+
+[data-theme="rich"] h1 {
+  font-size: clamp(1.8rem, 2vw + 1.4rem, 2.6rem);
+  margin: 0.6em 0 0.4em;
+}
+
+[data-theme="rich"] h2 {
+  font-size: clamp(1.4rem, 1.4vw + 1.1rem, 1.9rem);
+  margin: 0.6em 0 0.35em;
+}
+
+[data-theme="rich"] h3 {
+  font-size: clamp(1.1rem, 1vw + 0.9rem, 1.4rem);
+  margin: 0.5em 0 0.3em;
 }
 
 [data-theme="rich"] p,
@@ -285,21 +330,31 @@ iframe[src$="footer.html"] {
   border-bottom-color: currentColor;
 }
 
+[data-theme="rich"] a:focus-visible {
+  outline: 2px solid var(--rich-accent-glow);
+  outline-offset: 3px;
+  border-bottom-color: transparent;
+}
+
 [data-theme="rich"] textarea {
-  background: var(--rich-surface-strong);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(255, 255, 255, 0.86) 100%);
   border: 1px solid var(--rich-border);
-  border-radius: 14px;
-  padding: 12px 16px;
+  border-radius: 16px;
+  padding: 14px 18px;
+  width: min(1100px, 92vw);
   max-width: min(1200px, 92vw);
   box-sizing: border-box;
   box-shadow: var(--rich-shadow);
   color: var(--rich-ink);
   caret-color: var(--rich-accent-strong);
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  animation: rich-fade-up 0.55s ease both;
 }
 
 [data-theme="rich"] textarea:focus {
   outline: 2px solid rgba(11, 101, 113, 0.4);
   outline-offset: 2px;
+  border-color: var(--rich-border-strong);
 }
 
 [data-theme="rich"] button {
@@ -308,7 +363,8 @@ iframe[src$="footer.html"] {
   box-sizing: border-box;
   color: var(--rich-ink);
   box-shadow: var(--rich-shadow-soft);
-  transition: transform 0.08s ease, box-shadow 0.2s ease, background 0.2s ease;
+  transition: transform 0.08s ease, box-shadow 0.2s ease, background 0.2s ease,
+    border-color 0.2s ease;
   cursor: pointer;
   user-select: none;
   touch-action: manipulation;
@@ -317,8 +373,10 @@ iframe[src$="footer.html"] {
 
 [data-theme="rich"] .button,
 [data-theme="rich"] .functionButton {
-  border-radius: 10px;
+  border-radius: 12px;
   padding: 0;
+  box-shadow: var(--rich-key-shadow);
+  background: linear-gradient(180deg, #ffffff 0%, #f1e8db 100%);
 }
 
 [data-theme="rich"] button:not(.button):not(.functionButton) {
@@ -343,26 +401,30 @@ iframe[src$="footer.html"] {
 
 [data-theme="rich"] .labels {
   color: var(--rich-accent-strong);
+  letter-spacing: 0.04em;
 }
 
 [data-theme="rich"] .menu {
   list-style: none;
   padding: 0;
-  margin: 16px 0 24px;
+  margin: 16px 0 26px;
   width: min(1100px, 92vw);
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 12px;
+  gap: 14px;
 }
 
 [data-theme="rich"] .menu li {
   position: relative;
-  padding: 12px 16px 12px 46px;
+  padding: 14px 18px 18px 60px;
   border-radius: 16px;
   border: 1px solid var(--rich-border);
-  background: var(--rich-surface);
+  background: linear-gradient(140deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.68) 100%);
   box-shadow: var(--rich-shadow-soft);
-  transition: transform 0.15s ease, box-shadow 0.2s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease,
+    background 0.2s ease;
+  backdrop-filter: blur(8px);
+  animation: rich-rise 0.5s ease both;
 }
 
 [data-theme="rich"] .menu li::marker {
@@ -372,9 +434,18 @@ iframe[src$="footer.html"] {
 [data-theme="rich"] .menu li::before {
   content: attr(data-ico);
   position: absolute;
-  left: 14px;
-  top: 12px;
+  left: 16px;
+  top: 14px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--rich-surface-strong);
+  border: 1px solid var(--rich-border);
+  box-shadow: var(--rich-shadow-soft);
   font-size: 1.2em;
+  line-height: 1;
   color: var(--rich-accent-strong);
   opacity: 0.9;
 }
@@ -382,6 +453,11 @@ iframe[src$="footer.html"] {
 [data-theme="rich"] .menu li:hover {
   transform: translateY(-2px);
   box-shadow: var(--rich-shadow);
+}
+
+[data-theme="rich"] .menu li:focus-within {
+  border-color: var(--rich-accent);
+  box-shadow: var(--rich-shadow-lift);
 }
 
 [data-theme="rich"] .menu hr {
@@ -401,17 +477,47 @@ iframe[src$="footer.html"] {
 [data-theme="rich"] #glyph-sample-wrapper section {
   border-radius: 16px;
   border: 1px solid var(--rich-border);
-  background: var(--rich-surface);
+  background: var(--rich-surface-veil);
   box-shadow: var(--rich-shadow-soft);
   padding: 16px;
+  backdrop-filter: blur(8px);
+  animation: rich-fade-up 0.5s ease both;
+}
+
+[data-theme="rich"] #glyph-sample-wrapper .glyph-sample-section {
+  border-radius: 12px;
+  border: 1px dashed rgba(24, 32, 40, 0.18);
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+[data-theme="rich"] #glyph-sample-wrapper .glyph-sample-section>div {
+  padding: 4px 6px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+[data-theme="rich"] #glyph-sample-wrapper .glyph-sample-section span {
+  border-radius: 8px;
+  border: 1px solid rgba(11, 101, 113, 0.12);
+  background: rgba(11, 101, 113, 0.06);
+  transition: transform 0.12s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+[data-theme="rich"] #glyph-sample-wrapper .glyph-sample-section span:hover {
+  transform: translateY(-1px);
+  border-color: rgba(11, 101, 113, 0.25);
+  box-shadow: var(--rich-shadow-soft);
 }
 
 [data-theme="rich"] .conversion-table {
   border: 1px solid var(--rich-border);
   border-radius: 16px;
-  background: var(--rich-surface);
+  background: var(--rich-surface-veil);
   box-shadow: var(--rich-shadow);
   overflow: hidden;
+  backdrop-filter: blur(8px);
+  animation: rich-fade-up 0.5s ease both;
 }
 
 [data-theme="rich"] .conversion-table th,
@@ -424,7 +530,7 @@ iframe[src$="footer.html"] {
 }
 
 [data-theme="rich"] .conversion-table tbody tr:hover {
-  background-color: rgba(11, 101, 113, 0.06);
+  background-color: rgba(11, 101, 113, 0.08);
 }
 
 [data-theme="rich"] iframe[src$="footer.html"] {
@@ -436,13 +542,14 @@ iframe[src$="footer.html"] {
   padding: 6px 14px;
   border-radius: 999px;
   border: 1px solid var(--rich-border);
-  background: var(--rich-surface);
+  background: var(--rich-surface-strong);
   box-shadow: var(--rich-shadow-soft);
   color: var(--rich-accent-strong);
   font-weight: 600;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.15s ease, box-shadow 0.2s ease;
 }
 
 [data-theme="rich"] .app-footer a:hover {
@@ -453,4 +560,55 @@ iframe[src$="footer.html"] {
 [data-theme="rich"] .app-footer a:focus-visible {
   outline: 2px solid rgba(11, 101, 113, 0.4);
   outline-offset: 2px;
+}
+
+[data-theme="rich"] .theme-toggle {
+  backdrop-filter: blur(8px);
+  border-color: var(--rich-border-strong);
+}
+
+@media (max-width: 880px) {
+  [data-theme="rich"] body {
+    padding: 22px 14px 34px;
+  }
+
+  [data-theme="rich"] .menu {
+    grid-template-columns: 1fr;
+  }
+
+  [data-theme="rich"] #glyph-sample-wrapper section {
+    padding: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-theme="rich"] * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@keyframes rich-rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes rich-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
