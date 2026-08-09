@@ -1,156 +1,239 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
   <head>
     <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
     <title>asteain式人工言語統一フォント入力機</title>
     <link rel="stylesheet" href="../style.css" />
+    <link rel="stylesheet" href="ashogu_keyboard2.css" />
   </head>
-  <body>
-    <textarea id="textarea"></textarea>
-    <button id="toggleVrtAndHoriz" onclick="toggleTextOrientation()">
-      縦書き切り替え
-    </button>
-    <div class="vertical_keyboard">
-      <span class="spacer">
-        <div class="button-container_6">
-          <button class="button">&#xF2A0B;</button>
-          <!--s-->
-          <button class="button">&#xF2A47;</button>
-          <!--f-->
-          <button class="button">&#xF2A97;</button>
-          <!--n-->
-          <button class="button">&#xF2A01;</button>
-          <!--a-->
-          <button class="button">&#xF2A07;</button>
-          <!--u-->
-        </div>
+  <body class="kb2-page">
+    <div class="kb2-app">
+      <header class="kb2-head">
+        <button id="layoutToggle" class="layout-toggle" type="button">
+          自動
+        </button>
+        <button id="toggleVrtAndHoriz" onclick="toggleTextOrientation()">
+          縦書き切り替え
+        </button>
+      </header>
 
-        <div class="button-container_6">
-          <button class="button">&#xF2A1F;</button>
-          <!--þ-->
-          <button class="button">&#xF2A65;</button>
-          <!--h-->
-          <button class="button">&#xF2AA1;</button>
-          <!--m-->
-          <button class="button">&#xF2A03;</button>
-          <!--i-->
-          <button class="button">&#xF2A09;</button>
-          <!--e-->
-        </div>
+      <div class="kb2-editor">
+        <textarea id="textarea"></textarea>
+      </div>
 
-        <div class="button-container_6">
-          <button class="button">&#xF2A33;</button>
-          <!--t-->
-          <button class="button">&#xF2A83;</button>
-          <!--l-->
-          <button class="button">&#xF2AAB;</button>
-          <!--j-->
-          <button class="button">&#xF2A05;</button>
-          <!--o-->
-        </div>
-      </span>
-      <span class="spacer">
-        <div class="button-container_6">
-          <button class="button">&#xF2A0D;</button>
-          <!--s'-->
-          <button class="button">&#xF2A4A;</button>
-          <!--f'-->
-          <button class="button">&#xF2A98;</button>
-          <!--n'-->
-          <button class="button">&#xF2A02;</button>
-          <!--a'-->
-          <button class="button">&#xF2A08;</button>
-          <!--u'-->
-        </div>
-        <div class="button-container_6">
-          <button class="button">&#xF2A21;</button>
-          <!--þ'-->
-          <button class="button">&#xF2A68;</button>
-          <!--h'-->
-          <button class="button">&#xF2AA2;</button>
-          <!--m'-->
-          <button class="button">&#xF2A03;</button>
-          <!--i-->
-          <!--i'が存在しないので特例-->
-          <button class="button">&#xF2A0A;</button>
-          <!--e'-->
-        </div>
-        <div class="button-container_6">
-          <button class="button">&#xF2A35;</button>
-          <!--t'-->
-          <button class="button">&#xF2A85;</button>
-          <!--l'-->
-          <button class="button">&#xF2AAC;</button>
-          <!--j'-->
-          <button class="button">&#xF2A06;</button>
-          <!--o'-->
-        </div>
-      </span>
+      <div class="kb2-keyboard">
+        <div class="vertical_keyboard">
+          <span class="spacer spacer--base">
+            <div class="button-container_6">
+              <button class="button">&#xF2A0B;</button>
+              <!--s-->
+              <button class="button">&#xF2A47;</button>
+              <!--f-->
+              <button class="button">&#xF2A97;</button>
+              <!--n-->
+              <button class="button">&#xF2A01;</button>
+              <!--a-->
+              <button class="button">&#xF2A07;</button>
+              <!--u-->
+            </div>
 
-      <span class="spacer">
-        <div class="button-container_6">
-          <!--負荷点・撥音・促音-->
-          <button class="button">&#xF2AC9;</button>
-          <button class="button">&#xF2ACA;</button>
-          <button class="button">&#xF2AB5;</button>
-          <button class="button">&#xF2AB6;</button>
-          <button onclick="space()" class="functionButton">space</button>
-        </div>
+            <div class="button-container_6">
+              <button class="button">&#xF2A1F;</button>
+              <!--þ-->
+              <button class="button">&#xF2A65;</button>
+              <!--h-->
+              <button class="button">&#xF2AA1;</button>
+              <!--m-->
+              <button class="button">&#xF2A03;</button>
+              <!--i-->
+              <button class="button">&#xF2A09;</button>
+              <!--e-->
+            </div>
 
-        <div class="button-container_6">
-          <!--母音記号-->
-          <button class="button">&#xF2AB7;</button>
-          <button class="button">&#xF2AB8;</button>
-          <button class="button">&#xF2AB9;</button>
-          <button class="button">&#xF2ABA;</button>
-          <button class="button">&#xF2ABB;</button>
+            <div class="button-container_6">
+              <button class="button">&#xF2A33;</button>
+              <!--t-->
+              <button class="button">&#xF2A83;</button>
+              <!--l-->
+              <button class="button">&#xF2AAB;</button>
+              <!--j-->
+              <button class="button">&#xF2A05;</button>
+              <!--o-->
+            </div>
+          </span>
+
+          <span class="spacer spacer--alt">
+            <div class="button-container_6">
+              <button class="button">&#xF2A0D;</button>
+              <!--s'-->
+              <button class="button">&#xF2A4A;</button>
+              <!--f'-->
+              <button class="button">&#xF2A98;</button>
+              <!--n'-->
+              <button class="button">&#xF2A02;</button>
+              <!--a'-->
+              <button class="button">&#xF2A08;</button>
+              <!--u'-->
+            </div>
+            <div class="button-container_6">
+              <button class="button">&#xF2A21;</button>
+              <!--þ'-->
+              <button class="button">&#xF2A68;</button>
+              <!--h'-->
+              <button class="button">&#xF2AA2;</button>
+              <!--m'-->
+              <button class="button">&#xF2A03;</button>
+              <!--i-->
+              <!--i'が存在しないので特例-->
+              <button class="button">&#xF2A0A;</button>
+              <!--e'-->
+            </div>
+            <div class="button-container_6">
+              <button class="button">&#xF2A35;</button>
+              <!--t'-->
+              <button class="button">&#xF2A85;</button>
+              <!--l'-->
+              <button class="button">&#xF2AAC;</button>
+              <!--j'-->
+              <button class="button">&#xF2A06;</button>
+              <!--o'-->
+              <!--スマホ表示のみ: テンキー引き出しの開閉キー-->
+              <button
+                id="numpadKey"
+                class="functionButton numpad-key"
+                type="button"
+                aria-controls="numpad"
+                aria-expanded="false"
+                title="上にフリック、またはタップで数字キーを開く"
+              >
+                123<br />▲
+              </button>
+            </div>
+          </span>
+
+          <div class="func-band">
+          <span class="spacer spacer--func">
+            <div class="button-container_6">
+              <!--負荷点・撥音・促音-->
+              <button class="button">&#xF2AC9;</button>
+              <button class="button">&#xF2ACA;</button>
+              <button class="button">&#xF2AB5;</button>
+              <button class="button">&#xF2AB6;</button>
+              <button onclick="space()" class="functionButton">space</button>
+            </div>
+
+            <div class="button-container_6">
+              <!--母音記号-->
+              <button class="button">&#xF2AB7;</button>
+              <button class="button">&#xF2AB8;</button>
+              <button class="button">&#xF2AB9;</button>
+              <button class="button">&#xF2ABA;</button>
+              <button class="button">&#xF2ABB;</button>
+            </div>
+            <div class="button-container_6">
+              <!--句点類-->
+              <button class="button">&#xF2AC6;</button>
+              <button class="button">&#xF2AC7;</button>
+              <button class="button">&#xF2AC8;</button>
+              <!--バックスペース・エンター-->
+              <button
+                id="backspaceKey"
+                onclick="backspace()"
+                class="functionButton"
+              >
+                Back<br />Space
+              </button>
+              <button onclick="enter()" class="functionButton">Enter</button>
+            </div>
+          </span>
+
+            <!--カーソル十字キー（文中への挿入用）-->
+            <div class="dpad" role="group" aria-label="カーソル移動">
+              <button
+                class="functionButton dpad-key dpad-up"
+                type="button"
+                data-move="up"
+                aria-label="カーソルを上へ"
+              >
+                ▲
+              </button>
+              <button
+                class="functionButton dpad-key dpad-left"
+                type="button"
+                data-move="left"
+                aria-label="カーソルを左へ"
+              >
+                ◀
+              </button>
+              <button
+                class="functionButton dpad-key dpad-right"
+                type="button"
+                data-move="right"
+                aria-label="カーソルを右へ"
+              >
+                ▶
+              </button>
+              <button
+                class="functionButton dpad-key dpad-down"
+                type="button"
+                data-move="down"
+                aria-label="カーソルを下へ"
+              >
+                ▼
+              </button>
+            </div>
+          </div>
+
+          <div class="numpad" id="numpad" aria-hidden="false">
+            <div class="numpad-bar" id="numpadBar">
+              <span class="numpad-grip" aria-hidden="true"></span>
+              <button class="numpad-close" id="numpadClose" type="button">
+                閉じる
+              </button>
+            </div>
+            <span class="spacer spacer--num">
+              <div class="button-container_6">
+                <button class="button">&#xF2AC3;</button
+                ><!--7-->
+                <button class="button">&#xF2AC0;</button
+                ><!--4-->
+                <button class="button">&#xF2ABD;</button
+                ><!--1-->
+              </div>
+              <div class="button-container_6">
+                <button class="button">&#xF2AC4;</button
+                ><!--8-->
+                <button class="button">&#xF2AC1;</button
+                ><!--5-->
+                <button class="button">&#xF2ABE;</button
+                ><!--2-->
+                <button class="button">&#xF2ABC;</button
+                ><!--0-->
+              </div>
+              <div class="button-container_6">
+                <button class="button">&#xF2AC5;</button
+                ><!--9-->
+                <button class="button">&#xF2AC2;</button
+                ><!--6-->
+                <button class="button">&#xF2ABF;</button
+                ><!--3-->
+              </div>
+            </span>
+          </div>
         </div>
-        <div class="button-container_6">
-          <!--句点類-->
-          <button class="button">&#xF2AC6;</button>
-          <button class="button">&#xF2AC7;</button>
-          <button class="button">&#xF2AC8;</button>
-          <!--バックスペース・エンター-->
-          <button onclick="backspace()" class="functionButton">
-            Back<br />Space
-          </button>
-          <button onclick="enter()" class="functionButton">Enter</button>
-        </div>
-      </span>
-      <span class="spacer">
-        <div class="button-container_6">
-          <button class="button">&#xF2AC3;</button
-          ><!--7-->
-          <button class="button">&#xF2AC0;</button
-          ><!--4-->
-          <button class="button">&#xF2ABD;</button
-          ><!--1-->
-        </div>
-        <div class="button-container_6">
-          <button class="button">&#xF2AC4;</button
-          ><!--8-->
-          <button class="button">&#xF2AC1;</button
-          ><!--5-->
-          <button class="button">&#xF2ABE;</button
-          ><!--2-->
-          <button class="button">&#xF2ABC;</button
-          ><!--0-->
-        </div>
-        <div class="button-container_6">
-          <button class="button">&#xF2AC5;</button
-          ><!--9-->
-          <button class="button">&#xF2AC2;</button
-          ><!--6-->
-          <button class="button">&#xF2ABF;</button
-          ><!--3-->
-        </div>
-      </span>
+      </div>
     </div>
+
+    <iframe src="../footer.html" frameborder="0"></iframe>
+
     <script src="ashogu_data.js"></script>
     <script src="ashogu.js"></script>
     <script src="../basic.js"></script>
-  <script src="../theme.js"></script>
-</body>
-  <iframe src="../footer.html" frameborder="0"></iframe>
+    <script src="ashogu_keyboard2.js"></script>
+    <script src="../theme.js"></script>
+  </body>
 </html>
-

@@ -1,0 +1,487 @@
+@charset "UTF-8";
+
+/* =========================================================
+   新体アソーグ文字標準（ashogu_keyboard2）専用レイアウト
+
+   ・PC 表示  : 従来と同じ 12 列 × 5 段の配置
+   ・スマホ表示: 画面上半分が入力欄、下半分がキーボード
+                 テンキーはフリック（またはタップ）で出る引き出し
+
+   従来の実装は writing-mode: vertical-lr を使って
+   「縦 1 列 = 1 グループの 1 列」を作っていたが、
+   縦書きモードは寸法指定が効きづらく可変レイアウトに向かないため、
+   このページだけ通常の書字方向 + flex/grid で同じ見た目を組み直している。
+   ========================================================= */
+
+.kb2-page {
+  --kb-gap: 5px;
+  --kb-group-gap: 10px;
+  --kb-band-gap: 8px;
+  --kb-key-font: 40px;
+  --kb-label-font: 11px;
+  --kb-surface: #ffffff;
+  --kb-line: rgba(0, 0, 0, 0.18);
+}
+
+.kb2-app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.kb2-head {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+  padding: 10px 8px;
+  box-sizing: border-box;
+}
+
+.kb2-editor {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.kb2-keyboard {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+/* 左上の表示切り替えボタン（テーマ切り替えボタンと同じ見た目） */
+.layout-toggle {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--toggle-border);
+  background: var(--toggle-bg);
+  color: var(--toggle-fg);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--toggle-shadow);
+}
+
+.layout-toggle:focus-visible {
+  outline: 2px solid var(--toggle-ring);
+  outline-offset: 2px;
+}
+
+/* ---------- キーボード本体（PC 表示） ---------- */
+
+.kb2-page .vertical_keyboard {
+  writing-mode: horizontal-tb;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--kb-group-gap);
+}
+
+.kb2-page .spacer {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--kb-gap);
+  margin-right: 0;
+}
+
+/* 1 つの button-container_6 が視覚的な 1 列（最大 5 段）になる */
+.kb2-page .button-container_6 {
+  display: grid;
+  grid-template-columns: 40px;
+  grid-template-rows: repeat(5, 40px);
+  gap: var(--kb-gap);
+  grid-gap: var(--kb-gap);
+}
+
+.kb2-page .numpad {
+  display: flex;
+}
+
+/* 機能キーとカーソル十字キーをひとまとまりの帯として扱う */
+.kb2-page .func-band {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--kb-group-gap);
+}
+
+/*
+   十字キー。上下は横 2 列ぶんをまたいで十字の形にする。
+     ┌───────┐
+     │   ▲   │
+     │ ◀   ▶ │
+     │   ▼   │
+     └───────┘
+*/
+.kb2-page .dpad {
+  display: grid;
+  grid-template-columns: repeat(2, 40px);
+  grid-template-rows: repeat(3, 40px);
+  gap: var(--kb-gap);
+}
+
+.kb2-page .dpad-up {
+  grid-column: 1 / span 2;
+  grid-row: 1;
+}
+
+.kb2-page .dpad-left {
+  grid-column: 1;
+  grid-row: 2;
+}
+
+.kb2-page .dpad-right {
+  grid-column: 2;
+  grid-row: 2;
+}
+
+.kb2-page .dpad-down {
+  grid-column: 1 / span 2;
+  grid-row: 3;
+}
+
+.kb2-page .dpad-key {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  /* 矢印記号は asteain フォントに無いので明示的に本文フォントへ逃がす */
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* 引き出し用の部品は PC 表示では不要 */
+.kb2-page .numpad-bar,
+.kb2-page .numpad-key {
+  display: none;
+}
+
+.kb2-page .button,
+.kb2-page .functionButton {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* ---------- スマホ表示 ---------- */
+
+html[data-kb-mode="mobile"] {
+  height: 100%;
+  overflow: hidden;
+}
+
+[data-kb-mode="mobile"] body.kb2-page {
+  margin: 0;
+  padding: 0;
+  min-height: 0;
+  /* dvh 未対応環境向けのフォールバック（JS が --kb-vh を設定する） */
+  height: calc(var(--kb-vh, 1vh) * 100);
+  height: 100dvh;
+  display: block;
+  overflow: hidden;
+  overscroll-behavior: none;
+  -webkit-text-size-adjust: 100%;
+}
+
+[data-kb-mode="mobile"] .kb2-app {
+  height: 100%;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+  box-sizing: border-box;
+}
+
+[data-kb-mode="mobile"] .kb2-head {
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  gap: 6px;
+  padding: 6px 8px;
+  /* 右上に固定表示されるテーマ切り替えボタンを避ける */
+  padding-right: 136px;
+}
+
+[data-kb-mode="mobile"] .kb2-head button {
+  font-size: 12px;
+  padding: 7px 10px;
+  white-space: nowrap;
+}
+
+[data-kb-mode="mobile"] .kb2-editor {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 0 6px 6px;
+  box-sizing: border-box;
+}
+
+[data-kb-mode="mobile"] .kb2-page textarea {
+  width: 100%;
+  max-width: none;
+  height: 100%;
+  margin: 0;
+  padding: 8px 10px;
+  box-sizing: border-box;
+  font-size: clamp(22px, 7vw, 38px);
+  line-height: 1.25;
+  resize: none;
+  border-radius: 10px;
+}
+
+[data-kb-mode="mobile"] .kb2-keyboard {
+  flex: 0 0 auto;
+  height: calc(var(--kb-vh, 1vh) * 52);
+  height: 52dvh;
+  max-height: 460px;
+  min-height: 210px;
+  padding: 4px;
+  box-sizing: border-box;
+  overflow: hidden;
+  touch-action: manipulation;
+}
+
+/*
+   基本 3 列 × 5 段 ×2 グループ（上段）と、
+   機能キー 5 列 × 3 段（下段）の 2 バンド構成にする。
+   12 列を横並びにするより 1 キーが大きく取れる。
+*/
+[data-kb-mode="mobile"] .kb2-page .vertical_keyboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1.92fr) minmax(0, 1fr);
+  grid-template-areas:
+    "base alt"
+    "func func";
+  gap: var(--kb-band-gap) var(--kb-group-gap);
+  width: 100%;
+  height: 100%;
+}
+
+[data-kb-mode="mobile"] .kb2-page .spacer--base {
+  grid-area: base;
+}
+
+[data-kb-mode="mobile"] .kb2-page .spacer--alt {
+  grid-area: alt;
+}
+
+[data-kb-mode="mobile"] .kb2-page .func-band {
+  grid-area: func;
+  align-items: stretch;
+  min-width: 0;
+  height: 100%;
+}
+
+/* 機能キー 5 列ぶん : 十字キー 2 列ぶん の幅配分にする */
+[data-kb-mode="mobile"] .kb2-page .spacer--func {
+  flex: 5 1 0;
+  flex-direction: column;
+}
+
+[data-kb-mode="mobile"] .kb2-page .dpad {
+  flex: 2 1 0;
+  min-width: 0;
+  height: 100%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(3, minmax(0, 1fr));
+}
+
+[data-kb-mode="mobile"] .kb2-page .dpad-key {
+  border-radius: 8px;
+  font-size: var(--kb-dpad-font, 18px);
+}
+
+[data-kb-mode="mobile"] .kb2-page .spacer {
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  align-items: stretch;
+  gap: var(--kb-gap);
+}
+
+[data-kb-mode="mobile"] .kb2-page .button-container_6 {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: repeat(5, minmax(0, 1fr));
+  gap: var(--kb-gap);
+  grid-gap: var(--kb-gap);
+}
+
+/* 機能キーグループだけは 5 列 × 1 段の横帯に組み替える */
+[data-kb-mode="mobile"] .kb2-page .spacer--func .button-container_6 {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-rows: minmax(0, 1fr);
+}
+
+[data-kb-mode="mobile"] .kb2-page .button,
+[data-kb-mode="mobile"] .kb2-page .functionButton {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  border-radius: 8px;
+  line-height: 1;
+  font-size: var(--kb-key-font);
+}
+
+[data-kb-mode="mobile"] .kb2-page .functionButton {
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: var(--kb-label-font);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* 段ごとにキーの高さが違うので字面サイズも段ごとに持つ（JS が実測して設定） */
+[data-kb-mode="mobile"] .kb2-page .spacer--func .button {
+  font-size: var(--kb-func-font, var(--kb-key-font));
+}
+
+[data-kb-mode="mobile"] .kb2-page .numpad .button {
+  font-size: var(--kb-num-font, var(--kb-key-font));
+}
+
+[data-kb-mode="mobile"] .kb2-page .numpad-key {
+  display: flex;
+  touch-action: none;
+}
+
+[data-kb-mode="mobile"] iframe[src$="footer.html"] {
+  display: none;
+}
+
+/*
+   横向き（幅は広いが高さがない）のときは 2 バンドだと 1 段が潰れるので、
+   PC 表示と同じ 9 列 × 5 段の 1 バンドに戻す。
+*/
+@media (orientation: landscape) and (max-height: 560px) {
+  [data-kb-mode="mobile"] .kb2-keyboard {
+    height: calc(var(--kb-vh, 1vh) * 58);
+    height: 58dvh;
+    min-height: 160px;
+  }
+
+  /* base 3 列 : alt 3 列 : func 3 列 + 十字 2 列 = 計 11 列を均等にする */
+  [data-kb-mode="mobile"] .kb2-page .vertical_keyboard {
+    grid-template-columns: minmax(0, 3fr) minmax(0, 3fr) minmax(0, 5fr);
+    grid-template-rows: minmax(0, 1fr);
+    grid-template-areas: "base alt func";
+  }
+
+  [data-kb-mode="mobile"] .kb2-page .spacer--func {
+    flex: 3 1 0;
+    flex-direction: row;
+  }
+
+  [data-kb-mode="mobile"] .kb2-page .spacer--func .button-container_6 {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: repeat(5, minmax(0, 1fr));
+  }
+
+  [data-kb-mode="mobile"] .kb2-page textarea {
+    font-size: clamp(20px, 4vw, 32px);
+  }
+}
+
+/* ---------- テンキー引き出し（スマホ表示のみ） ---------- */
+
+[data-kb-mode="mobile"] .kb2-page .numpad {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 100%;
+  z-index: 5;
+  flex-direction: column;
+  gap: 6px;
+  padding: 0 8px 8px;
+  box-sizing: border-box;
+  background: var(--kb-surface);
+  border-top: 1px solid var(--kb-line);
+  border-radius: 14px 14px 0 0;
+  box-shadow: 0 -10px 26px rgba(0, 0, 0, 0.18);
+  transform: translateY(103%);
+  visibility: hidden;
+  transition: transform 0.22s ease, visibility 0s linear 0.22s;
+  will-change: transform;
+}
+
+[data-kb-mode="mobile"] .kb2-page .numpad.is-open {
+  transform: translateY(0);
+  visibility: visible;
+  transition: transform 0.22s ease, visibility 0s;
+}
+
+[data-kb-mode="mobile"] .kb2-page .numpad-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex: 0 0 auto;
+  height: 34px;
+  touch-action: none;
+}
+
+.numpad-grip {
+  display: block;
+  width: 46px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--kb-line);
+}
+
+.numpad-close {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  font-size: 12px;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  padding: 5px 10px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+[data-kb-mode="mobile"] .kb2-page .numpad .spacer {
+  width: min(100%, 330px);
+  margin: 0 auto;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+[data-kb-mode="mobile"] .kb2-page .numpad .button-container_6 {
+  grid-template-rows: repeat(4, minmax(0, 1fr));
+}
+
+/* ---------- リッチ表示との調整 ---------- */
+
+[data-theme="rich"] .kb2-page {
+  --kb-surface: #fbf6ee;
+  --kb-line: rgba(24, 32, 40, 0.24);
+}
+
+[data-kb-mode="mobile"][data-theme="rich"] body.kb2-page {
+  padding: 0;
+  min-height: 0;
+}
+
+[data-kb-mode="mobile"][data-theme="rich"] .kb2-page textarea {
+  width: 100%;
+  max-width: none;
+  padding: 8px 10px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kb2-page .numpad {
+    transition: none;
+  }
+}
