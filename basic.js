@@ -2,20 +2,15 @@ const textarea = document.getElementById("textarea");
 const buttons = document.querySelectorAll(".button");
 
 // 画面上のキーボードだけで入力するモード（スマホ表示など）かどうか。
-// このモードでは textarea が readonly なのでフォーカスを戻しても
-// OSのソフトウェアキーボードは開かない。キャレットを見せるために戻すが、
-// iOS が要素を画面内に入れようとするスクロールだけは抑止する。
+// このモードではOSのソフトウェアキーボードを出さずにフォーカスを戻す必要があり、
+// その手当てはページ側が window.kbFocusTextarea として差し込む。
 function isCustomInputMode() {
   return document.documentElement.dataset.kbInput === "custom";
 }
 
 function refocusTextarea() {
-  if (isCustomInputMode()) {
-    try {
-      textarea.focus({ preventScroll: true });
-    } catch (error) {
-      textarea.focus();
-    }
+  if (isCustomInputMode() && typeof window.kbFocusTextarea === "function") {
+    window.kbFocusTextarea();
     return;
   }
   textarea.focus();

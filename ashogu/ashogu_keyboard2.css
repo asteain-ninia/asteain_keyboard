@@ -21,6 +21,12 @@
   --kb-label-font: 11px;
   --kb-surface: #ffffff;
   --kb-line: rgba(0, 0, 0, 0.18);
+  /* readonly の textarea はキャレットが細く見つけにくいので目立つ色にする */
+  --kb-caret: #d93b18;
+}
+
+.kb2-page textarea {
+  caret-color: var(--kb-caret);
 }
 
 .kb2-app {

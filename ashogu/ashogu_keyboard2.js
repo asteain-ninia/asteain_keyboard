@@ -72,21 +72,104 @@
   const resolveMode = () =>
     preference === "auto" ? (detectMobile() ? "mobile" : "desktop") : preference;
 
+  /*
+    OSキーボードを出さずにキャレットを見せるための仕掛け。
+
+    OS がソフトウェアキーボードを出すかどうかは「フォーカスが当たった瞬間に
+    その要素が編集可能か」だけで決まる。そこでフォーカスが移る直前に readonly を
+    立て、確定した直後に外す。外した後は編集可能なのでキャレットが通常どおり
+    描画され、しかしフォーカスは既に確定しているのでキーボードは出てこない。
+    inputmode="none" を尊重するブラウザではそちらだけで足りるが、
+    効かない環境のための二重の備えとしてこの方式を併用する。
+  */
+  const GUARD_RELEASE_MS = 120;
+  const GUARD_FALLBACK_MS = 500;
+  let guardTimer = null;
+
+  const armKeyboardGuard = () => {
+    if (!textarea) {
+      return;
+    }
+    clearTimeout(guardTimer);
+    guardTimer = null;
+    textarea.setAttribute("readonly", "readonly");
+  };
+
+  const releaseKeyboardGuard = (delay) => {
+    if (!textarea) {
+      return;
+    }
+    clearTimeout(guardTimer);
+    guardTimer = setTimeout(() => {
+      guardTimer = null;
+      if (root.dataset.kbMode === "mobile") {
+        textarea.removeAttribute("readonly");
+      }
+    }, delay);
+  };
+
+  const focusTextareaSafely = () => {
+    if (!textarea) {
+      return;
+    }
+    if (root.dataset.kbMode !== "mobile") {
+      textarea.focus();
+      return;
+    }
+    armKeyboardGuard();
+    try {
+      textarea.focus({ preventScroll: true });
+    } catch (error) {
+      textarea.focus();
+    }
+    releaseKeyboardGuard(GUARD_RELEASE_MS);
+  };
+
+  // basic.js からはこのフックを経由してフォーカスを戻してもらう
+  window.kbFocusTextarea = focusTextareaSafely;
+
   const suppressNativeKeyboard = (on) => {
     if (!textarea) {
       return;
     }
     if (on) {
-      textarea.setAttribute("readonly", "readonly");
+      // 常時 readonly にはしない（キャレットが描画されなくなるため）。
+      // 実際の抑止はフォーカス直前の armKeyboardGuard() が担う。
       textarea.setAttribute("inputmode", "none");
       textarea.setAttribute("autocapitalize", "off");
       textarea.setAttribute("autocorrect", "off");
       textarea.setAttribute("spellcheck", "false");
+      textarea.removeAttribute("readonly");
     } else {
+      clearTimeout(guardTimer);
+      guardTimer = null;
       textarea.removeAttribute("readonly");
       textarea.removeAttribute("inputmode");
     }
   };
+
+  if (textarea) {
+    // 画面を直接タップされたときも、フォーカスが確定するまでは readonly にしておく
+    textarea.addEventListener(
+      "pointerdown",
+      () => {
+        if (root.dataset.kbMode !== "mobile") {
+          return;
+        }
+        armKeyboardGuard();
+        // 既にフォーカス済みで focus が発火しない場合に備えた保険
+        releaseKeyboardGuard(GUARD_FALLBACK_MS);
+      },
+      { passive: true }
+    );
+
+    textarea.addEventListener("focus", () => {
+      if (root.dataset.kbMode !== "mobile") {
+        return;
+      }
+      releaseKeyboardGuard(GUARD_RELEASE_MS);
+    });
+  }
 
   const updateToggleLabel = () => {
     if (!layoutToggle) {
@@ -214,11 +297,7 @@
       pos = verticalIndex(value, pos, direction === "up" ? -1 : 1);
     }
     // フォーカスを戻さないとキャレットが描画されず、位置が見えない
-    try {
-      textarea.focus({ preventScroll: true });
-    } catch (error) {
-      textarea.focus();
-    }
+    focusTextareaSafely();
     textarea.setSelectionRange(pos, pos);
   };
 
