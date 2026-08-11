@@ -3,7 +3,7 @@
 function main() {
   const selection = figma.currentPage.selection;
   if (selection[0]) {
-    for (let i = 0; i <= selection.length; i++) {
+    for (let i = 0; i < selection.length; i++) {
       const group = selection[i];
       const unionName = group.name;
       let unionized;
