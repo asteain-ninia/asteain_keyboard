@@ -1,1 +1,0 @@
-throw new Error("This plugin template uses JavaScript. Follow the instructions in `README.md` to generate `code.ts`.")
