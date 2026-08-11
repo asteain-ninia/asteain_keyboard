@@ -139,46 +139,11 @@
       </div>
     </div>
     <a href="derleConverter_small.html">変換器</a><br />
-    <script src="derle_data.js"></script>
     <script src="../basic.js"></script>
+    <script src="derle.js"></script>
     <script>
-      function insertLogic(value1, insertChar, button) {
-        insertChar = button.textContent;
-        const charCode = value1.substring(value1.length - 2).codePointAt();
-        if (button.textContent == "󲿁") {
-          //発音線
-          console.log(charCode);
-          if (charCode >= 995137 && charCode <= 995162) {
-            const newCharCode = charCode + 26;
-            insertChar = String.fromCodePoint(newCharCode);
-            value1 = value1.slice(0, -2);
-          } else if (charCode >= 995163 && charCode <= 995188) {
-            const newCharCode = charCode - 26;
-            insertChar = String.fromCodePoint(newCharCode);
-            value1 = value1.slice(0, -2);
-          } else if (charCode == 995233) {
-            const newCharCode = charCode + 7;
-            insertChar = String.fromCodePoint(newCharCode);
-            value1 = value1.slice(0, -2);
-          } else if (charCode == 995240) {
-            const newCharCode = charCode - 7;
-            insertChar = String.fromCodePoint(newCharCode);
-            value1 = value1.slice(0, -2);
-          } else {
-            //発音線がつかない文字の後で発音線を押しても何も起きない
-            insertChar = "";
-          }
-        }
-        console.log(insertChar.codePointAt());
-        if (charCode >= 995137 && charCode <= 995188) {
-          if (charCode == insertChar.codePointAt()) {
-            //促音符号
-            insertChar = String.fromCodePoint(995234);
-          }
-        }
-        const firstHalf = value1 + insertChar;
-        return firstHalf;
-      }
+      //小文字版の基準値
+      const insertLogic = makeDerleInsertLogic(995137, 995233, 995234);
     </script>
   <script src="../theme.js"></script>
 </body>

@@ -135,44 +135,11 @@
         <button class="button derle">&#xF2F1A;</button>
       </div>
     </div>
-    <script src="derle_data.js"></script>
     <script src="../basic.js"></script>
+    <script src="derle.js"></script>
     <script>
-      function insertLogic(value1, insertChar, button) {
-        insertChar = button.textContent;
-        const charCode = value1.substring(value1.length - 2).codePointAt();
-        if (button.textContent == "󲿁") {
-          //発音線
-          console.log(charCode);
-          if (charCode >= 995073 && charCode <= 995098) {
-            const newCharCode = charCode + 26;
-            insertChar = String.fromCodePoint(newCharCode);
-            value1 = value1.slice(0, -2);
-          } else if (charCode >= 995099 && charCode <= 995124) {
-            const newCharCode = charCode - 26;
-            insertChar = String.fromCodePoint(newCharCode);
-            value1 = value1.slice(0, -2);
-          } else if (charCode == 995201) {
-            const newCharCode = charCode + 7;
-            insertChar = String.fromCodePoint(newCharCode);
-            value1 = value1.slice(0, -2);
-          } else if (charCode == 995208) {
-            const newCharCode = charCode - 7;
-            insertChar = String.fromCodePoint(newCharCode);
-            value1 = value1.slice(0, -2);
-          } else {
-            //発音線がつかない文字の後で発音線を押しても何も起きない
-            insertChar = "";
-          }
-        }
-        console.log(insertChar.codePointAt());
-        if (charCode == insertChar.codePointAt()) {
-          //促音符号
-          insertChar = String.fromCodePoint(995202);
-        }
-        const firstHalf = value1 + insertChar;
-        return firstHalf;
-      }
+      //正文字版の基準値
+      const insertLogic = makeDerleInsertLogic(995073, 995201, 995202);
     </script>
   <script src="../theme.js"></script>
 </body>
