@@ -33,7 +33,7 @@
     <hr>
   </ul>
 
-  <h1>asteainフォント収録領域サンプル（00020～0007F/F2700〜F33FF）</h1>
+  <h1>asteainフォント収録領域サンプル（00020～0007F/03041～030FF/F2700〜F33FF）</h1>
   <div id="glyph-sample-wrapper"
     style="display: flex; flex-direction: column; font-family: 'asteain'; font-size: 24px;">
     <section>
@@ -46,14 +46,59 @@
       <hr>
     </section>
     <section>
+      <h3>ひらがな/カタカナ U+03041 ~ U+030FF</h3>
+      <p style="margin-bottom: 1em;">
+        かなくみあわせ ほねおれそ もしやちえに ひらけぬゆめへ つまりこのいろは うたをよむ さんぷるてきすと<br>
+        カナクミアワセ ホネオレソ モシヤチエニ ヒラケヌユメヘ ツマリコノイロハ ウタヲヨム サンプルテキスト<br>
+      </p>
+      <div id="kana-sample-list" class="glyph-sample-section"></div>
+      <hr>
+    </section>
+    <section>
       <h3>PUA U+F2700 ~ U+F33FF</h3>
       <div id="pua-sample-list" class="glyph-sample-section"></div>
       <hr>
     </section>
   </div>
   <script>
-    // Render samples for ASCII and the F27xx-F33xx PUA blocks in 16-code rows
-    function renderRange(containerId, start, end) {
+    // ASCII・かな・PUA の各ブロックを 16 文字ずつの行で一覧表示する
+
+    // asteain.woff の cmap テーブル（収録コードポイントの一覧表）を直接読んで、
+    // 収録済みコードポイントの Set を返す。全域を持つ format 12 だけ読めば足りる。
+    async function loadCoverage(url) {
+      const buf = await (await fetch(url)).arrayBuffer();
+      const woff = new DataView(buf);
+      let cmapEntry = null;
+      for (let i = 0; i < woff.getUint16(12); i++) {
+        const o = 44 + i * 20; // テーブル一覧は 44 バイト目から 1 件 20 バイト
+        const tag = String.fromCharCode(woff.getUint8(o), woff.getUint8(o + 1), woff.getUint8(o + 2), woff.getUint8(o + 3));
+        if (tag === 'cmap') {
+          cmapEntry = { offset: woff.getUint32(o + 4), compLength: woff.getUint32(o + 8), origLength: woff.getUint32(o + 12) };
+        }
+      }
+      let bytes = new Uint8Array(buf, cmapEntry.offset, cmapEntry.compLength);
+      if (cmapEntry.compLength < cmapEntry.origLength) { // zlib 圧縮されていたら伸長
+        const stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate'));
+        bytes = new Uint8Array(await new Response(stream).arrayBuffer());
+      }
+      const cmap = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+      const covered = new Set();
+      for (let i = 0; i < cmap.getUint16(2); i++) {
+        const sub = cmap.getUint32(8 + i * 8); // サブテーブル一覧は 4 バイト目から 1 件 8 バイト、後半 4 バイトが位置
+        if (cmap.getUint16(sub) !== 12) {
+          continue;
+        }
+        for (let g = 0; g < cmap.getUint32(sub + 12); g++) {
+          const o = sub + 16 + g * 12; // グループ = 開始コードポイント・終了コードポイント・開始グリフ ID
+          for (let cp = cmap.getUint32(o); cp <= cmap.getUint32(o + 4); cp++) {
+            covered.add(cp);
+          }
+        }
+      }
+      return covered;
+    }
+
+    function renderRange(containerId, start, end, covered) {
       const container = document.getElementById(containerId);
       container.style.display = 'flex';
       container.style.flexDirection = 'column';
@@ -72,6 +117,12 @@
           const span = document.createElement('span');
           span.textContent = String.fromCodePoint(cp);
           span.title = 'U+' + cp.toString(16).toUpperCase().padStart(4, '0');
+          if (covered && !covered.has(cp)) {
+            span.textContent = '□';
+            span.style.color = 'gray';
+            span.style.opacity = '0.4';
+            span.title += '（未収録）';
+          }
           span.style.display = 'inline-flex';
           span.style.width = '2em';
           span.style.justifyContent = 'center';
@@ -83,10 +134,17 @@
       }
     }
 
-    renderRange('ascii-sample-list', 0x21, 0x7E);
-    renderRange('pua-sample-list', 0xF2700, 0xF33FF);
+    // 注意: fetch を使うので file:// で直接開くと cmap が読めず、未収録マークが付かない
+    // （一覧表示自体はされる）。ローカル確認は `python -m http.server` などのサーバー経由で。
+    loadCoverage('asteain.woff')
+      .catch(() => null)
+      .then((covered) => {
+        renderRange('ascii-sample-list', 0x21, 0x7E, covered);
+        renderRange('kana-sample-list', 0x3041, 0x30FF, covered);
+        renderRange('pua-sample-list', 0xF2700, 0xF33FF, covered);
+      });
   </script>
-<script src="theme.js"></script>
+  <script src="theme.js"></script>
 </body>
 
 </html>
