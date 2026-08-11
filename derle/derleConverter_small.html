@@ -81,7 +81,7 @@
         const char = raw.toLowerCase();
         const match = latin_derle.find((obj) => obj.latin === char);
         if (match) {
-          resultChar = match.derle;
+          let resultChar = match.derle;
           if (
             resultArray.length > 0 &&
             resultArray[resultArray.length - 1] === resultChar
@@ -90,8 +90,7 @@
           }
           resultArray.push(resultChar);
         } else {
-          resultChar = raw;
-          resultArray.push(resultChar);
+          resultArray.push(raw);
         }
       }
       document.getElementById("textarea").value = resultArray.join("");

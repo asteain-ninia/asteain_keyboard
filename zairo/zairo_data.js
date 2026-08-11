@@ -89,7 +89,7 @@ for (let i = 0; i < 基本字母.length; i++) {
   );
 }
 
-母音 = [
+const 母音 = [
   String.fromCodePoint(994000),
   String.fromCodePoint(994001),
   String.fromCodePoint(994002),
@@ -98,10 +98,10 @@ for (let i = 0; i < 基本字母.length; i++) {
   String.fromCodePoint(994005),
 ];
 
-ウムラウト = String.fromCodePoint(994258);
-ウムラウト長音 = String.fromCodePoint(994265);
+const ウムラウト = String.fromCodePoint(994258);
+const ウムラウト長音 = String.fromCodePoint(994265);
 
-ウムラウト付き字母 = [
+const ウムラウト付き字母 = [
   String.fromCodePoint(994259),
   String.fromCodePoint(994260),
   String.fromCodePoint(994261),
@@ -110,7 +110,7 @@ for (let i = 0; i < 基本字母.length; i++) {
   String.fromCodePoint(994264),
 ];
 
-ウムラウト長音付き字母 = [
+const ウムラウト長音付き字母 = [
   String.fromCodePoint(994266),
   String.fromCodePoint(994267),
   String.fromCodePoint(994268),
@@ -119,7 +119,7 @@ for (let i = 0; i < 基本字母.length; i++) {
   String.fromCodePoint(994271),
 ];
 
-長音付き母音 = [
+const 長音付き母音 = [
   String.fromCodePoint(994225),
   String.fromCodePoint(994226),
   String.fromCodePoint(994227),

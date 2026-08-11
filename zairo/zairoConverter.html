@@ -95,11 +95,9 @@
           const char = textArray[i].toLowerCase();
           const match = latin_zairo.find((obj) => obj.latin === char);
           if (match) {
-            resultChar = match.zairo;
-            resultArray.push(resultChar);
+            resultArray.push(match.zairo);
           } else {
-            resultChar = textArray[i];
-            resultArray.push(resultChar);
+            resultArray.push(textArray[i]);
           }
         }
         document.getElementById("textarea").value = resultArray.join("");
