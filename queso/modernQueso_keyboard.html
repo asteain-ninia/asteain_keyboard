@@ -118,31 +118,13 @@
     </div>
     <script src="queso_data.js"></script>
     <script src="../basic.js"></script>
+    <script src="../compose.js"></script>
     <script>
-      function insertLogic(value1, insertChar, button) {
-        if (アクセント.includes(button.textContent)) {
-          if (母音.includes(value1.substring(value1.length - 2))) {
-            const C = value1.substring(value1.length - 2);
-            const V = button.textContent;
-            const match = combinations.find(
-              (combo) => combo.consonant.includes(C) && combo.vowel === V
-            );
-            if (match) {
-              insertChar = match.char;
-              value1 = value1.slice(0, -2);
-            } else {
-              console.warn(
-                "変換に失敗しました。一致する組み合わせがありません"
-              );
-              insertChar = "";
-            }
-          } else {
-            //母音後以外でアクセントを押しても何も起きない
-            insertChar = "";
-          }
-        }
+      //アクセントは母音の直後でだけ合成される（共通の compose.js から生成）
+      const 合成 = makeComposeInsertLogic([アクセント], [母音], combinations);
 
-        const firstHalf = value1 + insertChar;
+      function insertLogic(value1, insertChar, button) {
+        const firstHalf = 合成(value1, insertChar, button);
 
         if (button.classList.contains("large")) {
           const buttons = document.querySelectorAll(

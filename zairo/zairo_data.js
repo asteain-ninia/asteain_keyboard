@@ -151,7 +151,6 @@ for (let i = 0; i < 母音.length; i++) {
       char: 母音[i],
     },
 
-    //以下なぜかうまくうごかない
     {
       consonant: 長音付き母音[i],
       vowel: ウムラウト,
