@@ -1,3 +1,8 @@
 asteain.afm
 arka/■(参考)にしき的フォントについて.txt
-↑ DMでもらったFBなので一応Gitignoreしてます 
+↑ DMでもらったFBなので一応Gitignoreしてます
+かな取り込みツール/figma_token.txt
+かな取り込みツール/rows_urls.json
+かな取り込みツール/rows.json
+かな取り込みツール/__pycache__/
+グリフsvg/かなもじ/_rows/

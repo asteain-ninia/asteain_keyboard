@@ -33,7 +33,7 @@
     <hr>
   </ul>
 
-  <h1>asteainフォント収録領域サンプル（00020～0007F/03041～030FF/F2700〜F33FF）</h1>
+  <h1>asteainフォント収録領域サンプル</h1>
   <div id="glyph-sample-wrapper"
     style="display: flex; flex-direction: column; font-family: 'asteain'; font-size: 24px;">
     <section>
@@ -59,13 +59,33 @@
       <hr>
     </section>
     <section>
+      <h3>かな拡張 U+031F0 ~ U+031FF</h3>
+      <div id="kana-ext-list" class="glyph-sample-section"></div>
+      <hr>
+    </section>
+    <section>
+      <h3>かな拡張A・B U+1B120 ~ U+1B167（飛び飛び）</h3>
+      <div id="kana-ext-scattered" class="glyph-sample-section"></div>
+      <hr>
+    </section>
+    <section>
+      <h3>和字記号 U+03000 ~ U+0303F</h3>
+      <div id="jp-symbol-list" class="glyph-sample-section"></div>
+      <hr>
+    </section>
+    <section>
+      <h3>全角形 U+0FF01 ~ U+0FF5E</h3>
+      <div id="fullwidth-list" class="glyph-sample-section"></div>
+      <hr>
+    </section>
+    <section>
       <h3>PUA U+F2700 ~ U+F33FF</h3>
       <div id="pua-sample-list" class="glyph-sample-section"></div>
       <hr>
     </section>
   </div>
   <script>
-    // ASCII・かな・PUA の各ブロックを 16 文字ずつの行で一覧表示する
+    // 各ブロックを 16 文字ずつの行で一覧表示する（飛び飛びの領域だけは一覧で並べる）
 
     // asteain.woff の cmap テーブル（収録コードポイントの一覧表）を直接読んで、
     // 収録済みコードポイントの Set を返す。全域を持つ format 12 だけ読めば足りる。
@@ -102,11 +122,41 @@
       return covered;
     }
 
+    // 送り幅 0 の結合文字。単体で置くと直前の升に重なるので、空白を 1 つ添える
+    const COMBINING = new Set([0x3099, 0x309A]);
+
+    // 1 文字ぶんのマス。未収録なら灰色の豆腐に差し替える
+    function makeCell(cp, covered) {
+      const span = document.createElement('span');
+      span.textContent = (COMBINING.has(cp) ? ' ' : '') + String.fromCodePoint(cp);
+      span.title = 'U+' + cp.toString(16).toUpperCase().padStart(4, '0');
+      if (covered && !covered.has(cp)) {
+        span.textContent = '□';
+        span.style.color = 'gray';
+        span.style.opacity = '0.4';
+        span.title += '（未収録）';
+      }
+      span.style.display = 'inline-flex';
+      // 幅と同じだけ高さも決め打ちする。決めないと、豆腐（□）のように
+      // asteain に無い字を代替フォントが描いたときだけ行の高さが変わり、
+      // リッチ表示で枠が付くと升の大きさがばらついて見える。
+      span.style.width = '2em';
+      span.style.height = '2em';
+      span.style.lineHeight = '1';
+      span.style.flex = '0 0 auto';
+      span.style.justifyContent = 'center';
+      span.style.alignItems = 'center';
+      return span;
+    }
+
     function renderRange(containerId, start, end, covered) {
       const container = document.getElementById(containerId);
       container.style.display = 'flex';
       container.style.flexDirection = 'column';
       container.style.gap = '4px';
+      // 升を縮ませない代わりに、狭い画面ではここが横スクロールする
+      // （ページ全体が横に伸びてしまわないように）
+      container.style.overflowX = 'auto';
 
       const adjustedStart = start & ~0xF;
       const adjustedEnd = end | 0xF;
@@ -117,24 +167,31 @@
         row.style.gap = '8px';
 
         for (let offset = 0; offset < 0x10; offset++) {
-          const cp = rowStart + offset;
-          const span = document.createElement('span');
-          span.textContent = String.fromCodePoint(cp);
-          span.title = 'U+' + cp.toString(16).toUpperCase().padStart(4, '0');
-          if (covered && !covered.has(cp)) {
-            span.textContent = '□';
-            span.style.color = 'gray';
-            span.style.opacity = '0.4';
-            span.title += '（未収録）';
-          }
-          span.style.display = 'inline-flex';
-          span.style.width = '2em';
-          span.style.justifyContent = 'center';
-          span.style.alignItems = 'center';
-          row.appendChild(span);
+          row.appendChild(makeCell(rowStart + offset, covered));
         }
 
         container.appendChild(row);
+      }
+    }
+
+    // 割り当てが飛び飛びの領域は、範囲ではなくこの一覧で並べる。
+    // 未定義のコードポイントまで豆腐にすると、未収録の字と見分けが付かないため。
+    // 1B132・1B150〜1B152 はひらがな用なので、ひらがな収録時に点灯する。
+    const KANA_EXT = [
+      0x1B120, 0x1B121, 0x1B122,
+      0x1B132, 0x1B150, 0x1B151, 0x1B152,
+      0x1B155, 0x1B164, 0x1B165, 0x1B166, 0x1B167,
+    ];
+
+    function renderList(containerId, codePoints, covered) {
+      const container = document.getElementById(containerId);
+      container.style.display = 'flex';
+      container.style.flexWrap = 'wrap';
+      container.style.gap = '8px';
+      container.style.overflowX = 'auto';
+
+      for (const cp of codePoints) {
+        container.appendChild(makeCell(cp, covered));
       }
     }
 
@@ -145,6 +202,10 @@
       .then((covered) => {
         renderRange('ascii-sample-list', 0x21, 0x7E, covered);
         renderRange('kana-sample-list', 0x3041, 0x30FF, covered);
+        renderRange('kana-ext-list', 0x31F0, 0x31FF, covered);
+        renderList('kana-ext-scattered', KANA_EXT, covered);
+        renderRange('jp-symbol-list', 0x3000, 0x303F, covered);
+        renderRange('fullwidth-list', 0xFF01, 0xFF5E, covered);
         renderRange('pua-sample-list', 0xF2700, 0xF33FF, covered);
       });
   </script>
