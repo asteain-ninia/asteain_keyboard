@@ -170,32 +170,47 @@ def main():
     MASKS = collect_masks(root)
 
     # ① 最上位のまとまりを拾う (ガイドは名前で捨てる)
+    #    走査は「ラッパー直下」だけに限る。root.iter で全部歩くと、
+    #    記号ガイドの中の行 (名前が「記号4」等 → base_name で「記号」になる) を
+    #    誤ってコンテナ扱いしてしまう (実際に起きかけた)。
+    #    また「記号」「記号_2」のように同名コンテナが複数あってもよい。
+    wrapper = [c for c in root if c.tag == NS + "g"]
+    tops = list(wrapper[0]) if len(wrapper) == 1 else wrapper
     found = {}
-    for el in root.iter(NS + "g"):
-        name = base_name(el)
-        if "ガイド" in name or name not in CONTAINERS:
+    for el in tops:
+        if el.tag != NS + "g":
             continue
-        found.setdefault(CONTAINERS[name], el)
+        name = base_name(el)
+        if "ガイド" in name:
+            continue
+        # 名前は前方一致で見る。「記号１」のように番号付きで置かれることがあるため
+        # (実際にあった。完全一致だと ゛゜・ー の容器を取りこぼす)。
+        key = next((v for k, v in CONTAINERS.items() if name.startswith(k)), None)
+        if key is None:
+            continue
+        found.setdefault(key, []).append(el)
     lacking = [k for k in CONTAINERS.values() if k not in found]
-    print("まとまり:", " / ".join(sorted(found)) + (f"   ★不足: {lacking}" if lacking else ""))
+    counts = " / ".join(f"{k}×{len(v)}" for k, v in sorted(found.items()))
+    print("まとまり:", counts + (f"   ★不足: {lacking}" if lacking else ""))
 
     # ② 行グループごとに黒い図形を集める
     rows, singles = [], []
-    for script, container in found.items():
-        if script == "symbols":
-            for child in container:
-                nm = base_name(child) if child.tag == NS + "g" else fix_name(child.get("id")).rstrip("_0123456789")
-                regs = ink_regions(child)
-                if nm and regs:
-                    singles.append((nm, regs))
-            continue
-        for section_el in container:
-            section = SECTION_ALIAS.get(base_name(section_el))
-            if section is None:
-                print(f"  !! 知らないセクション「{base_name(section_el)}」は飛ばす")
+    for script, containers in found.items():
+        for container in containers:
+            if script == "symbols":
+                for child in container:
+                    nm = base_name(child) if child.tag == NS + "g" else fix_name(child.get("id")).rstrip("_0123456789")
+                    regs = ink_regions(child)
+                    if nm and regs:
+                        singles.append((nm, regs))
                 continue
-            for row_el in section_el:
-                rows.append((script, section, base_name(row_el), ink_regions(row_el)))
+            for section_el in container:
+                section = SECTION_ALIAS.get(base_name(section_el))
+                if section is None:
+                    print(f"  !! 知らないセクション「{base_name(section_el)}」は飛ばす")
+                    continue
+                for row_el in section_el:
+                    rows.append((script, section, base_name(row_el), ink_regions(row_el)))
 
     all_regions = [r for _, _, _, rs in rows for r in rs] + [r for _, rs in singles for r in rs]
     guide = offsets_from_guide(root)

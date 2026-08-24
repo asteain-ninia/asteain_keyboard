@@ -26,6 +26,35 @@ def expected_bbox(ink):
     return (x0 * SCALE, ASCENT - y1 * SCALE, x1 * SCALE, ASCENT - y0 * SCALE)
 
 
+# ── 字送りの規則 (family モード) ────────────────────────
+# 基本は家風「送り = インク幅 + 5」。例外が 2 つ:
+#   小書き仮名 … ベアリングを 2 倍 (計 +10)。定数ベアリングだと、インクが一回り
+#     小さい小書きは送りの比率が 0.69 まで落ち、調査した全書体 (0.75〜1.00、
+#     主流 0.83〜0.91) より詰まってしまうため。+10 で比率 ≈ 0.80 になる。
+#   句読点・括弧 … 半角 (28 単位) の枠。JLREQ の「句読点・括弧類は二分アキを
+#     伴う」に従う。開き括弧はインクを右に寄せ (前アキ)、閉じと句読点は左に寄せる (後アキ)。
+SMALL_KANA = ({0x3041, 0x3043, 0x3045, 0x3047, 0x3049, 0x3063, 0x3083, 0x3085, 0x3087, 0x308E,
+               0x30A1, 0x30A3, 0x30A5, 0x30A7, 0x30A9, 0x30C3, 0x30E3, 0x30E5, 0x30E7, 0x30EE,
+               0x30F5, 0x30F6}
+              | set(range(0x31F0, 0x3200))
+              | {0x1B132, 0x1B150, 0x1B151, 0x1B152, 0x1B155, 0x1B164, 0x1B165, 0x1B166, 0x1B167})
+PUNCT_LEFT = {0x3001, 0x3002, 0x300B, 0x300D, 0x300F, 0x3011, 0x3015, 0x3017,
+              0xFF09, 0xFF3D, 0xFF5D}
+PUNCT_RIGHT = {0x300A, 0x300C, 0x300E, 0x3010, 0x3014, 0x3016,
+               0xFF08, 0xFF3B, 0xFF5B}
+HALF = 28
+
+
+def metrics_for(cp, ink_w):
+    """family モードでの (送り幅, インクの寄せ方) を返す"""
+    if cp in PUNCT_LEFT:
+        return HALF * SCALE, "left"
+    if cp in PUNCT_RIGHT:
+        return HALF * SCALE, "right"
+    if cp in SMALL_KANA:
+        return ink_w + 10 * SCALE, "center"
+    return ink_w + 5 * SCALE, "center"
+
 # 結合用の濁点・半濁点。単独版 (U+309B/309C) の輪郭をそのまま使う。
 COMBINING = {0x3099: 0x309B, 0x309A: 0x309C}
 
@@ -153,11 +182,20 @@ def make_fullwidth_forms(font, done=(), by_uni=None):
         if b[2] <= b[0]:
             continue
         g = font.createChar(full)
-        dx = (KANA_WIDTH - (b[2] - b[0])) / 2 - b[0]
+        # 括弧類は他の和字括弧 (「」〔〕等) と同じく半角枠・前後アキ寄せにする
+        if full in PUNCT_RIGHT:
+            box = HALF * SCALE
+            dx = (box - 2.5 * SCALE) - b[2]
+        elif full in PUNCT_LEFT:
+            box = HALF * SCALE
+            dx = 2.5 * SCALE - b[0]
+        else:
+            box = KANA_WIDTH
+            dx = (box - (b[2] - b[0])) / 2 - b[0]
         how = put_outline(g, src, dup_names, round(dx))
         if how == "複製":
             copied.append(full)
-        g.width = KANA_WIDTH
+        g.width = int(round(box))
         g.vwidth = EM
         made += 1
     print("全角形 U+FF01〜FF5E を %d 字生成 (ASCII への参照・送り %.0f 単位)"
@@ -237,6 +275,58 @@ def make_borrowed_glyphs(font, done=(), by_uni=None):
         g.vwidth = EM
         print("借用 U+%04X ← U+%05X (%s) 送り %.1f 単位 [%s]"
               % (cp, src_cp, src.glyphname, src.width / SCALE, how))
+
+def make_vertical_variants(font, by_uni):
+    """縦書き用の変体 (.vert) を作り、vert / vrt2 の置換に登録する。
+
+    JLREQ (W3C 日本語組版処理の要件) に従う:
+      小書き仮名 … 縦組みでは「流れ方向は中央、左右方向は右寄り」。
+      句読点 、。 … 縦組みでは文字外枠の右上。
+    枠は全角 (56 単位)。横書きの狭い送りのままインクを右に出すと隣の列に
+    はみ出すため (実測済み)、縦書き変体だけ全角枠にする。これは
+    「縦組みの既定は全角送り、詰めは vpal でオプトイン」という OpenType の
+    慣例とも一致する。字形は参照なので実体は増えない。
+    """
+    subtables = []
+    for lk in font.gsub_lookups:
+        info = font.getLookupInfo(lk)
+        if info[2] and info[2][0][0] in ("vert", "vrt2"):
+            subtables += list(font.getLookupSubtables(lk))
+    if not subtables:
+        print("縦書き変体: vert/vrt2 のルックアップが無いので飛ばす")
+        return
+
+    frame = KANA_WIDTH                      # 全角枠 56 単位
+    right = frame - round(2.5 * SCALE)      # 右端はインク右を枠右から 2.5 内側へ
+    v_center = (ASCENT - 410) // 2          # 流れ方向の中央 (em の縦中心) = 614
+    made = 0
+    for cp in sorted(SMALL_KANA | {0x309B, 0x309C} | {0x3001, 0x3002}):
+        g = by_uni.get(cp)
+        if g is None:
+            continue
+        b = g.boundingBox()
+        if b[2] <= b[0]:
+            continue
+        dx = right - b[2]
+        if cp in (0x3001, 0x3002):
+            # 句読点は位置を点対称に写す: 左下 (横組) → 右上 (縦組)
+            dy = (2 * ASCENT - 64 * SCALE - b[1]) - b[3]
+        else:
+            dy = v_center - (b[1] + b[3]) / 2
+        name = g.glyphname + ".vert"
+        v = font.createChar(-1, name)
+        v.clear()
+        v.addReference(g.glyphname, psMat.translate(round(dx), round(dy)))
+        v.width = frame
+        v.vwidth = EM
+        for st in subtables:
+            try:
+                g.removePosSub(st)   # 再ビルドでの重複登録を防ぐ
+            except Exception:
+                pass
+            g.addPosSub(st, name)
+        made += 1
+    print("縦書き変体 %d 字を生成 (JLREQ: 小書き=右寄り・流れ方向中央 / 句読点=右上)" % made)
 
 def write_coverage_js(font, out_dir):
     """収録コードポイントの一覧を font_coverage.js に書き出す。
@@ -320,11 +410,20 @@ def main():
         if mode == "asis":
             g.width = int(item.get("adv", 56) * SCALE)  # 小書きはプロポーショナル、他は全角 1792
         else:
-            # 左右ベアリングを必ず等しくする (横位置は図面ではなくこの規則で決める)
+            # 横位置は図面ではなくこの規則で決める
             b = g.boundingBox()
             ink_w = b[2] - b[0]
-            adv = ink_w + 5 * SCALE if mode == "family" else KANA_WIDTH
-            g.transform(psMat.translate(round((adv - ink_w) / 2 - b[0]), 0))
+            if mode == "family":
+                adv, align = metrics_for(item["cp"], ink_w)
+            else:
+                adv, align = KANA_WIDTH, "center"
+            if align == "left":
+                dx = 2.5 * SCALE - b[0]
+            elif align == "right":
+                dx = (adv - 2.5 * SCALE) - b[2]
+            else:
+                dx = (adv - ink_w) / 2 - b[0]
+            g.transform(psMat.translate(round(dx), 0))
             g.width = int(round(adv))
         g.vwidth = EM
         b = g.boundingBox()
@@ -342,6 +441,7 @@ def main():
     make_fullwidth_forms(font, done, by_uni)
     make_tofu(font, done)
     make_borrowed_glyphs(font, done, by_uni)
+    make_vertical_variants(font, glyphs_by_unicode(font))
 
     os.remove(tmp)
     out_sfd = os.path.join(out_dir, basename + ".sfd")
