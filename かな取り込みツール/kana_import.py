@@ -164,6 +164,68 @@ def make_tofu(font, done=()):
     print("豆腐 U+25A1 と .notdef を生成  送り %.0f 単位" % ((w + sw) / SCALE))
 
 
+# 形が同じなので他の字から借りる字。
+#   〈〉 … デーレ文字の U+F2F8B / U+F2F8C が同形
+#   ゠   … 二重ハイフン。ASCII の = と同形
+BORROWED = {0x3008: 0xF2F8B, 0x3009: 0xF2F8C, 0x30A0: 0x003D}
+
+
+def make_borrowed_glyphs(font, done=()):
+    """既にある同形のグリフを参照して作る。
+
+    字送りも借り元のまま使う。借り元は家風 (送り = インク幅 + 5) で作られているので、
+    そのまま持ってくれば規則も揃う。借り元を描き直せばこちらも追従する。
+    """
+    for cp, src_cp in BORROWED.items():
+        if cp in done:
+            print("借用 U+%04X: 図面から取り込み済みなので自動生成しない" % cp)
+            continue
+        try:
+            src = font[src_cp]
+        except TypeError:
+            print("借用 U+%04X: 借り元 U+%05X が無いので飛ばす" % (cp, src_cp))
+            continue
+        g = font.createChar(cp)
+        g.clear()
+        g.addReference(src.glyphname)
+        g.width = src.width
+        g.vwidth = EM
+        print("借用 U+%04X ← U+%05X (%s) 送り %.1f 単位"
+              % (cp, src_cp, src.glyphname, src.width / SCALE))
+
+def write_coverage_js(font, out_dir):
+    """収録コードポイントの一覧を font_coverage.js に書き出す。
+
+    index.html は本来 asteain.woff の cmap を直接読んで「未収録」を判定するが、
+    **file:// で開くと fetch が使えず判定ごと無効になる** (豆腐も灰色も出ない)。
+    そのときの控えとしてこれを読む。<script src> なら file:// でも読めるため。
+    連続するコードポイントは範囲にまとめて小さくする。
+    """
+    cps = set()
+    for g in font.glyphs():
+        if g.unicode and g.unicode > 0:
+            cps.add(g.unicode)
+        for alt in (g.altuni or ()):
+            if alt[0] > 0:
+                cps.add(alt[0])
+    ranges = []
+    for cp in sorted(cps):
+        if ranges and cp == ranges[-1][1] + 1:
+            ranges[-1][1] = cp
+        else:
+            ranges.append([cp, cp])
+    head = [
+        "// asteain の収録コードポイント一覧。かな取り込みツール/kana_import.py が自動生成。",
+        "// index.html は普段 asteain.woff の cmap を直接読むが、file:// で開くと",
+        "// fetch が使えないので、そのときだけこれを使う。手で編集しないこと。",
+        "window.ASTEAIN_COVERAGE = [%s];" % ",".join("[%d,%d]" % (a, b) for a, b in ranges),
+        "",
+    ]
+    path = os.path.join(out_dir, "font_coverage.js")
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(chr(10).join(head))
+    print("font_coverage.js を生成  %d 字 / %d 範囲" % (len(cps), len(ranges)))
+
 def main():
     sfd_in, svg_dir, out_dir = sys.argv[1], sys.argv[2], sys.argv[3]
     basename = sys.argv[4] if len(sys.argv) > 4 else "test_asteain"
@@ -233,6 +295,7 @@ def main():
     make_ideographic_space(font, done)
     make_fullwidth_forms(font, done)
     make_tofu(font, done)
+    make_borrowed_glyphs(font, done)
 
     os.remove(tmp)
     out_sfd = os.path.join(out_dir, basename + ".sfd")
@@ -241,6 +304,7 @@ def main():
     font.save(out_sfd)
     font.generate(out_ttf)
     font.generate(out_woff)
+    write_coverage_js(font, out_dir)
     print("imported=%d -> %s / .ttf / .woff" % (imported, out_sfd))
 
 

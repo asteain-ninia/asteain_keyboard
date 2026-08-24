@@ -84,6 +84,8 @@
       <hr>
     </section>
   </div>
+  <!-- 収録一覧の控え。file:// で開くと fetch が使えないので、そのときはこれを使う -->
+  <script src="font_coverage.js"></script>
   <script>
     // 各ブロックを 16 文字ずつの行で一覧表示する（飛び飛びの領域だけは一覧で並べる）
 
@@ -195,11 +197,27 @@
       }
     }
 
-    // 注意: fetch を使うので file:// で直接開くと cmap が読めず、未収録マークが付かない
-    // （一覧表示自体はされる）。ローカル確認は `python -m http.server` などのサーバー経由で。
+    // 生成済みの収録一覧 (font_coverage.js) を Set に開く
+    function coverageFromList() {
+      if (!Array.isArray(window.ASTEAIN_COVERAGE)) {
+        return null;
+      }
+      const set = new Set();
+      for (const [lo, hi] of window.ASTEAIN_COVERAGE) {
+        for (let cp = lo; cp <= hi; cp++) {
+          set.add(cp);
+        }
+      }
+      return set;
+    }
+
+    // woff の cmap を直接読むのが本筋（常に現物と一致する）。
+    // ただし file:// で開くと fetch が弾かれるので、そのときは
+    // font_coverage.js の一覧に切り替える（無ければ未収録マークなしで表示だけする）。
     loadCoverage('asteain.woff')
       .catch(() => null)
       .then((covered) => {
+        covered = covered || coverageFromList();
         renderRange('ascii-sample-list', 0x21, 0x7E, covered);
         renderRange('kana-sample-list', 0x3041, 0x30FF, covered);
         renderRange('kana-ext-list', 0x31F0, 0x31FF, covered);
