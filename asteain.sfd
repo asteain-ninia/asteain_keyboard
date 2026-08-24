@@ -25,7 +25,7 @@ OS2Version: 4
 OS2_WeightWidthSlopeOnly: 0
 OS2_UseTypoMetrics: 1
 CreationTime: 1710049745
-ModificationTime: 1787547617
+ModificationTime: 1787550108
 PfmFamily: 33
 TTFWeight: 400
 TTFWidth: 5
@@ -255,7 +255,7 @@ Substitution2: "+fiZm+DBN-2-1" ashogu_i.vert
 Substitution2: "+fiZm+DBN--1" ashogu_i.vert
 EndChar
 
-StartChar: uF2A05
+StartChar: uF2A04
 Encoding: 993796 993796 6
 Width: 160
 GlyphClass: 2
@@ -265,7 +265,7 @@ Fore
 Validated: 1
 EndChar
 
-StartChar: uF2A06
+StartChar: uF2A05
 Encoding: 993797 993797 7
 Width: 1313
 GlyphClass: 2
@@ -291,7 +291,7 @@ EndSplineSet
 Validated: 1
 EndChar
 
-StartChar: uF2A07
+StartChar: uF2A06
 Encoding: 993798 993798 8
 Width: 1376
 GlyphClass: 2
@@ -349,7 +349,7 @@ EndSplineSet
 Validated: 1
 EndChar
 
-StartChar: uF2A08
+StartChar: uF2A07
 Encoding: 993799 993799 9
 Width: 1280
 GlyphClass: 2
@@ -396,7 +396,7 @@ EndSplineSet
 Validated: 1
 EndChar
 
-StartChar: uF2A09
+StartChar: uF2A08
 Encoding: 993800 993800 10
 Width: 1247
 GlyphClass: 2
@@ -445,7 +445,7 @@ EndSplineSet
 Validated: 1
 EndChar
 
-StartChar: uF2A0A
+StartChar: uF2A09
 Encoding: 993801 993801 11
 Width: 1268
 GlyphClass: 2
@@ -483,7 +483,7 @@ EndSplineSet
 Validated: 1
 EndChar
 
-StartChar: uF2A0B
+StartChar: uF2A0A
 Encoding: 993802 993802 12
 Width: 1227
 GlyphClass: 2
@@ -527,7 +527,7 @@ EndSplineSet
 Validated: 1
 EndChar
 
-StartChar: uF2A0C
+StartChar: uF2A0B
 Encoding: 993803 993803 13
 Width: 895
 GlyphClass: 2
@@ -554,7 +554,7 @@ EndSplineSet
 Validated: 1
 EndChar
 
-StartChar: uF2A0D
+StartChar: uF2A0C
 Encoding: 993804 993804 14
 Width: 1122
 GlyphClass: 2
@@ -586,7 +586,7 @@ EndSplineSet
 Validated: 1
 EndChar
 
-StartChar: uF2A0E
+StartChar: uF2A0D
 Encoding: 993805 993805 15
 Width: 1120
 GlyphClass: 2
@@ -635,7 +635,7 @@ EndSplineSet
 Validated: 1
 EndChar
 
-StartChar: uF2A0F
+StartChar: uF2A0E
 Encoding: 993806 993806 16
 Width: 1342
 GlyphClass: 2
@@ -681,7 +681,7 @@ EndSplineSet
 Validated: 1
 EndChar
 
-StartChar: less
+StartChar: uF2A0F
 Encoding: 993807 993807 17
 Width: 895
 GlyphClass: 2
@@ -44809,7 +44809,7 @@ Width: 1792
 Flags: HW
 LayerCount: 2
 Fore
-Refer: 17 993807 N 1 0 0 1 510 0 2
+Refer: 817 60 N 1 0 0 1 510 0 2
 EndChar
 
 StartChar: uniFF1D

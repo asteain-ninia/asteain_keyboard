@@ -30,7 +30,52 @@ def expected_bbox(ink):
 COMBINING = {0x3099: 0x309B, 0x309A: 0x309C}
 
 
-def make_combining_marks(font, done=()):
+def glyphs_by_unicode(font):
+    """コードポイント → グリフ の対応表を、**グリフ自身の unicode から**作る。
+
+    `font[cp]` (符号位置スロットで引く) は使わないこと。このフォントには
+    **同じ名前のグリフが 2 つある** 箇所があり (`less` が U+003C と U+F2A0F に),
+    スロット引きだと誤った方を掴む。実際 ＜ (U+FF1C) が別の字を参照していた。
+    """
+    m = {}
+    for g in font.glyphs():
+        if g.unicode and g.unicode > 0:
+            m.setdefault(g.unicode, g)
+        for alt in (g.altuni or ()):
+            if alt[0] > 0:
+                m.setdefault(alt[0], g)
+    return m
+
+def duplicated_names(font):
+    """同じ名前を持つグリフが複数ある名前の集合。
+
+    このフォントには `less` が 2 つある (U+003C の正しい ＜ と、U+F2A0F の別字)。
+    参照 (addReference) は**名前で解決される**ので、同名が複数あると狙った方を
+    指せない。そういう字は参照ではなく輪郭の複製で作る。
+    """
+    seen, dup = set(), set()
+    for g in font.glyphs():
+        if g.glyphname in seen:
+            dup.add(g.glyphname)
+        seen.add(g.glyphname)
+    return dup
+
+
+def put_outline(dst, src, dup_names, offset=0):
+    """src の字形を dst に置く。名前が一意なら参照、重複していれば輪郭を複製する。"""
+    dst.clear()
+    if src.glyphname in dup_names:
+        dst.foreground = src.foreground.dup()
+        if offset:
+            dst.transform(psMat.translate(offset, 0))
+        return "複製"
+    if offset:
+        dst.addReference(src.glyphname, psMat.translate(offset, 0))
+    else:
+        dst.addReference(src.glyphname)
+    return "参照"
+
+def make_combining_marks(font, done=(), by_uni=None):
     """U+3099 / U+309A を、単独版から「送り幅 0 で直前の字に重なる」グリフとして作る。
 
     横位置は、実際に描かれた合成字から逆算した:
@@ -43,9 +88,8 @@ def make_combining_marks(font, done=()):
         if cp in done:
             print("結合用 U+%04X: 図面から取り込み済みなので自動生成しない" % cp)
             continue
-        try:
-            src = font[src_cp]
-        except TypeError:
+        src = (by_uni or glyphs_by_unicode(font)).get(src_cp)
+        if src is None:
             print("結合用 U+%04X: 元になる U+%04X が無いので飛ばす" % (cp, src_cp))
             continue
         g = font.createChar(cp)
@@ -83,7 +127,7 @@ def make_ideographic_space(font, done=()):
     print("全角スペース U+3000 を生成  送り %.0f 単位 (輪郭なし)" % (KANA_WIDTH / SCALE))
 
 
-def make_fullwidth_forms(font, done=()):
+def make_fullwidth_forms(font, done=(), by_uni=None):
     """全角形 (U+FF01〜FF5E) を ASCII (U+0021〜007E) から作る。
 
     **字形は参照 (リファレンス) で共有する。** 実体は ASCII 側の 1 つだけなので、
@@ -94,30 +138,33 @@ def make_fullwidth_forms(font, done=()):
     違うから**の対処。このフォントは実測でラテンの括弧もかなと同じ縦の帯
     (y 1〜51) に載っているので、その必要がない。
     """
-    made, skipped = 0, []
+    by_uni = by_uni or glyphs_by_unicode(font)
+    dup_names = duplicated_names(font)
+    made, skipped, copied = 0, [], []
     for cp in range(0x21, 0x7F):
         full = cp + 0xFEE0  # ASCII → 全角形 のオフセット
         if full in done:
             skipped.append(full)
             continue
-        try:
-            src = font[cp]
-        except TypeError:
-            continue
-        if src.isWorthOutputting() is False:
+        src = by_uni.get(cp)
+        if src is None or src.isWorthOutputting() is False:
             continue
         b = src.boundingBox()
         if b[2] <= b[0]:
             continue
         g = font.createChar(full)
-        g.clear()
         dx = (KANA_WIDTH - (b[2] - b[0])) / 2 - b[0]
-        g.addReference(src.glyphname, psMat.translate(round(dx), 0))
+        how = put_outline(g, src, dup_names, round(dx))
+        if how == "複製":
+            copied.append(full)
         g.width = KANA_WIDTH
         g.vwidth = EM
         made += 1
     print("全角形 U+FF01〜FF5E を %d 字生成 (ASCII への参照・送り %.0f 単位)"
           % (made, KANA_WIDTH / SCALE))
+    if copied:
+        print("  うち %s は借り元の名前が重複しているので、参照ではなく輪郭を複製した"
+              % " ".join("U+%04X" % c for c in copied))
     if skipped:
         print("  ただし %s は図面から取り込み済みなので自動生成しない"
               % " ".join("U+%04X" % c for c in skipped))
@@ -170,7 +217,7 @@ def make_tofu(font, done=()):
 BORROWED = {0x3008: 0xF2F8B, 0x3009: 0xF2F8C, 0x30A0: 0x003D}
 
 
-def make_borrowed_glyphs(font, done=()):
+def make_borrowed_glyphs(font, done=(), by_uni=None):
     """既にある同形のグリフを参照して作る。
 
     字送りも借り元のまま使う。借り元は家風 (送り = インク幅 + 5) で作られているので、
@@ -180,18 +227,16 @@ def make_borrowed_glyphs(font, done=()):
         if cp in done:
             print("借用 U+%04X: 図面から取り込み済みなので自動生成しない" % cp)
             continue
-        try:
-            src = font[src_cp]
-        except TypeError:
+        src = (by_uni or glyphs_by_unicode(font)).get(src_cp)
+        if src is None:
             print("借用 U+%04X: 借り元 U+%05X が無いので飛ばす" % (cp, src_cp))
             continue
         g = font.createChar(cp)
-        g.clear()
-        g.addReference(src.glyphname)
+        how = put_outline(g, src, duplicated_names(font))
         g.width = src.width
         g.vwidth = EM
-        print("借用 U+%04X ← U+%05X (%s) 送り %.1f 単位"
-              % (cp, src_cp, src.glyphname, src.width / SCALE))
+        print("借用 U+%04X ← U+%05X (%s) 送り %.1f 単位 [%s]"
+              % (cp, src_cp, src.glyphname, src.width / SCALE, how))
 
 def write_coverage_js(font, out_dir):
     """収録コードポイントの一覧を font_coverage.js に書き出す。
@@ -291,11 +336,12 @@ def main():
         imported += 1
         done.add(item["cp"])
 
-    make_combining_marks(font, done)
+    by_uni = glyphs_by_unicode(font)
+    make_combining_marks(font, done, by_uni)
     make_ideographic_space(font, done)
-    make_fullwidth_forms(font, done)
+    make_fullwidth_forms(font, done, by_uni)
     make_tofu(font, done)
-    make_borrowed_glyphs(font, done)
+    make_borrowed_glyphs(font, done, by_uni)
 
     os.remove(tmp)
     out_sfd = os.path.join(out_dir, basename + ".sfd")
