@@ -175,6 +175,8 @@ def make_fullwidth_forms(font, done=(), by_uni=None):
         if full in done:
             skipped.append(full)
             continue
+        if full in BORROWED:
+            continue  # 借用で作る字 (～ など) はそちらに任せる
         src = by_uni.get(cp)
         if src is None or src.isWorthOutputting() is False:
             continue
@@ -252,7 +254,9 @@ def make_tofu(font, done=()):
 # 形が同じなので他の字から借りる字。
 #   〈〉 … デーレ文字の U+F2F8B / U+F2F8C が同形
 #   ゠   … 二重ハイフン。ASCII の = と同形
-BORROWED = {0x3008: 0xF2F8B, 0x3009: 0xF2F8C, 0x30A0: 0x003D}
+#   ～   … 全角チルダ (U+FF5E)。日本語入力で「〜」と打つと大抵こちらが入るので、
+#          ASCII ~ の全角化ではなく、図面の波ダッシュ 〜 (U+301C) を使う
+BORROWED = {0x3008: 0xF2F8B, 0x3009: 0xF2F8C, 0x30A0: 0x003D, 0xFF5E: 0x301C}
 
 
 def make_borrowed_glyphs(font, done=(), by_uni=None):
