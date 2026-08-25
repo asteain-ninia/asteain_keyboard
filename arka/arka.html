@@ -412,7 +412,13 @@
       function setState(state) {
         body.classList.toggle('font-asteain', state === 'asteain');
         body.classList.toggle('font-nishiki', state === 'nishiki-teki');
-        if (btn) btn.textContent = 'フォント: ' + (state === 'asteain' ? 'asteain' : 'にしき的（要フォントインストール）');
+        if (btn) {
+          if (state === 'asteain') {
+            btn.textContent = 'フォント: asteain';
+          } else {
+            btn.textContent = 'フォント: にしき的（要フォントインストール）';
+          }
+        }
         try { localStorage.setItem('arka-font', state); } catch (_) { }
       }
 
@@ -421,11 +427,18 @@
       }
 
       const saved = getSaved();
-      setState(saved === 'nishiki-teki' ? 'nishiki-teki' : 'asteain');
+      if (saved === 'nishiki-teki') {
+        setState('nishiki-teki');
+      } else {
+        setState('asteain');
+      }
 
       if (btn) {
         btn.addEventListener('click', () => {
-          const next = body.classList.contains('font-asteain') ? 'nishiki-teki' : 'asteain';
+          let next = 'asteain';
+          if (body.classList.contains('font-asteain')) {
+            next = 'nishiki-teki';
+          }
           setState(next);
         });
       }

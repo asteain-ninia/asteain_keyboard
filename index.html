@@ -130,7 +130,11 @@
     // 1 文字ぶんのマス。未収録なら灰色の豆腐に差し替える
     function makeCell(cp, covered) {
       const span = document.createElement('span');
-      span.textContent = (COMBINING.has(cp) ? ' ' : '') + String.fromCodePoint(cp);
+      let prefix = '';
+      if (COMBINING.has(cp)) {
+        prefix = ' ';
+      }
+      span.textContent = prefix + String.fromCodePoint(cp);
       span.title = 'U+' + cp.toString(16).toUpperCase().padStart(4, '0');
       if (covered && !covered.has(cp)) {
         span.textContent = '□';

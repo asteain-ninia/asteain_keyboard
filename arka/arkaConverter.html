@@ -350,7 +350,11 @@
     function toggleSymbolConversion() {
       convertSymbols = !convertSymbols;
       const button = document.getElementById("toggleSymbols");
-      button.textContent = convertSymbols ? "記号変換: オン" : "記号変換: オフ";
+      if (convertSymbols) {
+        button.textContent = "記号変換: オン";
+      } else {
+        button.textContent = "記号変換: オフ";
+      }
     }
 
     function convert() {
@@ -381,7 +385,11 @@
         const match = latin_hacm.find((obj) => obj.latin === raw);
         if (match) {
           const shouldConvert = convertSymbols || !OPTIONAL_PUNCTUATION.has(raw);
-          resultArray.push(shouldConvert ? match.hacm : raw);
+          if (shouldConvert) {
+            resultArray.push(match.hacm);
+          } else {
+            resultArray.push(raw);
+          }
         } else {
           resultArray.push(raw);
         }

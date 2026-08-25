@@ -74,7 +74,11 @@
         const raw = textArray[i];
         // '.' をデーレ語の前/後ピリオドに変換（arka/arkaconverter と同様のトグル方式）
         if (raw === ".") {
-          resultArray.push(periodOpenNext ? DERLE_PERIOD_FRONT : DERLE_PERIOD_BACK);
+          if (periodOpenNext) {
+            resultArray.push(DERLE_PERIOD_FRONT);
+          } else {
+            resultArray.push(DERLE_PERIOD_BACK);
+          }
           periodOpenNext = !periodOpenNext;
           continue;
         }

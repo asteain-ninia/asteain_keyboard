@@ -3,7 +3,12 @@
   const root = document.documentElement;
 
   const isValidTheme = (value) => value === "classic" || value === "rich";
-  const normalizeTheme = (value) => (isValidTheme(value) ? value : "classic");
+  const normalizeTheme = (value) => {
+    if (isValidTheme(value)) {
+      return value;
+    }
+    return "classic";
+  };
 
   const readStoredTheme = () => {
     try {
@@ -33,7 +38,11 @@
     }
     const isRich = root.dataset.theme === "rich";
     button.setAttribute("aria-pressed", String(isRich));
-    button.textContent = isRich ? "標準表示に切替" : "リッチ表示に切替";
+    if (isRich) {
+      button.textContent = "標準表示に切替";
+    } else {
+      button.textContent = "リッチ表示に切替";
+    }
   };
 
   const persistTheme = (value) => {
@@ -89,7 +98,10 @@
   button.setAttribute("aria-live", "polite");
 
   button.addEventListener("click", () => {
-    const nextTheme = root.dataset.theme === "rich" ? "classic" : "rich";
+    let nextTheme = "rich";
+    if (root.dataset.theme === "rich") {
+      nextTheme = "classic";
+    }
     setTheme(nextTheme, true);
     broadcastTheme(nextTheme);
   });

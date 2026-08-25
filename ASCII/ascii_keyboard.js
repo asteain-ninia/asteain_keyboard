@@ -29,10 +29,15 @@ function updateKeyLabels() {
     }
     let next = normal;
     if (isLetterKey(key)) {
-      const upper = capsOn ? !shiftOn : shiftOn;
-      next = upper ? shifted : normal;
-    } else {
-      next = shiftOn ? shifted : normal;
+      let upper = shiftOn;
+      if (capsOn) {
+        upper = !shiftOn;
+      }
+      if (upper) {
+        next = shifted;
+      }
+    } else if (shiftOn) {
+      next = shifted;
     }
     if (typeof next === "string") {
       key.textContent = next;

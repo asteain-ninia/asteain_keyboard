@@ -35,7 +35,10 @@ function makeDerleInsertLogic(字母開始, 発音線切替字, 繰り返し記�
     while (back >= 2 && value1.codePointAt(back - 2) == 繰り返し記号) {
       back -= 2;
     }
-    const baseCode = back >= 2 ? value1.codePointAt(back - 2) : 0;
+    let baseCode = 0;
+    if (back >= 2) {
+      baseCode = value1.codePointAt(back - 2);
+    }
     if (baseCode >= 字母開始 && baseCode <= 字母末尾 && baseCode == insertChar.codePointAt()) {
       insertChar = String.fromCodePoint(繰り返し記号);
     }

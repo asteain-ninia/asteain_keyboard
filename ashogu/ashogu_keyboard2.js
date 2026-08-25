@@ -39,7 +39,10 @@
   const readPreference = () => {
     try {
       const stored = localStorage.getItem(STORAGE_KEY);
-      return MODES.includes(stored) ? stored : "auto";
+      if (MODES.includes(stored)) {
+        return stored;
+      }
+      return "auto";
     } catch (error) {
       return "auto";
     }
@@ -69,8 +72,15 @@
     return window.innerWidth <= 620;
   };
 
-  const resolveMode = () =>
-    preference === "auto" ? (detectMobile() ? "mobile" : "desktop") : preference;
+  const resolveMode = () => {
+    if (preference !== "auto") {
+      return preference;
+    }
+    if (detectMobile()) {
+      return "mobile";
+    }
+    return "desktop";
+  };
 
   /*
     OSキーボードを出さずにキャレットを見せるための仕掛け。
@@ -222,7 +232,10 @@
       return 0;
     }
     const code = value.charCodeAt(pos - 1);
-    return code >= 0xdc00 && code <= 0xdfff && pos >= 2 ? pos - 2 : pos - 1;
+    if (code >= 0xdc00 && code <= 0xdfff && pos >= 2) {
+      return pos - 2;
+    }
+    return pos - 1;
   };
 
   const nextIndex = (value, pos) => {
@@ -230,16 +243,20 @@
       return value.length;
     }
     const code = value.charCodeAt(pos);
-    return code >= 0xd800 && code <= 0xdbff && pos + 2 <= value.length
-      ? pos + 2
-      : pos + 1;
+    if (code >= 0xd800 && code <= 0xdbff && pos + 2 <= value.length) {
+      return pos + 2;
+    }
+    return pos + 1;
   };
 
   const lineStartOf = (value, pos) => value.lastIndexOf("\n", pos - 1) + 1;
 
   const lineEndOf = (value, pos) => {
     const found = value.indexOf("\n", pos);
-    return found === -1 ? value.length : found;
+    if (found === -1) {
+      return value.length;
+    }
+    return found;
   };
 
   const columnOf = (value, start, pos) => {
@@ -284,17 +301,24 @@
     const value = textarea.value;
     const backward = direction === "left" || direction === "up";
     // 範囲選択中はまず端に畳む
-    let pos = backward ? textarea.selectionStart : textarea.selectionEnd;
+    let pos = textarea.selectionEnd;
+    if (backward) {
+      pos = textarea.selectionStart;
+    }
     if (direction === "left") {
-      pos = textarea.selectionStart === textarea.selectionEnd
-        ? prevIndex(value, pos)
-        : pos;
+      if (textarea.selectionStart === textarea.selectionEnd) {
+        pos = prevIndex(value, pos);
+      }
     } else if (direction === "right") {
-      pos = textarea.selectionStart === textarea.selectionEnd
-        ? nextIndex(value, pos)
-        : pos;
+      if (textarea.selectionStart === textarea.selectionEnd) {
+        pos = nextIndex(value, pos);
+      }
     } else {
-      pos = verticalIndex(value, pos, direction === "up" ? -1 : 1);
+      let step = 1;
+      if (direction === "up") {
+        step = -1;
+      }
+      pos = verticalIndex(value, pos, step);
     }
     // フォーカスを戻さないとキャレットが描画されず、位置が見えない
     focusTextareaSafely();
@@ -344,7 +368,11 @@
     }
     numpad.classList.toggle("is-open", open);
     if (root.dataset.kbMode === "mobile") {
-      numpad.setAttribute("aria-hidden", open ? "false" : "true");
+      if (open) {
+        numpad.setAttribute("aria-hidden", "false");
+      } else {
+        numpad.setAttribute("aria-hidden", "true");
+      }
     } else {
       numpad.setAttribute("aria-hidden", "false");
     }
@@ -455,7 +483,11 @@
   const applyMode = () => {
     const mode = resolveMode();
     root.dataset.kbMode = mode;
-    root.dataset.kbInput = mode === "mobile" ? "custom" : "native";
+    if (mode === "mobile") {
+      root.dataset.kbInput = "custom";
+    } else {
+      root.dataset.kbInput = "native";
+    }
     suppressNativeKeyboard(mode === "mobile");
     if (mode !== "mobile") {
       setNumpad(false);
