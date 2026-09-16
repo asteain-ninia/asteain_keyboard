@@ -14,7 +14,8 @@ Figma  ── SVG 書き出し (「Include "id" attribute」を有効に) ──
   │  ② kana_import.py       … ffpython で sfd に取り込み (×32 で em2048 へ、字送りは規則で決定)
   ▼
 asteain.sfd / asteain.ttf / asteain.woff
-  │  ③ verify_font.py / bearings.py / coverage.py … 検証・左右ベアリング実測・未収録一覧
+  │  ③ verify_font.py / bearings.py / coverage.py / verify_input_coverage.py
+  │       … 検証・左右ベアリング実測・未収録一覧・画面キーボードの入力漏れ
 ```
 
 REST API を使う版 (ルートA) と、名前が落ちる Copy as SVG 版 (ルートB) も残してある。
@@ -56,7 +57,12 @@ ffpython kana_import.py ../asteain.sfd "../グリフsvg/かなもじ" .. asteain
 # ⑤ 検証
 ffpython verify_font.py ../asteain.ttf
 python bearings.py ../asteain.ttf   # 左右対称・はみ出しの実測
+python verify_input_coverage.py ../asteain.ttf  # QWERTY・50音から入力できない収録字
 ```
+
+`verify_input_coverage.py` はフォントの cmap と画面キーボードの全モードを比較し、
+入力経路のない文字があれば終了コード 1 を返す。概要だけ見る場合は
+`--summary-only` を付ける。`々` は漢字扱いとして検査対象から除外する。
 
 ③は `_rows/` にダウンロード済みの SVG があるとそれを使い回すので、
 **Figma を更新したら出力先の `_rows/` を消してから実行する**。
