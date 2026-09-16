@@ -120,7 +120,7 @@
       <span class="flexibleSpacer" style="--w: 20"> </span>
       <button onclick="Shift()" class="functionButton tall-key">Shift</button>
       <button class="button arka">&#xF2700;</button>
-      <button onclick="enter()" class="functionButton tall-key">Enter</button>
+      <button class="button functionButton tall-key" value="&#10;">Enter</button>
       <span class="flexibleSpacer" style="--w: 20"> </span>
       <button class="button arka">&#xF2745;</button>
       <button class="button arka">&#xF2746;</button>
@@ -164,7 +164,7 @@
       <button class="button arka vowel">&#xF2731;</button>
       <button class="button arka vowel">&#xF2734;</button>
       <span class="flexibleSpacer" style="--w: 20"> </span>
-      <button onclick="space()" class="functionButton" style="--w: 120">space</button>
+      <button class="button functionButton" style="--w: 120" value="&#32;">space</button>
       <span class="flexibleSpacer" style="--w: 20"> </span>
       <button class="button arka intonation">&#xF2760;</button>
       <button class="button arka intonation">&#xF2761;</button>
@@ -309,7 +309,7 @@
   <script src="../basic.js"></script>
   <script>
     function insertLogic(value1, insertChar, button) {
-      return value1 + (button.textContent || insertChar);
+      return value1 + insertChar;
     }
     function Shift() {
       const buttons = document.querySelectorAll(".button.arka.letter");

@@ -55,14 +55,4 @@ function CapsLock() {
   updateKeyLabels();
 }
 
-function tab() {
-  const textArea = document.getElementById("textarea");
-  const value1 = textArea.value.substr(0, textArea.selectionStart);
-  const value2 = textArea.value.substr(textArea.selectionEnd);
-
-  textArea.value = value1 + "\t" + value2;
-  textArea.selectionStart = textArea.selectionEnd = value1.length + 1;
-  textArea.focus();
-}
-
 updateKeyLabels();

@@ -26,10 +26,18 @@ textarea.addEventListener("blur", () => {
 
 buttons.forEach((button) => {
   button.addEventListener("click", () => {
+    // 入力文字はキーの刻印 (textContent) そのもの。刻印と入力文字が違うキー
+    // (space・Enter・Tab) だけ value 属性に入力文字を持つ。
+    // ここで読んだ文字を insertLogic に渡す。insertLogic の中で刻印を読み直さないこと
+    // (かな文字の space は insertLogic 中の Shift 消費で value が描き直されるため)。
     let insertChar = button.textContent;
+    if (button.value) {
+      insertChar = button.value;
+    }
     const value1 = textarea.value.substr(0, textarea.selectionStart);
     const value2 = textarea.value.substr(textarea.selectionEnd);
 
+    // insertLogic はページ側が必ず定義する契約 (value1 + 挿入文字列を返す)。
     const firstHalf = insertLogic(value1, insertChar, button);
     textarea.value = firstHalf + value2;
 
@@ -40,52 +48,36 @@ buttons.forEach((button) => {
 
 function toggleTextOrientation() {
   const textArea = document.getElementById("textarea");
-  textArea.classList.toggle("vertical-text");
+  const vertical = textArea.classList.toggle("vertical-text");
   const button = document.getElementById("toggleVrtAndHoriz");
-  if (button.textContent === "横書き切り替え") {
-    button.textContent = "縦書き切り替え";
-  } else {
+  if (vertical) {
     button.textContent = "横書き切り替え";
+  } else {
+    button.textContent = "縦書き切り替え";
   }
 }
 
-function space() {
-  let value1 = textarea.value.substr(0, textarea.selectionStart);
+// キャレット位置に文字列を挿入する (ボタン経由でない挿入用。かな文字の単独濁点など)。
+function insertTextAtCaret(text) {
+  const value1 = textarea.value.substr(0, textarea.selectionStart);
   const value2 = textarea.value.substr(textarea.selectionEnd);
-
-  textarea.value = value1 + " " + value2;
-
-  textarea.selectionStart = textarea.selectionEnd = value1.length + 1;
+  textarea.value = value1 + text + value2;
+  textarea.selectionStart = textarea.selectionEnd = value1.length + text.length;
   refocusTextarea();
 }
 
 function backspace() {
-  let value1 = textarea.value.substr(0, textarea.selectionStart);
+  const value1 = textarea.value.substr(0, textarea.selectionStart);
   const value2 = textarea.value.substr(textarea.selectionEnd);
 
-  if (
-    (55296 <= value1.codePointAt(value1.length - 1) &&
-      value1.codePointAt(value1.length - 1) <= 56319) ||
-    (56320 <= value1.codePointAt(value1.length - 1) &&
-      value1.codePointAt(value1.length - 1) <= 57343)
-    // サロゲートペアを使う文字かどうかを判定
-  ) {
-    textarea.value = value1.slice(0, -2) + value2;
-    textarea.selectionStart = textarea.selectionEnd = value1.length - 2;
-  } else {
-    textarea.value = value1.slice(0, -1) + value2;
-    textarea.selectionStart = textarea.selectionEnd = value1.length - 1;
+  // 末尾がサロゲートペアを使う文字なら2単位まとめて消す。
+  const code = value1.charCodeAt(value1.length - 1);
+  let dropLength = 1;
+  if (code >= 0xd800 && code <= 0xdfff) {
+    dropLength = 2;
   }
 
-  refocusTextarea();
-}
-
-function enter() {
-  let value1 = textarea.value.substr(0, textarea.selectionStart);
-  const value2 = textarea.value.substr(textarea.selectionEnd);
-
-  textarea.value = value1 + "\n" + value2;
-
-  textarea.selectionStart = textarea.selectionEnd = value1.length + 1;
+  textarea.value = value1.slice(0, -dropLength) + value2;
+  textarea.selectionStart = textarea.selectionEnd = value1.length - dropLength;
   refocusTextarea();
 }

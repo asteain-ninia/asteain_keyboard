@@ -7,9 +7,8 @@
 function makeDerleInsertLogic(字母開始, 発音線切替字, 繰り返し記号) {
   const 字母末尾 = 字母開始 + 51;
   return function insertLogic(value1, insertChar, button) {
-    insertChar = button.textContent;
     const charCode = value1.substring(value1.length - 2).codePointAt();
-    if (button.textContent == "󲿁") {
+    if (insertChar == "󲿁") {
       //発音線
       if (charCode >= 字母開始 && charCode <= 字母開始 + 25) {
         insertChar = String.fromCodePoint(charCode + 26);

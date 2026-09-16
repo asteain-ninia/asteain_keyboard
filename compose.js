@@ -6,7 +6,7 @@
 //  組み合わせ表: { consonant, vowel, char } の配列
 function makeComposeInsertLogic(トリガー群, 基底群, 組み合わせ表) {
   return function insertLogic(value1, insertChar, button) {
-    const 押下 = button.textContent;
+    const 押下 = insertChar;
     if (トリガー群.some((t) => t.includes(押下))) {
       const C = value1.substring(value1.length - 2);
       if (基底群.some((g) => g.includes(C))) {
