@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>asteain式人工言語統一フォント入力機</title>
+  <link rel="stylesheet" href="../style.css" />
+</head>
+
+<body>
+  <textarea id="textarea"></textarea>
+  <!-- 文字キーは素の .button の列。ラベルと Shift 変種は romaji_keyboard.js の
+       JIS配列 が行位置から描くので、行の並びが JS との契約になる。
+       挿入文字はラベルそのもの。 -->
+  <div class="ascii-keyboard">
+    <div class="keyboardRow">
+      <button id="imeToggle" class="functionButton" style="font-size: 12px" onclick="toggleIME()">IMEを<br />Offに</button>
+      <button class="button">1</button>
+      <button class="button">2</button>
+      <button class="button">3</button>
+      <button class="button">4</button>
+      <button class="button">5</button>
+      <button class="button">6</button>
+      <button class="button">7</button>
+      <button class="button">8</button>
+      <button class="button">9</button>
+      <button class="button">0</button>
+      <button class="button">-</button>
+      <button class="button">^</button>
+      <button class="button">¥</button>
+      <button class="functionButton" style="--w: 60" onclick="backspace()">Back<br />Space</button>
+      <span class="flexibleSpacer" style="--w: 20"> </span>
+      <button id="insertKey" class="functionButton" style="font-size: 11px" onclick="toggleInsertMode()">Insert</button>
+      <button class="functionButton" style="font-size: 11px" onclick="moveHome()">Home</button>
+      <button class="functionButton" style="font-size: 11px" onclick="pageMove('up')">Page<br />Up</button>
+    </div>
+    <div class="keyboardRow">
+      <button class="button functionButton" style="--w: 60" value="&#9;">Tab</button>
+      <button class="button">q</button>
+      <button class="button">w</button>
+      <button class="button">e</button>
+      <button class="button">r</button>
+      <button class="button">t</button>
+      <button class="button">y</button>
+      <button class="button">u</button>
+      <button class="button">i</button>
+      <button class="button">o</button>
+      <button class="button">p</button>
+      <button class="button">@</button>
+      <button class="button">[</button>
+      <button class="button functionButton" style="--w: 80" value="&#10;">Enter</button>
+      <span class="flexibleSpacer" style="--w: 20"> </span>
+      <button class="functionButton" style="font-size: 11px" onclick="deleteForward()">Delete</button>
+      <button class="functionButton" style="font-size: 11px" onclick="moveEnd()">End</button>
+      <button class="functionButton" style="font-size: 11px" onclick="pageMove('down')">Page<br />Down</button>
+    </div>
+    <div class="keyboardRow">
+      <button id="capsLockKey" class="functionButton" style="--w: 70" onclick="CapsLock()">CapsLock</button>
+      <button class="button">a</button>
+      <button class="button">s</button>
+      <button class="button">d</button>
+      <button class="button">f</button>
+      <button class="button">g</button>
+      <button class="button">h</button>
+      <button class="button">j</button>
+      <button class="button">k</button>
+      <button class="button">l</button>
+      <button class="button">;</button>
+      <button class="button">:</button>
+      <button class="button">]</button>
+      <button class="button functionButton" style="--w: 70" value="&#10;">Enter</button>
+      <span class="flexibleSpacer" style="--w: 60"> </span>
+      <button class="functionButton" onclick="moveCaret('up')">↑</button>
+      <span class="flexibleSpacer" style="--w: 40"> </span>
+    </div>
+    <div class="keyboardRow">
+      <button class="functionButton shiftToggleKey" style="--w: 80" onclick="Shift()">Shift</button>
+      <button class="button">z</button>
+      <button class="button">x</button>
+      <button class="button">c</button>
+      <button class="button">v</button>
+      <button class="button">b</button>
+      <button class="button">n</button>
+      <button class="button">m</button>
+      <button class="button">,</button>
+      <button class="button">.</button>
+      <button class="button">/</button>
+      <button class="button">\</button>
+      <button class="functionButton shiftToggleKey" style="--w: 100" onclick="Shift()">Shift</button>
+      <span class="flexibleSpacer" style="--w: 20"> </span>
+      <button class="functionButton" onclick="moveCaret('left')">←</button>
+      <button class="functionButton" onclick="moveCaret('down')">↓</button>
+      <button class="functionButton" onclick="moveCaret('right')">→</button>
+    </div>
+    <div class="keyboardRow">
+      <span class="flexibleSpacer" style="--w: 60"> </span>
+      <button class="button functionButton" style="--w: 240" value="&#32;">space</button>
+      <span class="flexibleSpacer" style="--w: 20"> </span>
+      <button id="kanaModeToggle" class="functionButton" style="--w: 160; font-size: 14px"
+        onclick="toggleKanaMode()">カタカナにする</button>
+      <button id="widthToggle" class="functionButton" style="--w: 130; font-size: 13px" onclick="toggleWidthMode()"
+        disabled>半角ｶﾅにする</button>
+    </div>
+  </div>
+  <script src="kana_data.js"></script>
+  <script src="romaji_keyboard.js"></script>
+  <script src="../keyboard_controls.js"></script>
+  <script src="../basic.js"></script>
+  <script src="../theme.js"></script>
+</body>
+<iframe src="../footer.html" frameborder="0"></iframe>
+
+</html>

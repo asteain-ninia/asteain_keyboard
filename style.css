@@ -59,6 +59,13 @@ textarea {
   font-size: 20px;
 }
 
+.button-container_5 {
+  display: grid;
+  grid-auto-rows: 40px;
+  grid-gap: 5px;
+  grid-template-columns: repeat(5, 40px);
+}
+
 .button-container_6 {
   display: grid;
   grid-auto-rows: 40px;
@@ -73,7 +80,8 @@ textarea {
   grid-template-columns: repeat(11, 40px);
 }
 
-.button {
+.button,
+.voicing-key {
   writing-mode: horizontal-tb;
   font-family: "asteain";
   display: flex;
@@ -83,6 +91,11 @@ textarea {
   /*数値設定の最小値は16*/
   height: 40px;
   font-size: 40px;
+}
+
+/* 濁点キー。直前の字を書き換えるので .button の共通処理には乗せない */
+.voicing-key {
+  cursor: pointer;
 }
 
 .spacer {
@@ -119,6 +132,12 @@ textarea {
 
 .tall-key {
   height: 85px;
+}
+
+/* オン状態のトグルキー（CapsLock等） */
+.key-active {
+  outline: 2px solid currentColor;
+  outline-offset: -3px;
 }
 
 .conversion-table {
@@ -185,6 +204,24 @@ iframe[src$="footer.html"] {
   height: 56px;
   display: block;
   background: transparent;
+}
+
+/* ページ内のピル型トグル（ひらがな/カタカナ切替など） */
+.mode-toggle {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--toggle-border);
+  background: var(--toggle-bg);
+  color: var(--toggle-fg);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--toggle-shadow);
+}
+
+.mode-toggle:focus-visible {
+  outline: 2px solid var(--toggle-ring);
+  outline-offset: 2px;
 }
 
 .theme-toggle {

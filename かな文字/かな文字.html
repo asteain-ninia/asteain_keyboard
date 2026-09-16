@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>asteain式人工言語統一フォント入力機</title>
+  <link rel="stylesheet" href="../style.css" />
+  <style>
+    /* ラベルは flex 行の中では幅を持たないので、キー1つ分に固定して列を揃える。 */
+    .labels {
+      width: 40px;
+    }
+
+    /* 現在のモードにかなが無いキー。JS (kana_table.js) が付け外しする状態クラス。 */
+    .kana-unavailable {
+      visibility: hidden;
+    }
+  </style>
+</head>
+
+<body>
+  <textarea id="textarea"></textarea>
+  <!-- 五十音表は列の入れ子ではなく、QWERTY.html と同じ keyboardRow の積み重ねで表現する。
+       各行は「かな10キー + 母音ラベル + 記号5キー分 + ナビ3キー分」で、列は40px単位の幅で揃う。
+       行の幅が不揃いなので中央揃え (.ascii-keyboard) ではなく左揃えで積む。
+       kana_table.js は「2〜6行目の先頭10個の .button = わ〜あ列」「最下段の先頭 = ん」という
+       行位置からラベルを描画する。補助エリアの二変種キー (括弧・ゝ など) は、読込時のラベル
+       (基本形) を kana_table.js の対応表と結んで描く。挿入文字はラベルそのもの。 -->
+  <div
+    style="display: flex; flex-direction: column; align-items: flex-start; max-width: 98vw; overflow-x: auto; padding: 12px 16px 24px; box-sizing: border-box">
+    <div class="keyboardRow">
+      <span class="labels">w</span>
+      <span class="labels">r</span>
+      <span class="labels">y</span>
+      <span class="labels">m</span>
+      <span class="labels">h</span>
+      <span class="labels">n</span>
+      <span class="labels">t</span>
+      <span class="labels">s</span>
+      <span class="labels">k</span>
+      <span class="labels">a</span>
+      <span class="flexibleSpacer" style="--w: 56"> </span>
+      <button class="button">、</button>
+      <button class="button">。</button>
+      <button class="button">・</button>
+      <button class="button" title="Shiftで『">「</button>
+      <button class="button" title="Shiftで』">」</button>
+      <span class="flexibleSpacer" style="--w: 16"> </span>
+      <button id="insertKey" onclick="toggleInsertMode()" class="functionButton" style="font-size: 11px">Insert</button>
+      <button onclick="moveHome()" class="functionButton" style="font-size: 11px">Home</button>
+      <button onclick="pageMove('up')" class="functionButton" style="font-size: 11px">Page<br />Up</button>
+    </div>
+    <div class="keyboardRow">
+      <button class="button">わ</button>
+      <button class="button">ら</button>
+      <button class="button">や</button>
+      <button class="button">ま</button>
+      <button class="button">は</button>
+      <button class="button">な</button>
+      <button class="button">た</button>
+      <button class="button">さ</button>
+      <button class="button">か</button>
+      <button class="button">あ</button>
+      <span class="labels">a</span>
+      <span class="flexibleSpacer" style="--w: 16"> </span>
+      <button class="voicing-key" onclick="濁点適用()" title="直前の字を濁音にする（もう一度で戻す・Shiftで単独の゛）">゛</button>
+      <button class="voicing-key" onclick="半濁点適用()" title="直前の字を半濁音にする（もう一度で戻す・Shiftで単独の゜）">゜</button>
+      <button class="voicing-key" style="font-size: 18px" onclick="小書き適用()"
+        title="直前のかなを小書きにする（もう一度で戻す）">小</button>
+      <button class="button" title="Shiftで《">〈</button>
+      <button class="button" title="Shiftで》">〉</button>
+      <span class="flexibleSpacer" style="--w: 16"> </span>
+      <button onclick="deleteForward()" class="functionButton" style="font-size: 11px">Delete</button>
+      <button onclick="moveEnd()" class="functionButton" style="font-size: 11px">End</button>
+      <button onclick="pageMove('down')" class="functionButton" style="font-size: 11px">Page<br />Down</button>
+    </div>
+    <div class="keyboardRow">
+      <button class="button">ゐ</button>
+      <button class="button">り</button>
+      <button class="button"></button>
+      <button class="button">み</button>
+      <button class="button">ひ</button>
+      <button class="button">に</button>
+      <button class="button">ち</button>
+      <button class="button">し</button>
+      <button class="button">き</button>
+      <button class="button">い</button>
+      <span class="labels">i</span>
+      <span class="flexibleSpacer" style="--w: 16"> </span>
+      <button class="button" title="繰り返し記号（濁点は ゛ キーで）">ゝ</button>
+      <button class="button" title="二重ハイフン">゠</button>
+      <button class="button" title="合字">ゟ</button>
+      <button class="button" title="Shiftで〖">【</button>
+      <button class="button" title="Shiftで〗">】</button>
+    </div>
+    <div class="keyboardRow">
+      <button class="button">𛄟</button>
+      <button class="button">る</button>
+      <button class="button">ゆ</button>
+      <button class="button">む</button>
+      <button class="button">ふ</button>
+      <button class="button">ぬ</button>
+      <button class="button">つ</button>
+      <button class="button">す</button>
+      <button class="button">く</button>
+      <button class="button">う</button>
+      <span class="labels">u</span>
+      <span class="flexibleSpacer" style="--w: 16"> </span>
+      <button class="button">〃</button>
+      <button class="button">〆</button>
+      <button class="button">〜</button>
+      <button class="button">〔</button>
+      <button class="button">〕</button>
+    </div>
+    <div class="keyboardRow">
+      <button class="button">ゑ</button>
+      <button class="button">れ</button>
+      <button class="button">𛀁</button>
+      <button class="button">め</button>
+      <button class="button">へ</button>
+      <button class="button">ね</button>
+      <button class="button">て</button>
+      <button class="button">せ</button>
+      <button class="button">け</button>
+      <button class="button">え</button>
+      <span class="labels">e</span>
+      <span class="flexibleSpacer" style="--w: 16"> </span>
+      <button class="button functionButton" style="--w: 120" value="&#9;">Tab</button>
+      <button class="button">［</button>
+      <button class="button">］</button>
+      <span class="flexibleSpacer" style="--w: 56"> </span>
+      <button onclick="moveCaret('up')" class="functionButton" style="font-size: 16px">↑</button>
+    </div>
+    <div class="keyboardRow">
+      <button class="button">を</button>
+      <button class="button">ろ</button>
+      <button class="button">よ</button>
+      <button class="button">も</button>
+      <button class="button">ほ</button>
+      <button class="button">の</button>
+      <button class="button">と</button>
+      <button class="button">そ</button>
+      <button class="button">こ</button>
+      <button class="button">お</button>
+      <span class="labels">o</span>
+      <span class="flexibleSpacer" style="--w: 16"> </span>
+      <button id="kanaModeToggle" class="functionButton" style="--w: 120" onclick="toggleKanaMode()">カタカナにする</button>
+      <button id="widthToggle" class="functionButton" style="--w: 80" onclick="toggleWidthMode()"
+        disabled>半角ｶﾅにする</button>
+      <span class="flexibleSpacer" style="--w: 16"> </span>
+      <button onclick="moveCaret('left')" class="functionButton" style="font-size: 16px">←</button>
+      <button onclick="moveCaret('down')" class="functionButton" style="font-size: 16px">↓</button>
+      <button onclick="moveCaret('right')" class="functionButton" style="font-size: 16px">→</button>
+    </div>
+    <div class="keyboardRow">
+      <button class="button">ん</button>
+      <button class="button">ー</button>
+      <span class="flexibleSpacer" style="--w: 16"> </span>
+      <button onclick="backspace()" class="functionButton" style="--w: 80">BackSpace</button>
+      <button id="shiftKey" class="functionButton" style="--w: 60" onclick="Shift()"
+        title="一回だけ小書き・二重括弧・範囲選択・空白の全半角反転にする">Shift</button>
+      <button class="button functionButton" style="--w: 180" id="spaceKey" value="&#32;">space</button>
+      <button class="button functionButton" style="--w: 90" value="&#10;">Enter</button>
+      <button id="capsLockKey" class="functionButton" style="--w: 80" onclick="CapsLock()"
+        title="小書き・二重括弧を固定する (Shiftのロック)">CapsLock</button>
+    </div>
+  </div>
+  <script src="kana_data.js"></script>
+  <script src="../syllabary.js"></script>
+  <script src="kana_table.js"></script>
+  <script src="../keyboard_controls.js"></script>
+  <script src="../basic.js"></script>
+  <script src="../theme.js"></script>
+</body>
+<iframe src="../footer.html" frameborder="0"></iframe>
+
+</html>
