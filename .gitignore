@@ -7,3 +7,10 @@ arka/■(参考)にしき的フォントについて.txt
 かな取り込みツール/__pycache__/
 グリフsvg/かなもじ/_rows/
 mailbox/
+
+# Figma 図面の派生物 (figローカル編集/ で再生成できる)
+フォント作成_*.fig
+*.fig.report.json
+ラテン拡張ガイド確認.*
+# Figma ページ丸ごとの書き出し原稿
+グリフsvg/かなもじ/Group 1.svg

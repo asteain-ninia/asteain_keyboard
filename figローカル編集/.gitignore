@@ -1,0 +1,4 @@
+node_modules/
+scratch/
+.python-libs/
+__pycache__/
