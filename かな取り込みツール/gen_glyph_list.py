@@ -24,6 +24,7 @@ GROUPS = [
     ("古字・小書き拡張", lambda cp: 0x1B000 <= cp <= 0x1B16F),
     ("和字記号", lambda cp: 0x3000 <= cp <= 0x303F),
     ("全角形（図面から）", lambda cp: 0xFF00 <= cp <= 0xFF5E),
+    ("半角カタカナ（図面から）", lambda cp: 0xFF61 <= cp <= 0xFF9F),
 ]
 
 

@@ -23,14 +23,19 @@ from pathlib import Path as FsPath
 from fontTools.misc.transform import Transform
 from pathops import PathOp, op
 
-from kana_resolve import CELL_H, CELL_W, SCRIPTS, svg_d
+from kana_resolve import CELL_H, CELL_W, SCRIPTS, HALFWIDTH_SMALL_SINGLES, svg_d
 from kana_svg_route import collect_masks, parse_transform, resolve_element
 
 NS = "{http://www.w3.org/2000/svg}"
 INK = {"black", "#000000", "#000"}
 
 # 最上位のまとまり → どの文字体系か
-CONTAINERS = {"カタカナ": "katakana", "ひらがな": "hiragana", "記号": "symbols"}
+CONTAINERS = {
+    "カタカナ": "katakana",
+    "ひらがな": "hiragana",
+    "半角ｶﾅ": "halfwidth",
+    "記号": "symbols",
+}
 
 # セクション名の揺れを吸収して、対応表の鍵に寄せる
 SECTION_ALIAS = {
@@ -150,6 +155,8 @@ def lookup(script, section, row_name, dan):
     """(文字体系, セクション, 行名, 段) → (ラベル, コードポイント)"""
     tables, _, _, singles = SCRIPTS[script]
     name = ROW_ALIAS.get(row_name, row_name)
+    if script == "halfwidth" and section == "小書き" and name in HALFWIDTH_SMALL_SINGLES:
+        return HALFWIDTH_SMALL_SINGLES[name]
     if name in singles:
         # 小書きセクションの「ン」は小書きのンのこと
         if section == "小書き" and name in ("ン", "ん"):
@@ -188,6 +195,9 @@ def main():
         key = next((v for k, v in CONTAINERS.items() if name.startswith(k)), None)
         if key is None:
             continue
+        # 半角カナのガイドは実字と同名だが、黒い字形を持たないので除外できる。
+        if key == "halfwidth" and not any(ink_regions(child) for child in el):
+            continue
         found.setdefault(key, []).append(el)
     lacking = [k for k in CONTAINERS.values() if k not in found]
     counts = " / ".join(f"{k}×{len(v)}" for k, v in sorted(found.items()))
@@ -203,6 +213,19 @@ def main():
                     regs = ink_regions(child)
                     if nm and regs:
                         singles.append((nm, regs))
+                continue
+            if script == "halfwidth":
+                for row_el in container:
+                    if row_el.tag == NS + "g":
+                        name = base_name(row_el)
+                        section = {"基本半角ｶﾅ": "半角カナ", "小書き半角ｶﾅ": "小書き"}.get(name)
+                        if section:
+                            for child in row_el:
+                                if child.tag == NS + "g":
+                                    rows.append((script, section, base_name(child), ink_regions(child)))
+                        else:
+                            # 旧図面の「半角ｶﾅ → ア行…」も引き続き読める。
+                            rows.append((script, "半角カナ", name, ink_regions(row_el)))
                 continue
             for section_el in container:
                 section = SECTION_ALIAS.get(base_name(section_el))

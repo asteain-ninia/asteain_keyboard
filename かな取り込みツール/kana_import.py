@@ -18,6 +18,7 @@ import psMat
 ASCENT = 1638
 SCALE = 32.0
 KANA_WIDTH = 56 * 32  # 全角固定 1792
+HALF_WIDTH = 28 * 32  # 半角カナ固定 896
 EM = 2048
 
 
@@ -47,6 +48,8 @@ HALF = 28
 
 def metrics_for(cp, ink_w):
     """family モードでの (送り幅, インクの寄せ方) を返す"""
+    if 0xFF61 <= cp <= 0xFF9F:
+        return HALF_WIDTH, "center"
     if cp in PUNCT_LEFT:
         return HALF * SCALE, "left"
     if cp in PUNCT_RIGHT:
@@ -54,6 +57,22 @@ def metrics_for(cp, ink_w):
     if cp in SMALL_KANA:
         return ink_w + 10 * SCALE, "center"
     return ink_w + 5 * SCALE, "center"
+
+
+def fit_punctuation_to_halfwidth(g, cp):
+    """半角枠の括弧が左右ベアリング2.5を割らないよう、横だけ縮める。"""
+    if cp not in PUNCT_LEFT | PUNCT_RIGHT:
+        return False
+    b = g.boundingBox()
+    ink_w = b[2] - b[0]
+    target_ink = HALF_WIDTH - 5 * SCALE
+    if ink_w <= target_ink:
+        return False
+    sx = target_ink / ink_w
+    g.transform(psMat.translate(-b[0], 0))
+    g.transform(psMat.scale(sx, 1.0))
+    g.round()
+    return True
 
 # 結合用の濁点・半濁点。単独版 (U+309B/309C) の輪郭をそのまま使う。
 COMBINING = {0x3099: 0x309B, 0x309A: 0x309C}
@@ -258,6 +277,64 @@ def make_tofu(font, done=()):
 #          ASCII ~ の全角化ではなく、図面の波ダッシュ 〜 (U+301C) を使う
 BORROWED = {0x3008: 0xF2F8B, 0x3009: 0xF2F8C, 0x30A0: 0x003D, 0xFF5E: 0x301C}
 
+# 半角カナのうち、専用図面を要しない記号類。小書き9字 (U+FF67〜FF6F) は
+# 機械縮小せず、専用図面から取り込む。
+HALFWIDTH_AUTO = {
+    0xFF61: 0x3002,  # ｡ ← 。
+    0xFF62: 0x300C,  # ｢ ← 「
+    0xFF63: 0x300D,  # ｣ ← 」
+    0xFF64: 0x3001,  # ､ ← 、
+    0xFF65: 0x30FB,  # ･ ← ・
+    0xFF70: 0x30FC,  # ｰ ← ー
+    0xFF9E: 0x309B,  # ﾞ ← ゛
+    0xFF9F: 0x309C,  # ﾟ ← ゜
+}
+
+
+def make_halfwidth_forms(font, done=(), by_uni=None):
+    """半角カナの記号類を既存字形から作り、送りを28単位に揃える。"""
+    by_uni = by_uni or glyphs_by_unicode(font)
+    dup_names = duplicated_names(font)
+    made = 0
+    for cp, src_cp in HALFWIDTH_AUTO.items():
+        if cp in done:
+            continue
+        src = by_uni.get(src_cp)
+        if src is None or src.isWorthOutputting() is False:
+            print("半角 U+%04X: 借り元 U+%04X が無いので飛ばす" % (cp, src_cp))
+            continue
+
+        g = font.createChar(cp)
+        if cp == 0xFF70:
+            # 長音だけは全角の字面が広すぎるので、線の高さを保ったまま横だけ縮める。
+            g.clear()
+            g.addReference(src.glyphname)
+            g.unlinkRef()
+            b = g.boundingBox()
+            target_ink = HALF_WIDTH - 5 * SCALE
+            sx = min(1.0, target_ink / (b[2] - b[0]))
+            g.transform(psMat.translate(-b[0], 0))
+            g.transform(psMat.scale(sx, 1.0))
+            b = g.boundingBox()
+            g.transform(psMat.translate((HALF_WIDTH - (b[2] - b[0])) / 2 - b[0], 0))
+            how = "横縮小"
+        else:
+            b = src.boundingBox()
+            if cp in (0xFF65, 0xFF9E, 0xFF9F):
+                dx = (HALF_WIDTH - (b[2] - b[0])) / 2 - b[0]
+            else:
+                # 句読点と括弧は元字がすでに28単位枠の前後アキ位置にある。
+                dx = 0
+            how = put_outline(g, src, dup_names, round(dx))
+        g.width = HALF_WIDTH
+        g.vwidth = EM
+        g.round()
+        made += 1
+        print("半角 U+%04X ← U+%04X (%s) 送り %.0f 単位"
+              % (cp, src_cp, how, HALF_WIDTH / SCALE))
+    missing_small = [cp for cp in range(0xFF67, 0xFF70) if cp not in done]
+    print("半角記号類 %d 字を生成 / 小書き専用図面 %d/9 字を収録" % (made, 9 - len(missing_small)))
+
 
 def make_borrowed_glyphs(font, done=(), by_uni=None):
     """既にある同形のグリフを参照して作る。
@@ -415,6 +492,8 @@ def main():
             g.width = int(item.get("adv", 56) * SCALE)  # 小書きはプロポーショナル、他は全角 1792
         else:
             # 横位置は図面ではなくこの規則で決める
+            if mode == "family" and fit_punctuation_to_halfwidth(g, item["cp"]):
+                print("  U+%04X 括弧を28単位枠へ横幅補正" % item["cp"])
             b = g.boundingBox()
             ink_w = b[2] - b[0]
             if mode == "family":
@@ -445,6 +524,7 @@ def main():
     make_fullwidth_forms(font, done, by_uni)
     make_tofu(font, done)
     make_borrowed_glyphs(font, done, by_uni)
+    make_halfwidth_forms(font, done, glyphs_by_unicode(font))
     make_vertical_variants(font, glyphs_by_unicode(font))
 
     os.remove(tmp)

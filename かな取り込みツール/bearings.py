@@ -15,7 +15,10 @@ SCALE = 32.0
 # 既知の代表コードポイント (キーボード/変換器の実装から)
 KNOWN = [
     (0x0020, 0x007E, "ASCII/ラテン"),
+    (0x3000, 0x303F, "和文記号"),
     (0x3041, 0x31FF, "かな (今回追加)"),
+    (0xFF01, 0xFF5E, "全角形"),
+    (0xFF61, 0xFF9F, "半角カナ"),
     (0x1B100, 0x1B16F, "かな拡張 (今回追加)"),
     (0xF2700, 0xF27FF, "幻字"),
     (0xF2800, 0xF2ADF, "アソーグ"),
@@ -89,6 +92,14 @@ def main():
         sym = sum(1 for r in rows if abs(r["lsb"] - r["rsb"]) < 0.6)
         neg = [r for r in rows if r["lsb"] < -0.01 or r["rsb"] < -0.01]
         print(f"   左右対称(±0.5以内): {sym}/{len(rows)} = {100*sym//len(rows)}%   はみ出し(負のベアリング): {len(neg)}字")
+        if gname == "半角カナ":
+            wrong_width = [r for r in rows if abs(r["adv"] - 28.0) > 0.01]
+            status = "PASS" if not wrong_width else "MISMATCH"
+            print(f"   半角送り28.0検査: {len(rows) - len(wrong_width)}/{len(rows)} {status}")
+            if wrong_width:
+                print("   幅違い: " + ", ".join(
+                    f"U+{r['cp']:04X}={r['adv']:.1f}" for r in wrong_width
+                ))
         cl = Counter(round(v * 2) / 2 for v in lsbs).most_common(4)
         cr = Counter(round(v * 2) / 2 for v in rsbs).most_common(4)
         cs = Counter(round(v * 2) / 2 for v in slack).most_common(4)

@@ -82,6 +82,36 @@ SINGLES = {
     "ッ": ("ッ", 0x30C3),
 }
 
+# ── 半角カタカナ ────────────────────────────────────────
+# Figma では全角かなと同じ五十音の行で描いているが、Unicode の半角カナには
+# ヤ行イ・エ段とワ行イ・ウ・エ段が無い。図面は残し、対応の無い5字だけ
+# unmapped SVG として書き出す。
+HALFWIDTH_ROWS = {
+    "ア行": _row(("ｱ", 0xFF71), ("ｲ", 0xFF72), ("ｳ", 0xFF73), ("ｴ", 0xFF74), ("ｵ", 0xFF75)),
+    "カ行": _row(("ｶ", 0xFF76), ("ｷ", 0xFF77), ("ｸ", 0xFF78), ("ｹ", 0xFF79), ("ｺ", 0xFF7A)),
+    "サ行": _row(("ｻ", 0xFF7B), ("ｼ", 0xFF7C), ("ｽ", 0xFF7D), ("ｾ", 0xFF7E), ("ｿ", 0xFF7F)),
+    "タ行": _row(("ﾀ", 0xFF80), ("ﾁ", 0xFF81), ("ﾂ", 0xFF82), ("ﾃ", 0xFF83), ("ﾄ", 0xFF84)),
+    "ナ行": _row(("ﾅ", 0xFF85), ("ﾆ", 0xFF86), ("ﾇ", 0xFF87), ("ﾈ", 0xFF88), ("ﾉ", 0xFF89)),
+    "ハ行": _row(("ﾊ", 0xFF8A), ("ﾋ", 0xFF8B), ("ﾌ", 0xFF8C), ("ﾍ", 0xFF8D), ("ﾎ", 0xFF8E)),
+    "マ行": _row(("ﾏ", 0xFF8F), ("ﾐ", 0xFF90), ("ﾑ", 0xFF91), ("ﾒ", 0xFF92), ("ﾓ", 0xFF93)),
+    "ヤ行": _row(("ﾔ", 0xFF94), ("半角yi", N), ("ﾕ", 0xFF95), ("半角ye", N), ("ﾖ", 0xFF96)),
+    "ラ行": _row(("ﾗ", 0xFF97), ("ﾘ", 0xFF98), ("ﾙ", 0xFF99), ("ﾚ", 0xFF9A), ("ﾛ", 0xFF9B)),
+    "ワ行": _row(("ﾜ", 0xFF9C), ("半角wi", N), ("半角wu", N), ("半角we", N), ("ｦ", 0xFF66)),
+}
+
+HALFWIDTH_SMALL_ROWS = {
+    "ア行": _row("ｧ", "ｨ", "ｩ", "ｪ", "ｫ"),
+    "ァ行": _row("ｧ", "ｨ", "ｩ", "ｪ", "ｫ"),
+    "ヤ行": _row("ｬ", None, "ｭ", None, "ｮ"),
+    "タ行": _row(None, None, "ｯ", None, None),
+}
+HALFWIDTH_SMALL_SINGLES = {
+    name: (char, ord(char))
+    for name, char in (("ヤ", "ｬ"), ("ユ", "ｭ"), ("ヨ", "ｮ"), ("ツ", "ｯ"))
+}
+SECTION_TABLES_HALFWIDTH = {"半角カナ": HALFWIDTH_ROWS, "小書き": HALFWIDTH_SMALL_ROWS}
+SINGLES_HALFWIDTH = {"ン": ("ﾝ", 0xFF9D)}
+
 # ── 記号セクション用 ────────────────────────────────
 # Figma の「記号」グループ直下に置いた図形を、**レイヤー名でそのまま**引く。
 # 名前は字そのもの (「 や 。 など) にしておけば、描いた時点で拾える。
@@ -237,6 +267,7 @@ SINGLES_HIRA.update(SYMBOLS)
 SCRIPTS = {
     "katakana": (SECTION_TABLES, COL_TO_ROW, EXTRA_CELLS, SINGLES),
     "hiragana": (SECTION_TABLES_HIRA, COL_TO_ROW_HIRA, EXTRA_CELLS_HIRA, SINGLES_HIRA),
+    "halfwidth": (SECTION_TABLES_HALFWIDTH, {}, {}, SINGLES_HALFWIDTH),
 }
 
 

@@ -50,6 +50,7 @@
       <p style="margin-bottom: 1em;">
         かなくみあわせ　ほねおれそ　もしやちえに　ひらけぬゆめへ　つまり　このいろは　うたをよむ　さんぷるてきすと<br>
         カナクミアワセ　ホネオレソ　モシヤチエニ　ヒラケヌユメヘ　ツマリ　コノイロハ　ウタヲヨム　サンプルテキスト<br>
+        ｶﾅｸﾐｱﾜｾ ﾎﾈｵﾚｿ ﾓｼﾔﾁｴﾆ ﾋﾗｹﾇﾕﾒﾍ ﾂﾏﾘ ｺﾉｲﾛﾊ ｳﾀｦﾖﾑ ｻﾝﾌﾟﾙﾃｷｽﾄ<br>
       </p>
       <p style="font-family: system-ui, sans-serif; font-size: 14px; margin-bottom: 1em; opacity: 0.7;">
         安見すや「<a href="https://www.nicovideo.jp/watch/sm46059413" target="_blank" rel="noopener"
@@ -76,6 +77,11 @@
     <section>
       <h3>全角形 U+0FF01 ~ U+0FF5E</h3>
       <div id="fullwidth-list" class="glyph-sample-section"></div>
+      <hr>
+    </section>
+    <section>
+      <h3>半角カタカナ・和文記号 U+0FF61 ~ U+0FF9F</h3>
+      <div id="halfwidth-kana-list" class="glyph-sample-section"></div>
       <hr>
     </section>
     <section>
@@ -228,6 +234,7 @@
         renderList('kana-ext-scattered', KANA_EXT, covered);
         renderRange('jp-symbol-list', 0x3000, 0x303F, covered);
         renderRange('fullwidth-list', 0xFF01, 0xFF5E, covered);
+        renderRange('halfwidth-kana-list', 0xFF61, 0xFF9F, covered);
         renderRange('pua-sample-list', 0xF2700, 0xF33FF, covered);
       });
   </script>
