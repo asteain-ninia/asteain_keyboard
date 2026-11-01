@@ -70,6 +70,20 @@ function backspace() {
   const value1 = textarea.value.substr(0, textarea.selectionStart);
   const value2 = textarea.value.substr(textarea.selectionEnd);
 
+  // 範囲選択中は選択範囲だけを消し、キャレットを選択の先頭に置く。
+  if (textarea.selectionStart !== textarea.selectionEnd) {
+    textarea.value = value1 + value2;
+    textarea.selectionStart = textarea.selectionEnd = value1.length;
+    refocusTextarea();
+    return;
+  }
+
+  // 先頭では消す文字がない (キャレットを負の位置に置くと末尾へ飛んでしまう)。
+  if (value1.length === 0) {
+    refocusTextarea();
+    return;
+  }
+
   // 末尾がサロゲートペアを使う文字なら2単位まとめて消す。
   const code = value1.charCodeAt(value1.length - 1);
   let dropLength = 1;
