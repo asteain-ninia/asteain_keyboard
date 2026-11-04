@@ -1,7 +1,8 @@
 // QWERTY・五十音キーボード共通の編集キー。
 // 利用ページとの契約: isKeyboardShiftActive() / consumeKeyboardShift() /
 // updateToggleKeyVisual() を必ず定義する (かなページは syllabary.js が、
-// QWERTY は romaji_keyboard.js が持つ)。
+// QWERTY は romaji_keyboard.js が持つ)。変換待ちの入力を持つページは
+// pendingInputLength() も定義する (ローマ字入力の romaji_keyboard.js。無ければ常に確定扱い)。
 function deleteForward() {
   const textArea = document.getElementById("textarea");
   const value = textArea.value;
@@ -188,15 +189,37 @@ function toggleInsertMode() {
   updateInsertKeyVisual();
 }
 
-document.querySelectorAll(".button").forEach((button) => {
-  button.addEventListener("click", () => {
-    if (!insertModeOvertype) return;
-    const textArea = document.getElementById("textarea");
-    if (textArea.selectionStart !== textArea.selectionEnd) return;
-    const value = textArea.value;
-    const pos = textArea.selectionEnd;
-    const end = nextCaretIndex(value, pos);
-    if (end === pos) return;
-    textArea.setSelectionRange(pos, end);
-  });
-});
+// 確定済みの文字数 (コードポイント数)。
+//   - 末尾で変換待ちのローマ字 (か を待つ k、っ を待つ xts など) はまだ確定していないので
+//     数えない。その長さはページ側が pendingInputLength(text) で申告する (定義が無ければ 0)。
+//   - 改行は行を伸ばすだけで文字の枡を占めないので、上書きの数にも対象にも入れない。
+function committedCharCount(text) {
+  let pending = 0;
+  if (typeof pendingInputLength === "function") {
+    pending = pendingInputLength(text);
+  }
+  let count = 0;
+  for (const character of text.slice(0, text.length - pending)) {
+    if (character !== "\n") count += 1;
+  }
+  return count;
+}
+
+// 上書き (Insert) モードの本体。basic.js が文字キーの入力のたびに呼ぶ契約:
+//   value1 = 入力前のキャレット前、firstHalf = insertLogic が返した新しいキャレット前、
+//   value2 = キャレット後、hadSelection = 範囲選択を置き換えた入力かどうか。
+// 今回の入力で新たに確定した文字数ぶんだけ value2 の先頭を消して返す。
+// 「次の1文字を選択してから挿入」では、k+a のように2打で1文字しか確定しないローマ字入力で
+// 消しすぎる (変換待ちの k が1字、か がもう1字消す) ので、確定した数を入力後に数える。
+// 範囲選択の置き換えは選択範囲の削除で済んでいるので何も消さない。
+// 行末 (改行) の先は消さないので、Enter は常に改行の挿入になる。
+function overtypeRemainder(value1, firstHalf, value2, hadSelection) {
+  if (!insertModeOvertype || hadSelection) return value2;
+  let count = committedCharCount(firstHalf) - committedCharCount(value1);
+  let end = 0;
+  while (count > 0 && end < value2.length && value2[end] !== "\n") {
+    end = nextCaretIndex(value2, end);
+    count -= 1;
+  }
+  return value2.slice(end);
+}

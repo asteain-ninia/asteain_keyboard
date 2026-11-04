@@ -34,12 +34,20 @@ buttons.forEach((button) => {
     if (button.value) {
       insertChar = button.value;
     }
+    const hadSelection = textarea.selectionStart !== textarea.selectionEnd;
     const value1 = textarea.value.substr(0, textarea.selectionStart);
     const value2 = textarea.value.substr(textarea.selectionEnd);
 
     // insertLogic はページ側が必ず定義する契約 (value1 + 挿入文字列を返す)。
     const firstHalf = insertLogic(value1, insertChar, button);
-    textarea.value = firstHalf + value2;
+
+    // 上書き (Insert) モードを持つページ (keyboard_controls.js) は overtypeRemainder を定義し、
+    // 今回確定した文字数ぶんキャレット後ろを消した value2 を返す。無いページはそのまま挿入。
+    let secondHalf = value2;
+    if (typeof overtypeRemainder === "function") {
+      secondHalf = overtypeRemainder(value1, firstHalf, value2, hadSelection);
+    }
+    textarea.value = firstHalf + secondHalf;
 
     textarea.selectionStart = textarea.selectionEnd = firstHalf.length;
     refocusTextarea(); // テキストエリアにフォーカスを当てる
