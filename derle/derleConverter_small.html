@@ -22,8 +22,10 @@
   ピリオドは自動で前後を判別します。<br />
   <script src="derle.js"></script>
   <script>
-    // 繰り返し記号の規則は小文字キーボード (derle_small.html) と同じ insertLogic を使う
-    const derleInsert = makeDerleInsertLogic(995137, 995233, 995234);
+    // 繰り返し記号の規則は小文字キーボード (derle_small.html) と同じ derleRepeatChar を使う
+    const DERLE_LETTER_START = 995137; // 小文字の字母の先頭
+    const DERLE_REPEAT_CODE = 995234; // 繰り返し記号 󲾂
+    const DERLE_REPEAT = String.fromCodePoint(DERLE_REPEAT_CODE);
 
     const latin_derle = [
       { latin: "a", derle: String.fromCodePoint(995137) },
@@ -71,9 +73,14 @@
 
     function convert() {
       const textarea = document.getElementById("textarea").value;
-      let textArray = textarea.split("");
+      // 1 文字ずつ (サロゲートペアを割らずに) 読む
+      let textArray = Array.from(textarea);
       let result = "";
       let periodOpenNext = true; // '.' は文頭→文末の順に交互変換
+      // 直前の繰り返し記号を読み飛ばした先の文字のコードポイント。
+      // キーボードは毎回文字列を遡って求めるが、変換器は長い入力を一度に流すので、
+      // 遡ると同じ字の長い連続で時間が字数の 2 乗に伸びる。ここで覚えておく。
+      let lastBase = 0;
       for (let i = 0; i < textArray.length; i++) {
         const raw = textArray[i];
         // '.' をデーレ語の前/後ピリオドに変換（arka/arkaconverter と同様のトグル方式）
@@ -84,6 +91,7 @@
             result += DERLE_PERIOD_BACK;
           }
           periodOpenNext = !periodOpenNext;
+          lastBase = 0;
           continue;
         }
         const char = raw.toLowerCase();
@@ -91,9 +99,15 @@
         if (match) {
           // キーボードでその字のキーを押したのと同じ結果にする
           // (直前の繰り返し記号を読み飛ばして同じ字母なら 󲾂。aaa → a󲾂󲾂)
-          result = derleInsert(result, match.derle);
+          result += derleRepeatChar(lastBase, match.derle, DERLE_LETTER_START, DERLE_REPEAT_CODE);
+          lastBase = match.derle.codePointAt();
         } else {
           result += raw;
+          // 元から入っていた繰り返し記号はキーボードと同じく読み飛ばす。
+          // 元から入っていたデーレ文字の字母は、続く同じ字母を繰り返し記号にする
+          if (raw !== DERLE_REPEAT) {
+            lastBase = raw.codePointAt();
+          }
         }
       }
       document.getElementById("textarea").value = result;
