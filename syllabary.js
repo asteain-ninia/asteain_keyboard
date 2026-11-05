@@ -114,7 +114,13 @@ function applyPostfix(map, 結合記号, 除外集合) {
   const after = textarea.value.slice(pos);
   if (!before) return;
 
-  const lastChar = lastCodePointOf(before);
+  let lastChar = lastCodePointOf(before);
+  // 半角ｶﾅの濁音・半濁音 (ｶﾞ ﾊﾟ) は字と ﾞ/ﾟ の2コードポイントで1字なので、組ごと表を引く
+  // (ｶﾞ にもう一度濁点で ｶ に戻す)。組が表に無ければ直前の1コードポイントで引く。
+  if ((lastChar === "\uFF9E" || lastChar === "\uFF9F") && before.length >= 2) {
+    const pair = lastCodePointOf(before.slice(0, -1)) + lastChar;
+    if (map[pair]) lastChar = pair;
+  }
   const converted = map[lastChar];
   let newBefore;
   if (converted) {
