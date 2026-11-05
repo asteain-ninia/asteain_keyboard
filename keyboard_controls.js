@@ -189,15 +189,35 @@ function toggleInsertMode() {
   updateInsertKeyVisual();
 }
 
-// 確定済みの文字数 (コードポイント数)。末尾で変換待ちのローマ字 (か を待つ k、っ を待つ xts
-// など) はまだ確定していないので数えない。その長さはページ側が pendingInputLength(text) で
-// 申告する (定義が無ければ 0)。
+// 半角ｶﾅの濁点・半濁点 (U+FF9E ﾞ・U+FF9F ﾟ) か。前の字と組で1字に見える (ｶﾞ ﾊﾟ)。
+function isHalfwidthSoundMark(value, index) {
+  const code = value.charCodeAt(index);
+  return code === 0xff9e || code === 0xff9f;
+}
+
+// 上書きで1字と数える単位の次の位置。サロゲートペアと、半角ｶﾅ+ﾞ/ﾟ の組 (ｶﾞ) をまとめて進む。
+function nextOvertypeIndex(value, pos) {
+  let next = nextCaretIndex(value, pos);
+  while (next < value.length && isHalfwidthSoundMark(value, next)) {
+    next += 1;
+  }
+  return next;
+}
+
+// 確定済みの文字数。サロゲートペアは1字、半角ｶﾅの濁音・半濁音 (ｶﾞ) も1字と数える。
+// 末尾で変換待ちのローマ字 (か を待つ k、っ を待つ xts など) はまだ確定していないので
+// 数えない。その長さはページ側が pendingInputLength(text) で申告する (定義が無ければ 0)。
 function committedCharCount(text) {
   let pending = 0;
   if (typeof pendingInputLength === "function") {
     pending = pendingInputLength(text);
   }
-  return Array.from(text.slice(0, text.length - pending)).length;
+  const committed = text.slice(0, text.length - pending);
+  let count = 0;
+  for (let i = 0; i < committed.length; count++) {
+    i = nextOvertypeIndex(committed, i);
+  }
+  return count;
 }
 
 // 2つの文字列に共通する先頭部分の長さ (コード単位)。サロゲートペアの途中では切らない。
@@ -224,6 +244,8 @@ function commonPrefixLength(a, b) {
 // キャレット前に元からある英字 (IME Off で打った語・貼り付けた語) まで変換待ちと見なして
 // 数えると、hello| world + a で hello の5字ぶん消してしまう。代わりに、変換されずに終わった
 // 変換待ちの字 (k の後に空白など) は数えないままになり、その1字ぶん消し残す (消しすぎるよりは無害)。
+// 半角ｶﾅの濁音 (ｶﾞ) は2コードポイントだが1字として数え、消す側でも ｶﾞ を組ごと1字消す
+// (ga で ｶﾞ を打つと後ろを2字消す・ｶﾞ の上に打つと ﾞ だけ残る、を防ぐ)。
 // 範囲選択の置き換えは選択範囲の削除で済んでいるので何も消さない。
 // 行末 (改行) の先は消さない。改行を入れる入力 (Enter) はキャレットが次の行へ移るので、
 // 前の行で確定した字 (変換待ちの n → ん) があっても後続とは行が違い、何も消さない。
@@ -236,7 +258,7 @@ function overtypeRemainder(value1, firstHalf, value2, hadSelection) {
   let count = committedCharCount(added) - committedCharCount(removed);
   let end = 0;
   while (count > 0 && end < value2.length && value2[end] !== "\n") {
-    end = nextCaretIndex(value2, end);
+    end = nextOvertypeIndex(value2, end);
     count -= 1;
   }
   return value2.slice(end);
