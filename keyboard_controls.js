@@ -1,7 +1,8 @@
 // QWERTY・五十音キーボード共通の編集キー。
 // 利用ページとの契約: isKeyboardShiftActive() / consumeKeyboardShift() /
 // updateToggleKeyVisual() を必ず定義する (かなページは syllabary.js が、
-// QWERTY は romaji_keyboard.js が持つ)。
+// QWERTY は romaji_keyboard.js が持つ)。変換待ちの入力を持つページは
+// pendingInputLength() も定義する (ローマ字入力の romaji_keyboard.js。無ければ常に確定扱い)。
 function deleteForward() {
   const textArea = document.getElementById("textarea");
   const value = textArea.value;
@@ -188,15 +189,55 @@ function toggleInsertMode() {
   updateInsertKeyVisual();
 }
 
-document.querySelectorAll(".button").forEach((button) => {
-  button.addEventListener("click", () => {
-    if (!insertModeOvertype) return;
-    const textArea = document.getElementById("textarea");
-    if (textArea.selectionStart !== textArea.selectionEnd) return;
-    const value = textArea.value;
-    const pos = textArea.selectionEnd;
-    const end = nextCaretIndex(value, pos);
-    if (end === pos) return;
-    textArea.setSelectionRange(pos, end);
-  });
-});
+// 確定済みの文字数 (コードポイント数)。末尾で変換待ちのローマ字 (か を待つ k、っ を待つ xts
+// など) はまだ確定していないので数えない。その長さはページ側が pendingInputLength(text) で
+// 申告する (定義が無ければ 0)。
+function committedCharCount(text) {
+  let pending = 0;
+  if (typeof pendingInputLength === "function") {
+    pending = pendingInputLength(text);
+  }
+  return Array.from(text.slice(0, text.length - pending)).length;
+}
+
+// 2つの文字列に共通する先頭部分の長さ (コード単位)。サロゲートペアの途中では切らない。
+function commonPrefixLength(a, b) {
+  const limit = Math.min(a.length, b.length);
+  let length = 0;
+  while (length < limit && a.charCodeAt(length) === b.charCodeAt(length)) {
+    length += 1;
+  }
+  if (length > 0) {
+    const code = a.charCodeAt(length - 1);
+    if (code >= 0xd800 && code <= 0xdbff) length -= 1;
+  }
+  return length;
+}
+
+// 上書き (Insert) モードの本体。basic.js が文字キーの入力のたびに呼ぶ契約:
+//   value1 = 入力前のキャレット前、firstHalf = insertLogic が返した新しいキャレット前、
+//   value2 = キャレット後、hadSelection = 範囲選択を置き換えた入力かどうか。
+// 今回の入力で新たに確定した文字数ぶんだけ value2 の先頭を消して返す。
+// 「次の1文字を選択してから挿入」では、k+a のように2打で1文字しか確定しないローマ字入力で
+// 消しすぎる (変換待ちの k が1字、か がもう1字消す) ので、確定した数を入力後に数える。
+// 数えるのは insertLogic が書き換えた末尾 (value1 と firstHalf の共通部分より後ろ) だけ。
+// キャレット前に元からある英字 (IME Off で打った語・貼り付けた語) まで変換待ちと見なして
+// 数えると、hello| world + a で hello の5字ぶん消してしまう。代わりに、変換されずに終わった
+// 変換待ちの字 (k の後に空白など) は数えないままになり、その1字ぶん消し残す (消しすぎるよりは無害)。
+// 範囲選択の置き換えは選択範囲の削除で済んでいるので何も消さない。
+// 行末 (改行) の先は消さない。改行を入れる入力 (Enter) はキャレットが次の行へ移るので、
+// 前の行で確定した字 (変換待ちの n → ん) があっても後続とは行が違い、何も消さない。
+function overtypeRemainder(value1, firstHalf, value2, hadSelection) {
+  if (!insertModeOvertype || hadSelection) return value2;
+  const prefix = commonPrefixLength(value1, firstHalf);
+  const added = firstHalf.slice(prefix);
+  const removed = value1.slice(prefix);
+  if (added.includes("\n")) return value2;
+  let count = committedCharCount(added) - committedCharCount(removed);
+  let end = 0;
+  while (count > 0 && end < value2.length && value2[end] !== "\n") {
+    end = nextCaretIndex(value2, end);
+    count -= 1;
+  }
+  return value2.slice(end);
+}

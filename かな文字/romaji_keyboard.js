@@ -264,6 +264,21 @@ function insertLogic(value1, insertChar) {
   return buffer;
 }
 
+// 末尾で変換待ちになっているローマ字の長さ (コード単位)。IME が On のとき、末尾に残った
+// 英小文字は次のキーで かな に化けうる (k → か、xts+u → っ) ので、まだ確定していない。
+// 上書きモード (keyboard_controls.js) が確定した文字数を数えるときに参照する。
+// IME が Off なら打った字がそのまま確定する。
+function pendingInputLength(text) {
+  if (!imeOn) return 0;
+  let length = 0;
+  while (length < text.length) {
+    const code = text.charCodeAt(text.length - 1 - length);
+    if (code < 0x61 || code > 0x7a) break; // a〜z 以外
+    length += 1;
+  }
+  return length;
+}
+
 function updateModeToggleLabel() {
   const button = document.getElementById("kanaModeToggle");
   if (!button) return;
