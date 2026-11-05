@@ -12,7 +12,7 @@
   <button onclick="convert()" type="button">デーレ文字に転写！</button>
   <br />
   ラテン文字で綴られたデーレ語の文章をデーレ文字に転写します。<br />
-  同じ文字が連続した場合、2文字目は「󲾂」に変換されます。
+  同じ字母が連続した場合、2文字目以降は「󲾂」に変換されます（キーボードと同じ規則。数字は対象外）。
   変換できない文字（セミコロンなど）はそのまま残ります。<br />
   対応：
   <ul>
@@ -20,7 +20,11 @@
     <li>0-9 </li>
   </ul>
   ピリオドは自動で前後を判別します。<br />
+  <script src="derle.js"></script>
   <script>
+    // 繰り返し記号の規則は小文字キーボード (derle_small.html) と同じ insertLogic を使う
+    const derleInsert = makeDerleInsertLogic(995137, 995233, 995234);
+
     const latin_derle = [
       { latin: "a", derle: String.fromCodePoint(995137) },
       { latin: "z", derle: String.fromCodePoint(995138) },
@@ -68,16 +72,16 @@
     function convert() {
       const textarea = document.getElementById("textarea").value;
       let textArray = textarea.split("");
-      let resultArray = [];
+      let result = "";
       let periodOpenNext = true; // '.' は文頭→文末の順に交互変換
       for (let i = 0; i < textArray.length; i++) {
         const raw = textArray[i];
         // '.' をデーレ語の前/後ピリオドに変換（arka/arkaconverter と同様のトグル方式）
         if (raw === ".") {
           if (periodOpenNext) {
-            resultArray.push(DERLE_PERIOD_FRONT);
+            result += DERLE_PERIOD_FRONT;
           } else {
-            resultArray.push(DERLE_PERIOD_BACK);
+            result += DERLE_PERIOD_BACK;
           }
           periodOpenNext = !periodOpenNext;
           continue;
@@ -85,19 +89,14 @@
         const char = raw.toLowerCase();
         const match = latin_derle.find((obj) => obj.latin === char);
         if (match) {
-          let resultChar = match.derle;
-          if (
-            resultArray.length > 0 &&
-            resultArray[resultArray.length - 1] === resultChar
-          ) {
-            resultChar = String.fromCodePoint(995234); // 󲾂
-          }
-          resultArray.push(resultChar);
+          // キーボードでその字のキーを押したのと同じ結果にする
+          // (直前の繰り返し記号を読み飛ばして同じ字母なら 󲾂。aaa → a󲾂󲾂)
+          result = derleInsert(result, match.derle);
         } else {
-          resultArray.push(raw);
+          result += raw;
         }
       }
-      document.getElementById("textarea").value = resultArray.join("");
+      document.getElementById("textarea").value = result;
     }
   </script>
 <script src="../theme.js"></script>
