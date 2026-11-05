@@ -112,6 +112,13 @@ textarea {
   padding: 0px;
 }
 
+/* Tab・space・Enter は文字を挿入するので .button も付いており、文字キー用の
+   font-size: 40px を受け継いで印字が大きくなっていた。ほかの機能キー (BackSpace・Shift など、
+   ブラウザ既定のボタン文字サイズ) に揃える。HTML の style 属性で指定したサイズはこれより優先される。 */
+.button.functionButton {
+  font-size: 13.3333px;
+}
+
 .flexibleSpacer {
   margin-right: calc(var(--w) * 1px);
   /*数値設定の最小値は16*/
