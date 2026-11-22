@@ -16,10 +16,14 @@
   変換できない文字（セミコロンなど）はそのまま残ります。<br />
   対応：
   <ul>
-    <li>a,z,h,i,d,y,j,p,b,f,m,n,v,u,e,t,s,w,k,l,o,q,x,r,g,c（小文字へ）</li>
+    <li>a,z,h,i,d,y,j,p,b,f,m,n,u,v,e,t,s,w,k,l,o,q,x,r,g,c（小文字へ）</li>
+    <li>A〜Z の大文字（発音線付きの小文字へ。例：derleKr、dali-einerZy）</li>
     <li>0-9 </li>
+    <li>ハイフン「-」→「󲾵」、アポストロフィ「'」→「󲾣」、コンマ「,」→「󲿄」</li>
   </ul>
-  ピリオドは自動で前後を判別します。<br />
+  ピリオドは出てきた順に、文頭符「󲿂」と文末符「󲿃」へ交互に変換します。
+  ピリオドが続けて並んだとき（kantoka... など）は、直前と同じ符を続けます。
+  文末符のすぐ後に次の文を書くときは、間に空白を入れてください（.naqtoka kantoka. .douno kouno.）。<br />
   <script src="derle.js"></script>
   <script>
     // 繰り返し記号の規則は小文字キーボード (derle_small.html) と同じ derleRepeatChar を使う
@@ -40,8 +44,8 @@
       { latin: "f", derle: String.fromCodePoint(995146) },
       { latin: "m", derle: String.fromCodePoint(995147) },
       { latin: "n", derle: String.fromCodePoint(995148) },
-      { latin: "v", derle: String.fromCodePoint(995149) },
-      { latin: "u", derle: String.fromCodePoint(995150) },
+      { latin: "u", derle: String.fromCodePoint(995149) },
+      { latin: "v", derle: String.fromCodePoint(995150) },
       { latin: "e", derle: String.fromCodePoint(995151) },
       { latin: "t", derle: String.fromCodePoint(995152) },
       { latin: "s", derle: String.fromCodePoint(995153) },
@@ -65,6 +69,10 @@
       { latin: "7", derle: String.fromCodePoint(995196) },
       { latin: "8", derle: String.fromCodePoint(995197) },
       { latin: "9", derle: String.fromCodePoint(995198) },
+      // 記号 (小文字キーボードの記号キーと同じ字)
+      { latin: "-", derle: String.fromCodePoint(0xF2FB5) },
+      { latin: "'", derle: String.fromCodePoint(0xF2FA3) },
+      { latin: ",", derle: String.fromCodePoint(0xF2FC4) },
     ];
 
     // 前後ピリオド（文頭/文末）を区別
@@ -77,30 +85,43 @@
       let textArray = Array.from(textarea);
       let result = "";
       let periodOpenNext = true; // '.' は文頭→文末の順に交互変換
+      // 直前の文字がピリオドだったときの変換結果 (そうでなければ "")。
+      // ピリオドの連続は直前と同じ符を繰り返す (.naqtoka kantoka... → 文末符が 3 つ)
+      let lastPeriod = "";
       // 直前の繰り返し記号を読み飛ばした先の文字のコードポイント。
       // キーボードは毎回文字列を遡って求めるが、変換器は長い入力を一度に流すので、
       // 遡ると同じ字の長い連続で時間が字数の 2 乗に伸びる。ここで覚えておく。
       let lastBase = 0;
       for (let i = 0; i < textArray.length; i++) {
         const raw = textArray[i];
-        // '.' をデーレ語の前/後ピリオドに変換（arka/arkaconverter と同様のトグル方式）
+        // '.' をデーレ語の文頭符/文末符に変換（arka/arkaconverter と同様のトグル方式）
         if (raw === ".") {
-          if (periodOpenNext) {
-            result += DERLE_PERIOD_FRONT;
-          } else {
-            result += DERLE_PERIOD_BACK;
+          if (lastPeriod === "") {
+            if (periodOpenNext) {
+              lastPeriod = DERLE_PERIOD_FRONT;
+            } else {
+              lastPeriod = DERLE_PERIOD_BACK;
+            }
+            periodOpenNext = !periodOpenNext;
           }
-          periodOpenNext = !periodOpenNext;
+          result += lastPeriod;
           lastBase = 0;
           continue;
         }
+        lastPeriod = "";
         const char = raw.toLowerCase();
         const match = latin_derle.find((obj) => obj.latin === char);
         if (match) {
+          let derle = match.derle;
+          // ラテン文字の大文字は発音線付きの字の転写 (正典「表記上の特記」)。
+          // 発音線付きの字は素の字母の 26 字後ろに並ぶ。数字には大文字が無い
+          if (raw !== char) {
+            derle = String.fromCodePoint(derle.codePointAt() + 26);
+          }
           // キーボードでその字のキーを押したのと同じ結果にする
           // (直前の繰り返し記号を読み飛ばして同じ字母なら 󲾂。aaa → a󲾂󲾂)
-          result += derleRepeatChar(lastBase, match.derle, DERLE_LETTER_START, DERLE_REPEAT_CODE);
-          lastBase = match.derle.codePointAt();
+          result += derleRepeatChar(lastBase, derle, DERLE_LETTER_START, DERLE_REPEAT_CODE);
+          lastBase = derle.codePointAt();
         } else {
           result += raw;
           // 元から入っていた繰り返し記号はキーボードと同じく読み飛ばす。
