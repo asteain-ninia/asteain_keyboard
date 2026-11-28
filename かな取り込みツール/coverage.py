@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-"""かな関連ブロックのうち、フォントに未収録の文字を一覧する。usage: python coverage.py <font>"""
+"""図面から取り込むブロックのうち、フォントに未収録の文字を一覧する。usage: python coverage.py <font>"""
 import sys
 import unicodedata
 
 from fontTools.ttLib import TTFont
 
 BLOCKS = [
+    ("ラテン1補助 U+00A0-00FF", 0x00A0, 0x00FF),
     ("カタカナ U+30A0-30FF", 0x30A0, 0x30FF),
     ("カタカナ拡張 U+31F0-31FF", 0x31F0, 0x31FF),
     ("小書き拡張 U+1B120-1B167", 0x1B120, 0x1B167),

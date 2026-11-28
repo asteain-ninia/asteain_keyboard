@@ -46,6 +46,11 @@
       <hr>
     </section>
     <section>
+      <h3>ラテン1補助 U+000A0 ~ U+000FF</h3>
+      <div id="latin1-sample-list" class="glyph-sample-section"></div>
+      <hr>
+    </section>
+    <section>
       <h3>ひらがな/カタカナ U+03041 ~ U+030FF</h3>
       <p style="margin-bottom: 1em;">
         かなくみあわせ　ほねおれそ　もしやちえに　ひらけぬゆめへ　つまり　このいろは　うたをよむ　さんぷるてきすと<br>
@@ -229,6 +234,7 @@
       .then((covered) => {
         covered = covered || coverageFromList();
         renderRange('ascii-sample-list', 0x21, 0x7E, covered);
+        renderRange('latin1-sample-list', 0xA0, 0xFF, covered);
         renderRange('kana-sample-list', 0x3041, 0x30FF, covered);
         renderRange('kana-ext-list', 0x31F0, 0x31FF, covered);
         renderList('kana-ext-scattered', KANA_EXT, covered);

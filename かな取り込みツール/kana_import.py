@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""ffpython で実行。カタカナ SVG 群を asteain フォント (のコピー) に取り込む。
+"""ffpython で実行。図面から切り出した SVG 群を asteain フォントに取り込む。
 
-usage: ffpython kana_import.py <in.sfd> <svg_dir> <out_dir>
+usage: ffpython kana_import.py <in.sfd> <svg_dir> <out_dir> [名前] [字送りの規則] [追加の svg_dir ...]
 
 座標系: SVG 64 単位 = em2048 (×32)、SVG y=0 → フォント y=+1638 (Ascent)。
 既存グリフと同じ「ベースライン +6」の載り方に合わせる。
@@ -11,11 +11,14 @@ import json
 import os
 import re
 import sys
+import tempfile
+import unicodedata
 
 import fontforge
 import psMat
 
 ASCENT = 1638
+BASELINE = 6  # 図面の y51 がフォントのここに載る
 SCALE = 32.0
 KANA_WIDTH = 56 * 32  # 全角固定 1792
 HALF_WIDTH = 28 * 32  # 半角カナ固定 896
@@ -57,6 +60,79 @@ def metrics_for(cp, ink_w):
     if cp in SMALL_KANA:
         return ink_w + 10 * SCALE, "center"
     return ink_w + 5 * SCALE, "center"
+
+
+def base_letter(cp):
+    """アクセント付きラテン字の基字 (ASCII の英字) の符号位置。当てはまらなければ None。
+
+    Unicode の正規分解が「英字 + 結合用の印」になる字だけが対象 (À → A、ç → c)。
+    Æ Ð Ø Þ ß は分解を持たない独立の字なので、家風の規則のままにする。
+    ガ → カ のようなかなの分解は、基字が英字でないので当てはまらない。
+    """
+    parts = unicodedata.decomposition(chr(cp)).split()
+    if len(parts) < 2 or parts[0].startswith("<"):
+        return None
+    base = int(parts[0], 16)
+    if 0x41 <= base <= 0x5A or 0x61 <= base <= 0x7A:
+        return base
+    return None
+
+
+def inherit_base_metrics(font, done, by_uni):
+    """アクセント付きラテン字の送りと横位置を、基字に合わせる。
+
+    送り幅は基字と同じにし、字の本体を基字のインクと同じ位置に置く。
+    こうすると é は e と、Ù は U と同じ幅・同じベアリングになり、
+    アクセントの有無で字の間隔が変わらない。
+
+    本体とアクセントは輪郭で見分ける。ベースラインまで届いている輪郭が本体で、
+    届いていない輪郭 (上に載る印) は位置決めに使わない。下に付くセディーユは
+    本体とつながっているが、本体の幅に収まっているので横の範囲は変わらない。
+
+    アクセントが基字より広くて、印が送りの枠からはみ出す字 (ï など) は、
+    はみ出す側だけ枠を広げて、印に家風のベアリング 2.5 を取る。基字の送りのままだと、
+    印が隣の字に触れる (lïl で点が l に付く)。
+    """
+    bearing = round(2.5 * SCALE)
+    for cp in sorted(done):
+        base_cp = base_letter(cp)
+        if base_cp is None:
+            continue
+        base = by_uni.get(base_cp)
+        if base is None:
+            print("基字引き継ぎ U+%04X: 基字 %s がフォントに無いので飛ばす" % (cp, chr(base_cp)))
+            continue
+        g = by_uni[cp]
+        body = []
+        for contour in g.foreground:
+            cb = contour.boundingBox()
+            if cb[1] <= BASELINE + 2 * SCALE:
+                body.append(cb)
+        if not body:
+            print("基字引き継ぎ U+%04X: ベースラインに届く輪郭が無いので飛ばす" % cp)
+            continue
+        x0 = min(cb[0] for cb in body)
+        x1 = max(cb[2] for cb in body)
+        bb = base.boundingBox()
+        g.transform(psMat.translate(round((bb[0] + bb[2]) / 2 - (x0 + x1) / 2), 0))
+        width = base.width
+        nb = g.boundingBox()
+        add_left, add_right = 0, 0
+        if nb[0] < 0:
+            add_left = round(-nb[0]) + bearing
+        if nb[2] > width:
+            add_right = round(nb[2] - width) + bearing
+        if add_left:
+            g.transform(psMat.translate(add_left, 0))
+        g.width = int(width + add_left + add_right)
+        note = ""
+        if abs((x1 - x0) - (bb[2] - bb[0])) > 0.5 * SCALE:
+            note += "  ★本体の幅が基字 (%.1f) と違う" % ((bb[2] - bb[0]) / SCALE)
+        if add_left or add_right:
+            note += "  印がはみ出すので枠を広げた (基字の送り %.1f に 左 +%.1f・右 +%.1f)" % (
+                base.width / SCALE, add_left / SCALE, add_right / SCALE)
+        print("基字引き継ぎ U+%04X %s ← %s  送り %.1f  本体幅 %.1f%s"
+              % (cp, chr(cp), chr(base_cp), g.width / SCALE, (x1 - x0) / SCALE, note))
 
 
 def fit_punctuation_to_halfwidth(g, cp):
@@ -443,21 +519,32 @@ def write_coverage_js(font, out_dir):
     print("font_coverage.js を生成  %d 字 / %d 範囲" % (len(cps), len(ranges)))
 
 def main():
-    sfd_in, svg_dir, out_dir = sys.argv[1], sys.argv[2], sys.argv[3]
+    # FontForge 20251009 は、日本語を含むフォルダからの相対パスを開けない
+    # (「../asteain.sfd」が Open failed になる)。絶対パスなら開けるので、ここで直す。
+    sfd_in, svg_dir, out_dir = (os.path.abspath(p) for p in sys.argv[1:4])
     basename = sys.argv[4] if len(sys.argv) > 4 else "test_asteain"
     # 字送りの決め方:
     #   family    … 送り幅 = インク幅 + 5 (左右2.5ずつ)。既存6書体と同じ規則。
     #   fullwidth … 送り幅 = 全角56、インクを升目の中央に置く。日本語の等幅慣例。
     #   asis      … manifest の adv をそのまま使い、横位置も図面のまま。
     mode = sys.argv[5] if len(sys.argv) > 5 else "asis"
-    with open(os.path.join(svg_dir, "manifest.json"), encoding="utf-8") as f:
-        manifest = json.load(f)
+    # 図面のフォルダは 6 番目以降の引数で足せる (ラテン文字拡張など)。
+    # **図面は毎回すべて渡すこと。** 自動生成は「この実行で図面から取り込んだ字」だけを
+    # 避けるので、かなの図面を渡さずに実行すると、図面由来の ［ ］ などが
+    # ASCII への参照で上書きされる。
+    manifest = []
+    for d in [svg_dir] + sys.argv[6:]:
+        with open(os.path.join(d, "manifest.json"), encoding="utf-8") as f:
+            manifest += [dict(item, dir=d) for item in json.load(f)]
 
     font = fontforge.open(sfd_in)
     if "full" not in font.encoding.lower():
         font.encoding = "UnicodeFull"
     os.makedirs(out_dir, exist_ok=True)
-    tmp = os.path.join(out_dir, "_tmp_nomarker.svg")
+    # 取り込みに使う一時 SVG は、システムの一時フォルダに置く。FontForge 20251009 の
+    # importOutlines は、日本語を含むパスの SVG を読めない (libxml2: out of memory)。
+    tmp_dir = tempfile.mkdtemp(prefix="asteain_import_")
+    tmp = os.path.join(tmp_dir, "nomarker.svg")
 
     correction = None
     imported = 0
@@ -465,7 +552,7 @@ def main():
     for item in manifest:
         if not item.get("cp"):
             continue
-        with open(os.path.join(svg_dir, item["file"]), encoding="utf-8") as f:
+        with open(os.path.join(item["dir"], item["file"]), encoding="utf-8") as f:
             svg = f.read()
         svg = re.sub(r'<rect width="2" height="64"[^/]*/>\s*', "", svg)  # マーカーバー除去
         with open(tmp, "w", encoding="utf-8") as f:
@@ -519,6 +606,7 @@ def main():
         done.add(item["cp"])
 
     by_uni = glyphs_by_unicode(font)
+    inherit_base_metrics(font, done, by_uni)
     make_combining_marks(font, done, by_uni)
     make_ideographic_space(font, done)
     make_fullwidth_forms(font, done, by_uni)
@@ -528,6 +616,7 @@ def main():
     make_vertical_variants(font, glyphs_by_unicode(font))
 
     os.remove(tmp)
+    os.rmdir(tmp_dir)
     out_sfd = os.path.join(out_dir, basename + ".sfd")
     out_ttf = os.path.join(out_dir, basename + ".ttf")
     out_woff = os.path.join(out_dir, basename + ".woff")

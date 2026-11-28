@@ -5,6 +5,10 @@ asteain フォント (asteain.sfd / .ttf / .woff) に収録するパイプライ
 2026-09-12 時点で図面から 291 字を収録し、符号位置の無い25字も SVG 保存。
 半角カタカナは基本46字・専用図面の小書き9字・自動生成の記号8字の全63字を収録済み。
 
+ラテン文字ページの字も同じ道具で取り込む。2026-11-28 時点でラテン1補助の
+文字 62 字 (U+00C0〜00FF、× ÷ を除く) と、描き直した ASCII の A を収録済み。切り出しだけ専用の
+[latin_group_route.py](latin_group_route.py) を使う (下の「ラテン文字ページの取り込み」の節)。
+
 ## 工程の全体像 (本線 = ルートC)
 
 ```
@@ -26,7 +30,9 @@ REST API を使う版 (ルートA) と、名前が落ちる Copy as SVG 版 (ル
 
 - Node.js (①)
 - Python 3.12 + `pip install skia-pathops fonttools` (②)
-- FontForge の ffpython: `C:\Program Files (x86)\FontForgeBuilds\bin\ffpython.exe` (③)
+- FontForge の ffpython: `C:\Program Files\FontForgeBuilds\bin\ffpython.exe` (③、版は 20251009)
+    - 日本語の出力が cp932 で落ちるので、`PYTHONIOENCODING=utf-8` を付けて実行する。
+    - この版は日本語を含むパスに弱い (下の「ハマりどころ」)。スクリプト側で避けてある。
 - ImageMagick (任意・確認用レンダリング)
 
 ## トークン
@@ -52,8 +58,10 @@ node figma_fetch.mjs "/v1/images/MjWgTZUrTpt7BFMZ70W790?ids=$IDS&format=svg&svg_
 python kana_svg_route.py rows_urls.json rows.json "../グリフsvg/かなもじ"
 
 # ④ フォントへ取り込み (リポジトリ直下の asteain.sfd を更新し ttf/woff を再生成)
-#    最後の引数が字送りの規則。family = 家風準拠 (これが本採用)
-ffpython kana_import.py ../asteain.sfd "../グリフsvg/かなもじ" .. asteain family
+#    5 番目の引数が字送りの規則。family = 家風準拠 (これが本採用)
+#    6 番目以降は追加の図面フォルダ。図面は毎回すべて渡す (渡さなかった図面の字は、
+#    自動生成で上書きされることがある)
+ffpython kana_import.py ../asteain.sfd "../グリフsvg/かなもじ" .. asteain family "../グリフsvg/ラテン文字/ASCII" "../グリフsvg/ラテン文字/ラテン1補助"
 
 # ⑤ 検証
 ffpython verify_font.py ../asteain.ttf
@@ -108,6 +116,9 @@ python verify_input_coverage.py ../asteain.ttf  # QWERTY・50音から入力で�
   従う。開き括弧 (「『【〔〖《（) はインクを右へ寄せ (前アキ)、閉じと 、。 は左へ寄せる (後アキ)。
 - **半角カタカナ U+FF61〜FF9F は送り 28 単位固定。** 図面の横幅が23単位を超える
   括弧類は、左右ベアリング2.5を確保できるところまで横だけ縮める。
+
+これとは別に、**ラテン文字のアクセント付きの字は基字の送りと横位置を引き継ぐ**
+(下の「ラテン文字ページの取り込み」の「字送り」)。
 
 - 濁点・半濁点は**升目の内側に収める** (日本語フォントの作法。ガがカより広くならない)。
   外に出ていると、その字だけ送りが広くなって不揃いに見える。
@@ -168,6 +179,12 @@ python verify_input_coverage.py ../asteain.ttf  # QWERTY・50音から入力で�
   FontForge 側で直すなら `glyph.stroke("circular", 幅, "round", "round")` が要る。
 - ffpython の SVG 取り込みは viewBox 高さ 64 → em2048 にちょうど ×32 で載る
   (既存グリフと同じ「ベースライン+6」)。kana_import.py が 1 字目で校正して検算する。
+- **FontForge 20251009 は日本語を含むパスに弱い。**
+    - 日本語のフォルダからの相対パス (`../asteain.sfd`) を開けない (Open failed)。
+      絶対パスなら開けて、保存もできる。kana_import.py と verify_font.py は
+      受け取ったパスを絶対パスに直している。
+    - `importOutlines` は日本語を含むパスの SVG を読めない (libxml2: out of memory)。
+      kana_import.py は取り込み用の一時 SVG をシステムの一時フォルダに置く。
 
 ## ルートC: id 付き SVG 書き出し（★これが最良。2026-08-26 の 282 字収録で使用）
 
@@ -176,7 +193,7 @@ Figma の**書き出しパネルで SVG を選び、設定 (…) の「Include "
 
 ```sh
 python kana_group_route.py "<書き出した.svg>" "../グリフsvg/かなもじ"
-ffpython kana_import.py ../asteain.sfd "../グリフsvg/かなもじ" .. asteain family
+ffpython kana_import.py ../asteain.sfd "../グリフsvg/かなもじ" .. asteain family "../グリフsvg/ラテン文字/ASCII" "../グリフsvg/ラテン文字/ラテン1補助"
 ffpython verify_font.py ../asteain.ttf
 python bearings.py ../asteain.ttf
 python coverage.py ../asteain.ttf
@@ -250,6 +267,67 @@ Group 1
 - インクは**黒だけ**を拾う。ガイドの色付き図形は無視されるが、
   字の一部がうっかり黒以外になっていると落ちるので注意
   (実際に #020000 という惜しい色が 2 つ見つかったことがある)。
+
+## ラテン文字ページの取り込み
+
+書き出し方はルートCと同じ (書き出しパネルで SVG、「Include "id" attribute」を有効に)。
+ラテン文字ページの字・ガイド・お手本をまとめて 1 枚にしてよい。
+書き出した SVG は切り出しの元なので、切り出しが済んだら消す (リポジトリに置かない)。
+
+```sh
+# 拡張の升 (ラテン1補助) の字すべて
+python latin_group_route.py "<書き出した.svg>" "../グリフsvg/ラテン文字/ラテン1補助"
+# ASCII の段は、描き直した字だけを挙げて切り出す (描き直した字は毎回すべて挙げる)
+python latin_group_route.py "<書き出した.svg>" "../グリフsvg/ラテン文字/ASCII" A
+
+ffpython kana_import.py ../asteain.sfd "../グリフsvg/かなもじ" .. asteain family "../グリフsvg/ラテン文字/ASCII" "../グリフsvg/ラテン文字/ラテン1補助"
+ffpython verify_font.py ../asteain.ttf
+python bearings.py ../asteain.ttf
+python coverage.py ../asteain.ttf
+```
+
+### 字の同定
+
+**レイヤー名を使わない。** 黒い図形を 1 個ずつ「中心が載っている升」に割り当てて、
+升ごとに合成する。字のグループが崩れていても、名前が仮のままでも、升に載っていれば拾える。
+升がどの字かは、ガイドから決める。
+
+- **拡張の升**は、升の名前が `À U+C0` のように字と符号位置になっている
+  ([figローカル編集](../figローカル編集/README.md) で足したガイド)。新しいブロック
+  (ラテン拡張A など) も、ガイドの升にこの形の名前を付ければそのまま拾える。
+  出力先のフォルダはブロックごとに分け、kana_import.py の引数に足す。
+- **ASCII の段**は升に字の名前が無いので、段の名前 (大文字・小文字・数字・記号1・記号2) と
+  左からの順番で決める ([latin_group_route.py](latin_group_route.py) の `ASCII_ROWS`)。
+- ベースラインより下へ出る部分 (ç・þ・ý など) は升の下にはみ出すので、升の上端から
+  96 までをその升の縦の帯として扱う (升は 128 刻みで、間にお手本の段が挟まる)。
+
+### ASCII は描き直した字だけを入れる
+
+ASCII の字は 2025-10 に手作業で取り込んだもので、E・U・N・i・p などは縦線の側の
+ベアリングを 3.75 に手で調整してある。この道具で取り込み直すと家風の一律 2.5 に戻るので、
+**全部は取り込まず、描き直した字だけ**を `グリフsvg/ラテン文字/ASCII/` に切り出して入れる。
+今そこにあるのは A (幅 27 の形) の 1 字。
+
+`グリフsvg/ラテン文字/` の 大文字・小文字・数字・記号1・記号2 は 2025-10 の取り込みに使った
+図面の記録で、`ASCII/` にある字は `ASCII/` のほうが今の形。
+
+### 字送り
+
+- 独立した字 (Æ Ð Ø Þ ß æ ð ø þ) と ASCII の字は、かなと同じ家風 (送り = インク幅 + 5)。
+- **アクセント付きの字は、基字の送りと横位置を引き継ぐ** (kana_import.py の
+  `inherit_base_metrics`)。é は e と、Ù は U と同じ送り・同じベアリングになる。
+    - 対象は、Unicode の正規分解が「英字 + 結合用の印」になる字 (À → A、ç → c)。
+    - 字の本体 (ベースラインまで届いている輪郭) を、基字のインクと同じ位置に置く。
+      上に載る印は位置決めに使わない。
+    - アクセントが基字より広くて、印が基字の送りの枠からはみ出す字は、**はみ出す側だけ
+      枠を広げて、印に家風のベアリング 2.5 を取る**。基字の送りのままだと、印が隣の字に
+      触れる (lïl で点が l に付く)。今これに当たるのは ï (送り 27.0、i は 12.5)・î (22.2)・
+      ì í (15.8)・Ï (26.0、I は 18.0) の 5 字。
+    - 印が枠の内側に収まっていれば、ベアリングが 2.5 より狭くても広げない
+      (Î は左右 0.4)。隣の字との間は、隣の字のベアリングが空ける。
+    - 本体の幅が基字と 0.5 単位より大きく違うと、取り込みの記録に
+      `★本体の幅が基字と違う` が出る。基字を描き直したのにアクセント付きの字が
+      古い形のまま、というずれを見つけるための印。
 
 ## ルートB: Copy as SVG (API を一切使わない・2026-08-16 の 117 字収録で使用)
 
