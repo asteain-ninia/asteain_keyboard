@@ -1,15 +1,19 @@
 # -*- coding: utf-8 -*-
 """ffpython で実行: ビルド済みフォントの収録状態を検証する。usage: ffpython verify_font.py <font>"""
+import os
 import sys
 
 import fontforge
 
-font = fontforge.open(sys.argv[1])
+# FontForge 20251009 は日本語を含むフォルダからの相対パスを開けないので、絶対パスにする
+font = fontforge.open(os.path.abspath(sys.argv[1]))
 total = sum(1 for _ in font.glyphs())
 kana_bmp = [g for g in font.glyphs() if 0x3040 <= g.unicode <= 0x31FF]
 kana_ext = [g for g in font.glyphs() if 0x1B100 <= g.unicode <= 0x1B16F]
+latin1 = [g for g in font.glyphs() if 0xC0 <= g.unicode <= 0xFF]
 print("glyphs total = %d" % total)
 print("kana (3040-31FF) = %d / ext (1B1xx) = %d" % (len(kana_bmp), len(kana_ext)))
+print("latin-1 supplement (00C0-00FF) = %d" % len(latin1))
 
 a = font["a"]
 print("ASCII 'a': width=%d (expect 1248)" % a.width)
